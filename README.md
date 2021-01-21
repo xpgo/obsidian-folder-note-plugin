@@ -26,5 +26,10 @@ Just a simple trick. When create the description, a note file named `_about_.md`
 
 ## Manually installing the plugin
 
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
+- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/folder-note-obsidian/`.
 
+## Build
+
+- Clone this repo.
+- `npm i` or `yarn` to install dependencies
+- `npm run dev` to start compilation in watch mode.
