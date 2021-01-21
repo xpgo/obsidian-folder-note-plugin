@@ -1,0 +1,4 @@
+/* hide the note file with name _about_.md */
+div.nav-file-title[data-path$="_about_.md"] {
+  display: none;
+}
