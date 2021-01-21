@@ -1,6 +1,6 @@
 # Folder Note Plugin
 
-Add description note to a folder. 
+Obsidian Plugin: Add description note to a folder. 
 
 ## Usage
 
