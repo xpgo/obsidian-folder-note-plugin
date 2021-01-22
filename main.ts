@@ -62,8 +62,12 @@ export default class FolderNotePlugin extends Plugin {
 	}
 
 	async openFoldNote(folderElem: Element, folderPath: string, doCreate: boolean) {
+		// set note name
+		var noteName = this.settings.folderNoteName;
+		var folderName = folderPath.split('/').pop();
+		noteName = noteName.replace('{{FOLDER_NAME}}', folderName);
+
 		// check note file
-		const noteName = this.settings.folderNoteName;
 		var folderNotePath = folderPath + '/' + noteName + '.md';
 		let hasFolderNote = await this.app.vault.adapter.exists(folderNotePath);
 		var showFolderNote = hasFolderNote;
@@ -115,7 +119,7 @@ class FolderNoteSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Note Name')
-			.setDesc('Set the name for folder note. (Default: _about_) ')
+			.setDesc('Set the name for folder note. {{FOLDER_NAME}} will be replaced with current folder name.')
 			.addText(text => text
 				.setValue(this.plugin.settings.folderNoteName)
 				.onChange(async (value) => {

@@ -17,7 +17,10 @@ Just a simple trick. When create the description, a note file named `_about_.md`
 - The file name may looks abnormal.
 - In the future, the description will be automatically generated based on the files and their contents in the folder. 
 
-The note name and initial content for the description can be configured in the settings panel.
+About setting the note file name:
+
+- The note name and initial content for the description can be configured in the settings panel.
+- Use {{FOLDER_NAME}} if you want the note name to be the same of the folder name.
 
 ## Plans for future
 
