@@ -67,10 +67,15 @@ export default class FolderNotePlugin extends Plugin {
 		var folderNotePath = folderPath + '/' + noteName + '.md';
 		let hasFolderNote = await this.app.vault.adapter.exists(folderNotePath);
 		var showFolderNote = hasFolderNote;
-		if (!hasFolderNote && doCreate) {
-			const noteStrInit = this.settings.folderNoteStrInit;
-			await this.app.vault.adapter.write(folderNotePath, noteStrInit);
-			showFolderNote = true;
+		if (!hasFolderNote) {
+		    if(doCreate) {
+				const noteStrInit = this.settings.folderNoteStrInit;
+				await this.app.vault.adapter.write(folderNotePath, noteStrInit);
+				showFolderNote = true;
+			}
+			else if (folderElem.hasClass('has-folder-note')) {
+				folderElem.removeClass('has-folder-note');
+			}
 		}
 
 		// show the note
@@ -128,8 +133,7 @@ class FolderNoteSettingTab extends PluginSettingTab {
                         .setValue(this.plugin.settings.folderNoteStrInit)
                         .onChange(async (value) => {
                             try {
-                                const newValue = JSON.parse(value);
-                                this.plugin.settings.folderNoteStrInit = newValue;
+                                this.plugin.settings.folderNoteStrInit = value;
                                 await this.plugin.saveSettings();
                             } catch (e) {
                                 return false;
