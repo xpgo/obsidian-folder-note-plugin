@@ -7,6 +7,7 @@ Obsidian Plugin: Add description note to a folder.
 - **Add** description note for a folder: CTRL+Click on a folder node in the file explorer panel.
 - **Show** description note of a folder: Just Click the folder.
 - **Delete** description note of a folder: Just delete the opened note file.
+- **Setting** : configure the note name and template.
 
 ## How it works
 
@@ -15,6 +16,8 @@ Just a simple trick. When create the description, a note file named `_about_.md`
 - the `_about_.md` file will not always be shown right after the folder node if there are subfolders.
 - The file name may looks abnormal.
 - In the future, the description will be automatically generated based on the files and their contents in the folder. 
+
+The note name and initial content for the description can be configured in the settings panel.
 
 ## Plans for future
 
