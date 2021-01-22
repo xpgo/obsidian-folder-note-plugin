@@ -11,16 +11,17 @@ Obsidian Plugin: Add description note to a folder.
 
 ## How it works
 
-Just a simple trick. When create the description, a note file named `_about_.md` will be created in the clicked folder. However, the file `_about_.md` is hidden by CSS rules of the plugin. The reason that the file is hidden because:
+Just a simple trick. When create the description, a note file with title same as the folder name will be created in the clicked folder. However, the note file is hidden by CSS rules of the plugin. The reason that the file is hidden because:
 
-- the `_about_.md` file will not always be shown right after the folder node if there are subfolders.
-- The file name may looks abnormal.
+- the file will not always be shown right after the folder node if there are subfolders.
+- The file name may looks abnormal or weird.
 - In the future, the description will be automatically generated based on the files and their contents in the folder. 
 
-About setting the note file name:
+About setting the note file name and inital content:
 
-- The note name and initial content for the description can be configured in the settings panel.
-- Use {{FOLDER_NAME}} if you want the note name to be the same of the folder name.
+- The note name can be set to others, like `_about_` in the settings panel.
+- The {{FOLDER_NAME}} in the note name setting will be replaced with the folder name.
+- The initial content for the description can be configured in the settings panel.
 
 ## Plans for future
 
@@ -28,7 +29,7 @@ About setting the note file name:
 
 ## Known issues
 
-- Do not try to create a new file by context menu or Ctrl+N (which will create a file named 'Untitled.md' firstly), and change its name to  `_about_.md` manually. If you do that, the file  `_about_.md` will not be hidden due to internal mechanism of Obsidian. However, if you close and reopen Obsidian, it will be hidden again.
+- Do not try to create a new file by context menu or Ctrl+N (which will create a file named 'Untitled.md' firstly), and change its name to the folder name manually. If you do that, the file will not be hidden due to internal mechanism of Obsidian. However, if you close and reopen Obsidian, it will be hidden again.
 
 ## Manually installing the plugin
 

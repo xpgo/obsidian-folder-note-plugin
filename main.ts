@@ -7,7 +7,7 @@ interface FolderNotePluginSettings {
 }
 
 const DEFAULT_SETTINGS: FolderNotePluginSettings = {
-	folderNoteName: '_about_',
+	folderNoteName: '{{FOLDER_NAME}}',
 	folderNoteStrInit: '# About the Folder\n'
 }
 
