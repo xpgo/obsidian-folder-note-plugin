@@ -7,7 +7,7 @@ Obsidian Plugin: Add description note to a folder.
 - **Add** description note for a folder: CTRL+Click on a folder node in the file explorer panel.
 - **Show** description note of a folder: Just Click the folder.
 - **Delete** description note of a folder: Just delete the opened note file.
-- **Setting** : configure the note name and template.
+- **Configue** : configure the note name and template on the settings panel.
 
 ## How it works
 
@@ -19,7 +19,7 @@ Just a simple trick. When create the description, a note file with title same as
 
 About setting the note file name and inital content:
 
-- The note name can be set to others, like `_about_` in the settings panel.
+- The note name can be set to others, like `_about_` or `index` in the settings panel.
 - The {{FOLDER_NAME}} in the note name setting will be replaced with the folder name.
 - The initial content for the description can be configured in the settings panel.
 
@@ -31,9 +31,10 @@ About setting the note file name and inital content:
 
 - Do not try to create a new file by context menu or Ctrl+N (which will create a file named 'Untitled.md' firstly), and change its name to the folder name manually. If you do that, the file will not be hidden due to internal mechanism of Obsidian. However, if you close and reopen Obsidian, it will be hidden again.
 
-## Manually installing the plugin
+## Install
 
-- Go to the release page, copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/folder-note-obsidian/`.
+- On the Obsidian's settings page, browse the third-party plugins and search 'Folder Note', then install.
+- Or manully installing: go to the github release page, copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/folder-note-plugin/`.
 
 ## Build
 
