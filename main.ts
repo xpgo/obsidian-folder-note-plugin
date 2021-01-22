@@ -35,7 +35,7 @@ export default class FolderNotePlugin extends Plugin {
 				folderElem = elemTarget.parentElement;
 				folderPath = folderElem.attributes.getNamedItem('data-path').textContent;
 			}
-			else if (className == 'nav-folder-title') {
+			else if (className.contains('nav-folder-title')) {
 				folderPath = elemTarget.attributes.getNamedItem('data-path').textContent;
 			}
 
