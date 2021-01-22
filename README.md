@@ -33,7 +33,7 @@ About setting the note file name and inital content:
 
 ## Manually installing the plugin
 
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/folder-note-obsidian/`.
+- Go to the release page, copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/folder-note-obsidian/`.
 
 ## Build
 
