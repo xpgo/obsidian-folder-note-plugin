@@ -3,10 +3,6 @@ div.is-folder-note {
   display: none;
 }
 
-div.nav-file-title[data-path$="_about_.md"] {
-  display: none;
-}
-
 /* indicate the folder has note  */
 div.has-folder-note {
   color: var(--text-nav-selected);
