@@ -7,8 +7,8 @@ interface FolderNotePluginSettings {
 }
 
 const DEFAULT_SETTINGS: FolderNotePluginSettings = {
-	folderNoteName: '{{FOLDER_NAME}}',
-	folderNoteStrInit: '# About the Folder\n'
+	folderNoteName: '_about_',
+	folderNoteStrInit: '# About {{FOLDER_NAME}}\n'
 }
 
 export default class FolderNotePlugin extends Plugin {
@@ -82,7 +82,8 @@ export default class FolderNotePlugin extends Plugin {
 		var showFolderNote = hasFolderNote;
 		if (!hasFolderNote) {
 		    if(doCreate) {
-				const noteStrInit = this.settings.folderNoteStrInit;
+				var noteStrInit = this.settings.folderNoteStrInit;
+				noteStrInit.replace('{{FOLDER_NAME}}', folderName);
 				await this.app.vault.adapter.write(folderNotePath, noteStrInit);
 				showFolderNote = true;
 			}

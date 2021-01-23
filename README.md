@@ -11,18 +11,18 @@ Obsidian Plugin: Add description note to a folder.
 
 ## How it works
 
-Just a simple trick. When create description for a folder, a note file with title same as the folder name will be created in the clicked folder. However, the note file is hidden by CSS rules of the plugin. The reason that the file is hidden because:
+Just a simple trick. When create description for a folder, a note file named `_about_.md` will be created in the clicked folder. However, the file `_about_.md` is hidden by CSS rules of the plugin. The reason that the file is hidden because:
 
-- to simulate a folder-like note
-- the file will not always be shown right after the folder node if there are subfolders.
+- the `_about_.md` file will not always be shown right after the folder node if there are subfolders.
 - The file name may looks abnormal or weird.
-- In the future, the description will be automatically generated based on contents in the folder. 
+- In the future, the description will be automatically generated based on the files and their contents in the folder. 
 
 About setting the note file name and inital content:
 
-- The note name can be set to others, like `_about_` or `index` in the settings panel.
-- The {{FOLDER_NAME}} in the note name setting will be replaced with the folder name.
+- The note name can be set to others, like `_overview_` or `index` in the settings panel.
+- You can use {{FOLDER_NAME}} in the note name setting which will be replaced with the folder name.
 - The initial content for the description can be configured in the settings panel.
+- **NOTE**: if  you use {{FOLDER_NAME}} as the note name, you have to manually change it after you rename a folder.
 
 ## Plans for future
 
