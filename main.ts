@@ -28,15 +28,24 @@ export default class FolderNotePlugin extends Plugin {
 		this.registerDomEvent(document, 'click', (evt: MouseEvent) =>  {
 			// get the folder path
 			var folderPath = '';
+			var folderName = '';
 			const elemTarget = (evt.target as Element);
 			var className = elemTarget.className.toString();
 			var folderElem = elemTarget;
 			if (className.contains('nav-folder-title-content')) {
+				folderName = folderElem.getText();
 				folderElem = elemTarget.parentElement;
 				folderPath = folderElem.attributes.getNamedItem('data-path').textContent;
 			}
 			else if (className.contains('nav-folder-title')) {
 				folderPath = elemTarget.attributes.getNamedItem('data-path').textContent;
+				folderName = elemTarget.lastElementChild.getText();
+			}
+
+			// fix the polderPath
+			if (!(folderPath.endsWith(folderName))) {
+				var slashLast = folderPath.lastIndexOf('/');
+				folderPath = folderPath.substring(0, slashLast+1) + folderName;
 			}
 
 			// open the infor note
