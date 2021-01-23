@@ -83,7 +83,7 @@ export default class FolderNotePlugin extends Plugin {
 		if (!hasFolderNote) {
 		    if(doCreate) {
 				var noteStrInit = this.settings.folderNoteStrInit;
-				noteStrInit.replace('{{FOLDER_NAME}}', folderName);
+				noteStrInit = noteStrInit.replace('{{FOLDER_NAME}}', folderName);
 				await this.app.vault.adapter.write(folderNotePath, noteStrInit);
 				showFolderNote = true;
 			}
