@@ -24,6 +24,13 @@ About setting the note file name and inital content:
 - The initial content for the description can be configured in the settings panel.
 - **NOTE**: if  you use {{FOLDER_NAME}} as the note name, you have to manually change it after you rename a folder.
 
+## Change log
+
+### 0.2.3
+
+- Fix: failed to create note file when create a new folder.
+- Change: change the default note name to \_about\_ because of folder rename problem.
+
 ## Plans for future
 
 - Automatic generate brief contents for the folder note file based on contents in the folder, like the software [Trilium](https://github.com/zadam/trilium) does. 
