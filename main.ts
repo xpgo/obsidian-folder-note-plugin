@@ -2,11 +2,13 @@ import { fstat } from 'fs';
 import { App, Modal, Notice, Plugin, PluginSettingTab, Setting, getLinkpath } from 'obsidian';
 
 interface FolderNotePluginSettings {
+	folderNoteHide: boolean;
 	folderNoteName: string;
 	folderNoteStrInit: string;
 }
 
 const DEFAULT_SETTINGS: FolderNotePluginSettings = {
+	folderNoteHide: true,
 	folderNoteName: '_about_',
 	folderNoteStrInit: '# About {{FOLDER_NAME}}\n'
 }
@@ -95,14 +97,18 @@ export default class FolderNotePlugin extends Plugin {
 		// show the note
 		if (showFolderNote) {
 			// modify the element
+			var hideSetting = this.settings.folderNoteHide;
 			folderElem.addClass('has-folder-note');
 			folderElem.parentElement
 				.querySelectorAll('div.nav-folder-children > div.nav-file > div.nav-file-title')
 				.forEach(function (fileElem) {
 					// console.log('fileElem:', fileElem);
 					let fileDataPath = fileElem.attributes.getNamedItem('data-path').textContent;
-					if (fileDataPath.endsWith(folderNotePath)) {
+					if (hideSetting && fileDataPath.endsWith(folderNotePath)) {
 						fileElem.addClass('is-folder-note');
+					}
+					else {
+						fileElem.removeClass('is-folder-note');
 					}
 			});
 
@@ -128,8 +134,19 @@ class FolderNoteSettingTab extends PluginSettingTab {
 		containerEl.createEl('h2', {text: 'Folder Note Plugin: Settings.'});
 
 		new Setting(containerEl)
+			.setName('Hide Note')
+			.setDesc('Hide the folder note file in the file explorer panel.')
+			.addToggle((toggle) => {
+				toggle.setValue(this.plugin.settings.folderNoteHide);
+				toggle.onChange(async (value) => {
+					this.plugin.settings.folderNoteHide = value;
+					await this.plugin.saveSettings();
+				});
+			});
+
+		new Setting(containerEl)
 			.setName('Note Name')
-			.setDesc('Set the name for folder note. {{FOLDER_NAME}} will be replaced with current folder name.')
+			.setDesc('Set the name for folder note.')
 			.addText(text => text
 				.setValue(this.plugin.settings.folderNoteName)
 				.onChange(async (value) => {
@@ -140,7 +157,7 @@ class FolderNoteSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Inital Content')
-			.setDesc('Set the inital content for new folder note.')
+			.setDesc('Set the inital content for new folder note. {{FOLDER_NAME}} will be replaced with current folder name.')
 			.addTextArea(text => {
                     text
                         .setPlaceholder('About the folder.')
