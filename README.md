@@ -46,7 +46,6 @@ Just a simple trick. When create description for a folder, a note file named `_a
 
 ## Known issues
 
-- Do not try to create a new file by context menu or Ctrl+N (which will create a file named 'Untitled.md' firstly), and change its name to the folder name manually. If you do that, the file will not be hidden due to internal mechanism of Obsidian. However, if you close and reopen Obsidian, it will be hidden again.
 - The folder note file may appear when created. It will be hidden by click the folder again.
 - Leave a message on the github repo if you find an issues or want to improve the plugin.
 
