@@ -17,28 +17,38 @@ Just a simple trick. When create description for a folder, a note file named `_a
 - The file name may looks abnormal or weird.
 - In the future, the description will be automatically generated based on the files and their contents in the folder. 
 
-About setting the note file name and inital content:
+## Settings
 
-- The note name can be set to others, like `_overview_` or `index` in the settings panel.
-- You can use {{FOLDER_NAME}} in the note name setting which will be replaced with the folder name.
-- The initial content for the description can be configured in the settings panel.
-- **NOTE**: if  you use {{FOLDER_NAME}} as the note name, you have to manually change it after you rename a folder.
+- Hide Note: turn off the setting if you want to show the folder note file.
+- Note Name: set the folder note name, like `_overview_` or `index`. You can use {{FOLDER_NAME}} to set the note name same as folder, **BUT** it is not recommended, because you have to manually change all the note file name if you rename a folder.
+- Note inital content: set the initial content for new folder note, {{FOLDER_NAME}} in the content which will be replaced with the folder name.
 
 ## Change log
+
+### 0.2.4
+
+- Add settings option to hide or unhide folder note file.
 
 ### 0.2.3
 
 - Fix: failed to create note file when create a new folder.
 - Change: change the default note name to \_about\_ because of folder rename problem.
 
+### 0.2.1
+
+- Add: settings tab
+- Note name and contents can be configured.
+
 ## Plans for future
 
+- Add more template option for generate the inital content.
 - Automatic generate brief contents for the folder note file based on contents in the folder, like the software [Trilium](https://github.com/zadam/trilium) does. 
 
 ## Known issues
 
 - Do not try to create a new file by context menu or Ctrl+N (which will create a file named 'Untitled.md' firstly), and change its name to the folder name manually. If you do that, the file will not be hidden due to internal mechanism of Obsidian. However, if you close and reopen Obsidian, it will be hidden again.
 - The folder note file may appear when created. It will be hidden by click the folder again.
+- Leave a message on the github repo if you find an issues or want to improve the plugin.
 
 ## Install
 
