@@ -99,15 +99,15 @@ export default class FolderNotePlugin extends Plugin {
 		if (showFolderNote) {
 			// modify the element
 			const hideSetting = this.settings.folderNoteHide;
-			var folderDataPath = folderElem.attributes.getNamedItem('data-path').textContent;
-			var folderDataPathNote = folderDataPath + '/' + noteName + '.md';
+			// var folderDataPath = folderElem.attributes.getNamedItem('data-path').textContent;
+			var folderNotePathLast = '/' + noteName + '.md';
 			folderElem.addClass('has-folder-note');
 			folderElem.parentElement
 				.querySelectorAll('div.nav-folder-children > div.nav-file > div.nav-file-title')
 				.forEach(function (fileElem) {
 					// console.log('fileElem:', fileElem);
 					let fileDataPath = fileElem.attributes.getNamedItem('data-path').textContent;
-					if (hideSetting && fileDataPath.endsWith(folderDataPathNote)) {
+					if (hideSetting && fileDataPath.endsWith(folderNotePathLast)) {
 						fileElem.addClass('is-folder-note');
 					}
 					else {
