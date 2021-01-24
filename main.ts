@@ -44,14 +44,15 @@ export default class FolderNotePlugin extends Plugin {
 				folderName = elemTarget.lastElementChild.getText();
 			}
 
-			// fix the polderPath
-			if (!(folderPath.endsWith(folderName))) {
-				var slashLast = folderPath.lastIndexOf('/');
-				folderPath = folderPath.substring(0, slashLast+1) + folderName;
-			}
-
 			// open the infor note
 			if (folderPath.length > 0) {
+
+				// fix the polderPath
+				if (!(folderPath.endsWith(folderName))) {
+					var slashLast = folderPath.lastIndexOf('/');
+					folderPath = folderPath.substring(0, slashLast+1) + folderName;
+				}
+				
 				this.openFoldNote(folderElem, folderPath, evt.ctrlKey);
 			}
 		});
