@@ -52,7 +52,7 @@ export default class FolderNotePlugin extends Plugin {
 					var slashLast = folderPath.lastIndexOf('/');
 					folderPath = folderPath.substring(0, slashLast+1) + folderName;
 				}
-				
+
 				this.openFoldNote(folderElem, folderPath, evt.ctrlKey);
 			}
 		});
@@ -98,14 +98,16 @@ export default class FolderNotePlugin extends Plugin {
 		// show the note
 		if (showFolderNote) {
 			// modify the element
-			var hideSetting = this.settings.folderNoteHide;
+			const hideSetting = this.settings.folderNoteHide;
+			var folderDataPath = folderElem.attributes.getNamedItem('data-path').textContent;
+			var folderDataPathNote = folderDataPath + '/' + noteName + '.md';
 			folderElem.addClass('has-folder-note');
 			folderElem.parentElement
 				.querySelectorAll('div.nav-folder-children > div.nav-file > div.nav-file-title')
 				.forEach(function (fileElem) {
 					// console.log('fileElem:', fileElem);
 					let fileDataPath = fileElem.attributes.getNamedItem('data-path').textContent;
-					if (hideSetting && fileDataPath.endsWith(folderNotePath)) {
+					if (hideSetting && fileDataPath.endsWith(folderDataPathNote)) {
 						fileElem.addClass('is-folder-note');
 					}
 					else {
