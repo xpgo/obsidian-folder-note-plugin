@@ -25,6 +25,10 @@ Just a simple trick. When create description for a folder, a note file named `_a
 
 ## Change log
 
+### 0.2.5
+
+- Fix folder and note name check for hiding.
+
 ### 0.2.4
 
 - Add settings option to hide or unhide folder note file.
