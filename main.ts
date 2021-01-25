@@ -48,8 +48,9 @@ export default class FolderNotePlugin extends Plugin {
 			if (folderPath.length > 0) {
 
 				// fix the polderPath
-				if (!(folderPath.endsWith(folderName))) {
-					var slashLast = folderPath.lastIndexOf('/');
+				var slashLast = folderPath.lastIndexOf('/');
+				var folderPathLast = folderPath.substring(slashLast+1)
+				if (folderPathLast != folderName) {
 					folderPath = folderPath.substring(0, slashLast+1) + folderName;
 				}
 
