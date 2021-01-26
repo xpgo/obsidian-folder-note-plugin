@@ -63,3 +63,8 @@ Just a simple trick. When create description for a folder, a note file named `_a
 - Clone this repo.
 - `npm i` or `yarn` to install dependencies
 - `npm run dev` to start compilation in watch mode.
+
+## Downloads
+
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/xpgo/obsidian-folder-note-plugin?style=for-the-badge)
+![GitHub all releases](https://img.shields.io/github/downloads/xpgo/obsidian-folder-note-plugin/total?style=for-the-badge)
