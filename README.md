@@ -2,7 +2,7 @@
 
 Obsidian Plugin: Add description note to a folder. Make your vault to be a hierarchy note system.
 
-![](image/folder-note2.png)
+![Folder_Note_Show](https://raw.githubusercontent.com/xpgo/obsidian-folder-note-plugin/master/image/folder-note2.png)
 
 ## Usage
 
