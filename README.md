@@ -31,7 +31,7 @@ Just a simple trick. When create description for a folder, a note file named `_a
 
 ### 0.3.0
 
-- Automatically generate card-view of folder overview (Experimental).
+- Automatically generate card-view of folder overview (Experimental). Use {{FOLDER_BRIEF}} in the note content setting.
 
 ### 0.2.5
 
