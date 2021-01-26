@@ -1,6 +1,6 @@
 # Folder Note Plugin
 
-Obsidian Plugin: Add description note to a folder. 
+Obsidian Plugin: Add description note to a folder. Make your vault to be a hierarchy note system.
 
 ## Usage
 
