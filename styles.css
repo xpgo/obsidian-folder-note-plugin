@@ -7,3 +7,103 @@ div.is-folder-note {
 div.has-folder-note {
   color: var(--text-nav-selected);
 }
+
+/* Cute card view*/
+.cute-card-band {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    grid-gap: 20px;
+}
+
+@media (min-width: 30em) {
+    .cute-card-band {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (min-width: 60em) {
+    .cute-card-band {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.cute-card-view {
+    background: var(--background-accent);
+    text-decoration: none !important;
+    color: var(--text-normal);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    position: relative;
+    top: 0;
+    transition: all 0.1s ease-in;
+    border-radius: 10px;
+}
+
+.cute-card-view:hover {
+    top: -2px;
+    box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2);
+}
+
+.cute-card-view article {
+    padding: 15px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.cute-card-view h1 {
+    font-size: 1.2rem;
+    margin: 0;
+    color: var(--text-accent);
+}
+
+.cute-card-view a {
+    text-decoration: none !important;
+}
+
+.cute-card-view p {
+    flex: 1;
+    line-height: 1.0;
+}
+
+.cute-card-view span {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: var(--text-faint);
+    letter-spacing: 0.05em;
+}
+
+.cute-card-view .thumb {
+    padding-bottom: 60%;
+    background-size: cover;
+    background-position: center center;
+    border-radius: 10px 10px 0px 0px;
+}
+
+.cute-card-view .thumb-color {
+    padding-bottom: 10%;
+    background-size: cover;
+    background-position: center center;
+    border-radius: 10px 10px 0px 0px;
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+    color: #FFFFFF;
+    padding: 10px;
+}
+
+.cute-card-view .thumb-color-folder {
+    background-color: slateblue;
+}
+
+.cute-card-view .thumb-color-note {
+    background-color: salmon;
+}

@@ -2,6 +2,8 @@
 
 Obsidian Plugin: Add description note to a folder. Make your vault to be a hierarchy note system.
 
+![](image/folder-note2.png)
+
 ## Usage
 
 - **Add** description note for a folder: CTRL+Click on a folder node in the file explorer panel.
@@ -21,9 +23,15 @@ Just a simple trick. When create description for a folder, a note file named `_a
 
 - Hide Note: turn off the setting if you want to show the folder note file.
 - Note Name: set the folder note name, like `_overview_` or `index`. You can use {{FOLDER_NAME}} to set the note name same as folder, **BUT** it is not recommended, because you have to manually change all the note file name if you rename a folder.
-- Note inital content: set the initial content for new folder note, {{FOLDER_NAME}} in the content which will be replaced with the folder name.
+- Note inital content: set the initial content for new folder note.
+- {{FOLDER_NAME}} in the content will be replaced with the folder name.
+- {{FOLDER_BRIEF}} in the content will be replaced with the folder overview in card view.
 
 ## Change log
+
+### 0.3.0
+
+- Automatically generate card-view of folder overview (Experimental).
 
 ### 0.2.5
 

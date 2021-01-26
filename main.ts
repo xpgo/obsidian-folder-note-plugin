@@ -10,7 +10,7 @@ interface FolderNotePluginSettings {
 const DEFAULT_SETTINGS: FolderNotePluginSettings = {
 	folderNoteHide: true,
 	folderNoteName: '_about_',
-	folderNoteStrInit: '# About {{FOLDER_NAME}}\n'
+	folderNoteStrInit: '# About {{FOLDER_NAME}}\n {{FOLDER_BRIEF}} \n'
 }
 
 export default class FolderNotePlugin extends Plugin {
@@ -88,6 +88,10 @@ export default class FolderNotePlugin extends Plugin {
 		    if(doCreate) {
 				var noteStrInit = this.settings.folderNoteStrInit;
 				noteStrInit = noteStrInit.replace('{{FOLDER_NAME}}', folderName);
+				if (noteStrInit.contains('{{FOLDER_BRIEF}}')) {
+					let folderBrief = await this.generateFolderBrief(folderElem, folderPath);
+					noteStrInit = noteStrInit.replace('{{FOLDER_BRIEF}}', folderBrief);
+				}
 				await this.app.vault.adapter.write(folderNotePath, noteStrInit);
 				showFolderNote = true;
 			}
@@ -100,14 +104,10 @@ export default class FolderNotePlugin extends Plugin {
 		if (showFolderNote) {
 			// modify the element
 			const hideSetting = this.settings.folderNoteHide;
-			// var folderDataPath = folderElem.attributes.getNamedItem('data-path').textContent;
-			// var folderNotePathLast = '/' + noteName + '.md';
 			folderElem.addClass('has-folder-note');
 			folderElem.parentElement
 				.querySelectorAll('div.nav-folder-children > div.nav-file > div.nav-file-title')
 				.forEach(function (fileElem) {
-					// console.log('fileElem:', fileElem);
-					// let fileDataPath = fileElem.attributes.getNamedItem('data-path').textContent;
 					var fileNodeTitle = fileElem.firstElementChild.textContent;
 					if (hideSetting && (fileNodeTitle == noteName)) {
 						fileElem.addClass('is-folder-note');
@@ -121,7 +121,110 @@ export default class FolderNotePlugin extends Plugin {
 			this.app.workspace.openLinkText(folderNotePath, '', false, { active: true });
 		}
 	}
+
+	async generateFolderBrief(folderElem: Element, folderPath: string) {
+		// set note name
+		var noteFileName = this.settings.folderNoteName + '.md';
+		var htmlSubs = '';
+
+		// statistic
+		let pathList = await this.app.vault.adapter.list(folderPath);
+		const subFolderList = pathList.folders;
+		const subFileList = pathList.files;
+
+		// sub folders
+		for (var i = 0; i < subFolderList.length; i++) {
+			var htmlSubSect = '<div class="cute-card-view">\n';
+			htmlSubSect += '<div class="thumb-color thumb-color-folder">Folder</div>\n';
+			htmlSubSect += '<article>\n';
+			// title
+			var subFolderPath = subFolderList[i];
+			var subFolderName = subFolderPath.split('/').pop();
+			htmlSubSect += '<h1>' + subFolderName + '</h1>\n';
+			// how many files
+			let subPathList = await this.app.vault.adapter.list(subFolderPath);
+			htmlSubSect += '<p> ' + subPathList.folders.length.toString() + ' folders, ';
+			htmlSubSect += subPathList.files.length.toString() + ' notes</p>\n';
+			// logo
+			htmlSubSect +=  '<span> ' + subFolderPath + '</span>\n';
+			// close
+			htmlSubSect += '</article>\n</div>\n';
+			htmlSubs += htmlSubSect;
+		}
+
+		// notes
+		for (var i = 0; i < subFileList.length; i++) {
+			var subFilePath = subFileList[i];
+			var subFileName = subFilePath.split('/').pop();
+			if (subFileName != noteFileName) {
+				var htmlSubSect = '<div class="cute-card-view">\n';
+
+				// image
+				let content = await this.app.vault.adapter.read(subFilePath);
+				// console.log(content);
+				let regexImg = new RegExp('!\\[(.*?)\\]\\((.*?)\\)');
+				var match = regexImg.exec(content);
+				if (match != null) {
+					htmlSubSect += '<div class="thumb" style="background-image: url(';
+					var imageUrl = match[2];
+					if (!imageUrl.startsWith('http')) {
+						var headPath = folderPath;
+						while(imageUrl.startsWith('../')) {
+							imageUrl = imageUrl.substring(3);
+							headPath = headPath.substring(0, headPath.lastIndexOf('/'))
+						}
+						imageUrl = headPath + '/' + imageUrl;
+						imageUrl = this.app.vault.adapter.getResourcePath(imageUrl);
+					}
+					htmlSubSect += imageUrl
+					htmlSubSect += ');"></div>\n'
+				}
+				else {
+					htmlSubSect += '<div class="thumb-color thumb-color-note">Note</div>\n';
+				}
+
+				// title
+				htmlSubSect += '<article>\n';
+				var subFileBase = subFileName.substring(0, subFileName.length-3);
+				htmlSubSect += '<a class="internal-link" href="' + subFileName + '"><h1>';
+				htmlSubSect += subFileBase + '</h1></a>\n'
+				// content?
+				var contentBrief = '';
+				let regexHead = new RegExp('^#{1,6}(?!#)(.*)[\r\n]', 'mg');
+				while ((match = regexHead.exec(content)) !== null) {
+					contentBrief += match[1] + ', ';
+					if (contentBrief.length > 32) {
+						break;
+					}
+				}
+				if (contentBrief.length > 0) {
+					htmlSubSect += '<p> ' + contentBrief + ' ... </p>\n';
+				}
+				else {
+					htmlSubSect += '<p> No headings in the file. </p>\n';
+				}
+				// logo
+				htmlSubSect +=  '<span> ' + subFilePath + '</span>\n';
+				// close
+				htmlSubSect += '</article>\n</div>\n';
+				htmlSubs += htmlSubSect;
+			}
+		}
+
+		// return
+		var htmlSect = '';
+		if (htmlSubs.length > 0) {
+			htmlSect = '\n<div class="cute-card-band">\n' + htmlSubs + '</div>\n\n';
+		}
+
+		return htmlSect;
+	}
+
 }
+
+// ------------------------------------------------------------
+// Settings Tab
+// ------------------------------------------------------------
 
 class FolderNoteSettingTab extends PluginSettingTab {
 	plugin: FolderNotePlugin;
