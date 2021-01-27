@@ -27,13 +27,13 @@ Just a simple trick. When create description note for a folder, a note file name
     - {{FOLDER_BRIEF}} in the content will be replaced with a folder overview in card view.
     - The card view of content is html-based which can be edited and used in other normal notes.
 
-### About the Card-View of folder
+**About the Card-View of folder**
 
 - You can modify the html code of each card item to dispaly whatever contents you want.
 - You can change the color, title, description, note links and footnote of each card item.
 - The title of card item is linked to the note, so click it to jump or hover it to preview.
 - Although the note file order in the file explorer can not be changed, you can reorder the card items as you wish. 
-- Normally, the background image of an note item will be the first image of the note, you can manually change it.
+- Normally, the background image of a note item is the first image of the note, you can manually change it.
 
 ## Change log
 
