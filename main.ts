@@ -54,7 +54,8 @@ export default class FolderNotePlugin extends Plugin {
 					folderPath = folderPath.substring(0, slashLast+1) + folderName;
 				}
 
-				this.openFoldNote(folderElem, folderPath, evt.ctrlKey);
+				var ctrlKey = (evt.ctrlKey || evt.metaKey);
+				this.openFoldNote(folderElem, folderPath, ctrlKey);
 			}
 		});
 
