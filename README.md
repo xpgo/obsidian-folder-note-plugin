@@ -29,28 +29,23 @@ Just a simple trick. When create description note for a folder, a note file name
 
 ## Change log
 
+### 0.3.1
+
+- Fix the command key on Mac
+
 ### 0.3.0
 
 - Automatically generate card-view of folder overview (Experimental).
 - Add keyword {{FOLDER_BRIEF}} for generating the folder overview.
 
-### 0.2.5
+### 0.2.1 - 0.2.5
 
-- Fix folder and note name check for hiding.
-
-### 0.2.4
-
-- Add settings option to hide or unhide folder note file.
-
-### 0.2.3
-
-- Fix: failed to create note file when create a new folder.
-- Change: change the default note name to \_about\_ because of folder rename problem.
-
-### 0.2.1
-
-- Add: settings tab
-- Note name and contents can be configured.
+- Fix folder and note name check for hiding. (0.2.5)
+- Add settings option to hide or unhide folder note file. (0.2.3)
+- Fix: failed to create note file when create a new folder. (0.2.2)
+- Change: change the default note name to \_about\_ because of folder rename problem. (0.2.2)
+- Add: settings tab (0.2.1)
+- Note name and contents can be configured. (0.2.1)
 
 ## Plans for future
 
