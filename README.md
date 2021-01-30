@@ -1,6 +1,6 @@
 # Folder Note Plugin
 
-Obsidian Plugin: Add description note to a folder. Make your vault to be a hierarchy note system.
+Obsidian Plugin: Add description note to a folder. Generate card-style overview of folder. Make your vault to be a hierarchy note system.
 
 ![Folder_Note_Show](https://raw.githubusercontent.com/xpgo/obsidian-folder-note-plugin/master/image/folder-note1.png)
 
@@ -21,32 +21,36 @@ Just a simple trick. When create description note for a folder, a note file name
 ## Settings
 
 - **Hide Note**: turn off the setting if you want to show the note file in file explorer.
-- **Note Name**: set the default folder note name, like `_overview_` or `index`. Keyword {{FOLDER_NAME}} can be used to set the note name same as folder name, _HOWEVER_, it is not recommended, because you have to manually change the note file name if you rename a folder.
+- **Note Name**: set the default folder note name, like `_overview_` or `index`. Keyword {{FOLDER_NAME}} can be used to set the note name same as folder name, **HOWEVER**, it is not recommended, because you have to manually change the note file name if you rename a folder.
 - **Note Initial Content**: set the initial content for a new folder note.
     - {{FOLDER_NAME}} in the content will be replaced with the folder name.
-    - {{FOLDER_BRIEF}} in the content will be replaced with a folder overview in card view.
-    - The card view of content is html-based which can be edited and used in other normal notes.
+    - {{FOLDER_BRIEF}} in the content will be replaced with a card-style overview of current.
 
-**Tips for the Card-View of folder note**
+## Card-style overview of folder
 
-- You can modify the html code of each card item to dispaly whatever contents you want.
-- You can change the color, title, description, note links and footnote of each card item.
-- The title of card item is linked to the note, so click it to jump or hover it to preview.
-- Although the note file order in the file explorer can not be changed, you can reorder the card items as you wish. 
-- Normally, the background image of a note item is the first image of the note, you can manually change it.
+The card-style overview of a folder by keyword {{FOLDER_BRIEF}} is a block of html codes which are generated based on the content of subfolders and note files in the folder. There are some tips:
+
+- Modify the html code of each card item to dispaly whatever contents you want.
+- The color, title, description, note links and footnote of each card item can be changed.
+- The title of card item is linked to a note, so click it to jump or hover it to preview.
+- You can reorder the card items as you wish. 
+- The background image of a note item is the first image of the note, you can manually change it.
+- If you want to update the overview of a folder, it can be inserted to a note by command: Ctrl+P, Insert Folder Overview.
 
 ## Change log
 
-### 0.3.1
+### 0.3.2
 
-- Fix the command key on Mac
+- Insert folder overview by command: ctrl+p, Insert Folder Overview
+- Reorganized source code and fixed a mini bug
 
-### 0.3.0
+### 0.3.x
 
+- Fix the command key on Mac (0.3.1)
 - Automatically generate card-view of folder overview (Experimental).
 - Add keyword {{FOLDER_BRIEF}} for generating the folder overview.
 
-### 0.2.1 - 0.2.5
+### 0.2.x
 
 - Fix folder and note name check for hiding. (0.2.5)
 - Add settings option to hide or unhide folder note file. (0.2.3)
@@ -77,7 +81,7 @@ Just a simple trick. When create description note for a folder, a note file name
 - `npm i` or `yarn` to install dependencies
 - `npm run dev` to start compilation in watch mode.
 
-## More ...
+## Status
 
 [<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="BuyMeACoffee" width="100">](https://www.buymeacoffee.com/xpgo)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/xpgo/obsidian-folder-note-plugin?style=for-the-badge)

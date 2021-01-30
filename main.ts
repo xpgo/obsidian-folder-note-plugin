@@ -1,5 +1,13 @@
 import { fstat } from 'fs';
-import { App, Modal, Notice, Plugin, PluginSettingTab, Setting, getLinkpath } from 'obsidian';
+import { 
+	App, 
+	Modal, 
+	Notice, 
+	Plugin, 
+	MarkdownView, 
+	PluginSettingTab, 
+	Setting, 
+	getLinkpath } from 'obsidian';
 
 interface FolderNotePluginSettings {
 	folderNoteHide: boolean;
@@ -59,6 +67,22 @@ export default class FolderNotePlugin extends Plugin {
 			}
 		});
 
+		this.addCommand({
+            id: 'insert-folder-overview',
+            name: 'Insert Folder Overview',
+            callback: async () => {
+				const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+				if (view) {
+					const editor = view.sourceMode.cmEditor;
+					const activeFile = this.app.workspace.getActiveFile();
+					var folderPath = activeFile.parent.path;
+					let folderBrief = await this.generateFolderBrief(folderPath);
+					editor.replaceSelection(folderBrief, "end");
+				}
+			},
+            hotkeys: []
+		});
+		
 		// interval func - keep it, maybe used for auto generation
 		// this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
 	}
@@ -80,19 +104,15 @@ export default class FolderNotePlugin extends Plugin {
 		var noteName = this.settings.folderNoteName;
 		var folderName = folderPath.split('/').pop();
 		noteName = noteName.replace('{{FOLDER_NAME}}', folderName);
+		var folderNotePath = folderPath + '/' + noteName + '.md';
 
 		// check note file
-		var folderNotePath = folderPath + '/' + noteName + '.md';
 		let hasFolderNote = await this.app.vault.adapter.exists(folderNotePath);
 		var showFolderNote = hasFolderNote;
 		if (!hasFolderNote) {
 		    if(doCreate) {
-				var noteStrInit = this.settings.folderNoteStrInit;
-				noteStrInit = noteStrInit.replace('{{FOLDER_NAME}}', folderName);
-				if (noteStrInit.contains('{{FOLDER_BRIEF}}')) {
-					let folderBrief = await this.generateFolderBrief(folderElem, folderPath);
-					noteStrInit = noteStrInit.replace('{{FOLDER_BRIEF}}', folderBrief);
-				}
+				let noteStrInit = await this.expandContent(folderPath, 
+					this.settings.folderNoteStrInit);
 				await this.app.vault.adapter.write(folderNotePath, noteStrInit);
 				showFolderNote = true;
 			}
@@ -123,104 +143,246 @@ export default class FolderNotePlugin extends Plugin {
 		}
 	}
 
-	async generateFolderBrief(folderElem: Element, folderPath: string) {
-		// set note name
-		var noteFileName = this.settings.folderNoteName + '.md';
-		var htmlSubs = '';
+	// expand content template
+	async expandContent(folderPath: string, template: string) {
+		// keyword: {{FOLDER_NAME}}
+		var folderName = folderPath.split('/').pop();
+		var content = template.replace('{{FOLDER_NAME}}', folderName);
+		// keyword: {{FOLDER_BRIEF}}
+		if (content.contains('{{FOLDER_BRIEF}}')) {
+			let folderBrief = await this.generateFolderBrief(folderPath);
+			content = content.replace('{{FOLDER_BRIEF}}', folderBrief);
+		}
+		return content;
+	}
 
-		// statistic
+	// get folder note name
+	getFolderNoteName(folderPath: string) {
+		var folderName = folderPath.split('/').pop();
+		var noteName = this.settings.folderNoteName + '.md';
+		noteName = noteName.replace('{{FOLDER_NAME}}', folderName);
+		return noteName;
+	}
+
+	// generate folder brief
+	async generateFolderBrief(folderPath: string) {
+		// set note name
+		let cardBlock = new CardBlock();
+
+		// children statistic
 		let pathList = await this.app.vault.adapter.list(folderPath);
 		const subFolderList = pathList.folders;
 		const subFileList = pathList.files;
 
 		// sub folders
 		for (var i = 0; i < subFolderList.length; i++) {
-			var htmlSubSect = '<div class="cute-card-view">\n';
-			htmlSubSect += '<div class="thumb-color thumb-color-folder">Folder</div>\n';
-			htmlSubSect += '<article>\n';
-			// title
 			var subFolderPath = subFolderList[i];
-			var subFolderName = subFolderPath.split('/').pop();
-			htmlSubSect += '<h1>' + subFolderName + '</h1>\n';
-			// how many files
-			let subPathList = await this.app.vault.adapter.list(subFolderPath);
-			htmlSubSect += '<p> ' + subPathList.folders.length.toString() + ' folders, ';
-			htmlSubSect += subPathList.files.length.toString() + ' notes</p>\n';
-			// logo
-			htmlSubSect +=  '<span> ' + subFolderPath + '</span>\n';
-			// close
-			htmlSubSect += '</article>\n</div>\n';
-			htmlSubs += htmlSubSect;
+			let folderCard = await this.makeFolderCard(folderPath, subFolderPath);
+			cardBlock.addCard(folderCard);
 		}
 
 		// notes
+		var noteFileName = this.getFolderNoteName(folderPath)
 		for (var i = 0; i < subFileList.length; i++) {
 			var subFilePath = subFileList[i];
 			var subFileName = subFilePath.split('/').pop();
 			if (subFileName != noteFileName) {
-				var htmlSubSect = '<div class="cute-card-view">\n';
-
-				// image
-				let content = await this.app.vault.adapter.read(subFilePath);
-				// console.log(content);
-				let regexImg = new RegExp('!\\[(.*?)\\]\\((.*?)\\)');
-				var match = regexImg.exec(content);
-				if (match != null) {
-					htmlSubSect += '<div class="thumb" style="background-image: url(';
-					var imageUrl = match[2];
-					if (!imageUrl.startsWith('http')) {
-						var headPath = folderPath;
-						while(imageUrl.startsWith('../')) {
-							imageUrl = imageUrl.substring(3);
-							headPath = headPath.substring(0, headPath.lastIndexOf('/'))
-						}
-						imageUrl = headPath + '/' + imageUrl;
-						imageUrl = this.app.vault.adapter.getResourcePath(imageUrl);
-					}
-					htmlSubSect += imageUrl
-					htmlSubSect += ');"></div>\n'
-				}
-				else {
-					htmlSubSect += '<div class="thumb-color thumb-color-note">Note</div>\n';
-				}
-
-				// title
-				htmlSubSect += '<article>\n';
-				var subFileBase = subFileName.substring(0, subFileName.length-3);
-				htmlSubSect += '<a class="internal-link" href="' + subFileName + '"><h1>';
-				htmlSubSect += subFileBase + '</h1></a>\n'
-				// content?
-				var contentBrief = '';
-				let regexHead = new RegExp('^#{1,6}(?!#)(.*)[\r\n]', 'mg');
-				while ((match = regexHead.exec(content)) !== null) {
-					contentBrief += match[1] + ', ';
-					if (contentBrief.length > 32) {
-						break;
-					}
-				}
-				if (contentBrief.length > 0) {
-					htmlSubSect += '<p> ' + contentBrief + ' ... </p>\n';
-				}
-				else {
-					htmlSubSect += '<p> No headings in the file. </p>\n';
-				}
-				// logo
-				htmlSubSect +=  '<span> ' + subFilePath + '</span>\n';
-				// close
-				htmlSubSect += '</article>\n</div>\n';
-				htmlSubs += htmlSubSect;
+				let noteCard = await this.makeNoteCard(folderPath, subFilePath);
+				cardBlock.addCard(noteCard);
 			}
 		}
 
 		// return
 		var htmlSect = '';
-		if (htmlSubs.length > 0) {
-			htmlSect = '\n<div class="cute-card-band">\n' + htmlSubs + '</div>\n\n';
+		if (cardBlock.getCardNum() > 0) {
+			htmlSect = cardBlock.getHtmlCode();
 		}
 
 		return htmlSect;
 	}
 
+	// make folder brief card
+	async makeFolderCard(folderPath: string, subFolderPath: string) {
+		// title
+		var subFolderName = subFolderPath.split('/').pop();
+		let card = new CardItem(subFolderName, CardStyle.Folder);
+		// description
+		let subPathList = await this.app.vault.adapter.list(subFolderPath);
+		var folderBrief = 'Contains ';
+		folderBrief += subPathList.folders.length.toString() + ' folders, ';
+		folderBrief += subPathList.files.length.toString() + ' notes.';
+		card.setDesc(folderBrief);
+		// title link?
+		var subFolderNoteName = '';
+		var noteName = this.getFolderNoteName(subFolderPath);
+		const subFileList = subPathList.files; 
+		for (var i = 0; i < subFileList.length; i++) {
+			var subFilePath = subFileList[i];
+			if (subFilePath.endsWith(noteName)) {
+				subFolderNoteName = subFolderPath + '/' + noteName;
+				break;
+			}
+		}
+		if (subFolderNoteName.length > 0) {
+			card.setTitleLink(subFolderNoteName);
+		}
+		// footnote
+		card.setFootnote(subFolderPath);
+		return card;
+	}
+
+
+	// make note brief card
+	async makeNoteCard(folderPath: string, notePath: string) {
+		// titile
+		var noteName = notePath.split('/').pop();
+		var noteTitle = noteName.substring(0, noteName.length-3);
+		let card = new CardItem(noteTitle, CardStyle.Note);
+		card.setTitleLink(notePath);
+		// read content
+		let content = await this.app.vault.adapter.read(notePath);
+		// console.log(content);
+		let regexImg = new RegExp('!\\[(.*?)\\]\\((.*?)\\)');
+		var match = regexImg.exec(content);
+		if (match != null) {
+			var imageUrl = match[2];
+			if (!imageUrl.startsWith('http')) {
+				var headPath = folderPath;
+				while(imageUrl.startsWith('../')) {
+					imageUrl = imageUrl.substring(3);
+					headPath = headPath.substring(0, headPath.lastIndexOf('/'))
+				}
+				imageUrl = headPath + '/' + imageUrl;
+				imageUrl = this.app.vault.adapter.getResourcePath(imageUrl);
+			}
+			card.setImageLink(imageUrl);
+		}
+		// content?
+		var contentBrief = '';
+		let regexHead = new RegExp('^#{1,6}(?!#)(.*)[\r\n]', 'mg');
+		while ((match = regexHead.exec(content)) !== null) {
+			contentBrief += match[1] + ', ';
+			if (contentBrief.length > 32) {
+				break;
+			}
+		}
+		if (contentBrief.length > 0) {
+			card.setDesc(contentBrief);
+		}
+		// foot note
+		card.setFootnote(notePath);
+		// return
+		return card;
+	}
+
+}
+
+
+// ------------------------------------------------------------
+// Card block
+// ------------------------------------------------------------
+
+enum CardStyle { 
+	Folder, Note, Image,
+}
+
+class CardBlock {
+	cards: CardItem[];
+
+	constructor() {
+		this.cards = [];
+	}
+
+	addCard(card: CardItem) {
+		this.cards.push(card);
+	}
+
+	getCardNum() {
+		return this.cards.length;
+	}
+
+	getHtmlCode() {
+		var htmlSec = '\n<div class="cute-card-band">\n';
+		for (var i in this.cards) {
+			htmlSec += this.cards[i].getHtmlCode();
+		}
+		htmlSec += '</div>\n\n';
+		return htmlSec;
+	}
+}
+
+class CardItem {
+	title: string;
+	description: string;
+	footnote: string;
+	cardStyle: CardStyle;
+	titleLink: string;
+	imageLink: string;
+
+	constructor(title: string, style: CardStyle) {
+		this.title = title;
+		this.cardStyle = style;
+		this.description = "No descrition.";
+		this.footnote = "";
+	}
+
+	setImageLink(linkUrl: string) {
+		this.imageLink = linkUrl;
+	}
+
+	setTitleLink(linkUrl: string) {
+		this.titleLink = linkUrl;
+	}
+
+	setDesc(desc: string) {
+		this.description = desc;
+	}
+
+	setFootnote(footnote: string) {
+		this.footnote = footnote;
+	}
+
+	getHtmlCode() {
+		var htmlSec = '<div class="cute-card-view">\n';
+		// Heading
+		if (this.imageLink) {
+			this.cardStyle = CardStyle.Image;
+			htmlSec += '<div class="thumb" style="background-image: url(';
+			htmlSec += this.imageLink;
+			htmlSec += ');"></div>\n'
+		}
+		else if (this.cardStyle == CardStyle.Folder) {
+			htmlSec += '<div class="thumb-color thumb-color-folder">';
+			htmlSec += 'Folder';
+			htmlSec += '</div>\n';
+		}
+		else if (this.cardStyle == CardStyle.Note) {
+			htmlSec += '<div class="thumb-color thumb-color-note">';
+			htmlSec += 'Note';
+			htmlSec += '</div>\n';
+		}
+		// Title
+		htmlSec += '<article>\n';
+		if (this.titleLink) {
+			if (this.titleLink.endsWith('.md')) {
+				htmlSec += '<a class="internal-link" href="';
+			} 
+			else {
+				htmlSec += '<a href="';
+			}
+			htmlSec += this.titleLink + '"><h1>' + this.title + '</h1></a>\n'
+		}
+		else {
+			htmlSec += '<h1>' + this.title + '</h1>\n';
+		}
+		// description
+		htmlSec += '<p>' + this.description + '</p>\n';
+		// footnote
+		htmlSec +=  '<span> ' + this.footnote + '</span>\n';
+		// close
+		htmlSec += '</article>\n</div>\n';
+		return htmlSec;
+	}
 }
 
 // ------------------------------------------------------------
