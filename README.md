@@ -24,7 +24,7 @@ Just a simple trick. When create description note for a folder, a note file name
 - **Note Name**: set the default folder note name, like `_overview_` or `index`. Keyword {{FOLDER_NAME}} can be used to set the note name same as folder name, **HOWEVER**, it is not recommended, because you have to manually change the note file name if you rename a folder.
 - **Note Initial Content**: set the initial content for a new folder note.
     - {{FOLDER_NAME}} in the content will be replaced with the folder name.
-    - {{FOLDER_BRIEF}} in the content will be replaced with a card-style overview of current.
+    - {{FOLDER_BRIEF}} in the content will be replaced with a card-style overview of current folder.
 
 ## Card-style overview of folder
 
