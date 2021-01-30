@@ -63,6 +63,7 @@ The card-style overview of a folder by keyword {{FOLDER_BRIEF}} is a block of ht
 
 - Add more template option for generating the initial content.
 - Automaticaly generate overview contents for the folder note file based on contents in the folder, like the software [Trilium](https://github.com/zadam/trilium) does. (Partialy done.)
+- Generate card view with code block
 
 ## Known issues
 
