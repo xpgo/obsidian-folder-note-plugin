@@ -1,13 +1,19 @@
 import { fstat } from 'fs';
-import { 
-	App, 
-	Modal, 
-	Notice, 
-	Plugin, 
-	MarkdownView, 
-	PluginSettingTab, 
-	Setting, 
-	getLinkpath } from 'obsidian';
+import {
+	App,
+	Modal,
+	Notice,
+	Plugin,
+	PluginSettingTab,
+	MarkdownRenderer,
+	MarkdownView,
+	MarkdownPreviewRenderer,
+	MarkdownPostProcessor,
+	MarkdownPostProcessorContext,
+	Setting,
+	getLinkpath
+} from 'obsidian';
+import * as Yaml from 'yaml';
 
 interface FolderNotePluginSettings {
 	folderNoteHide: boolean;
@@ -32,10 +38,11 @@ export default class FolderNotePlugin extends Plugin {
 		// this.addRibbonIcon('dice', 'Folder Note Plugin', () => {
 		// 	new Notice('Auto generate brief description for folder note!');
 		// });
+		MarkdownPreviewRenderer.registerPostProcessor(FolderNotePlugin.ccardProcessor);
 
 		this.addSettingTab(new FolderNoteSettingTab(this.app, this));
 
-		this.registerDomEvent(document, 'click', (evt: MouseEvent) =>  {
+		this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
 			// get the folder path
 			var folderPath = '';
 			var folderName = '';
@@ -57,9 +64,9 @@ export default class FolderNotePlugin extends Plugin {
 
 				// fix the polderPath
 				var slashLast = folderPath.lastIndexOf('/');
-				var folderPathLast = folderPath.substring(slashLast+1)
+				var folderPathLast = folderPath.substring(slashLast + 1)
 				if (folderPathLast != folderName) {
-					folderPath = folderPath.substring(0, slashLast+1) + folderName;
+					folderPath = folderPath.substring(0, slashLast + 1) + folderName;
 				}
 
 				var ctrlKey = (evt.ctrlKey || evt.metaKey);
@@ -68,9 +75,9 @@ export default class FolderNotePlugin extends Plugin {
 		});
 
 		this.addCommand({
-            id: 'insert-folder-overview',
-            name: 'Insert Folder Overview',
-            callback: async () => {
+			id: 'insert-folder-overview',
+			name: 'Insert Folder Overview',
+			callback: async () => {
 				const view = this.app.workspace.getActiveViewOfType(MarkdownView);
 				if (view) {
 					const editor = view.sourceMode.cmEditor;
@@ -80,15 +87,16 @@ export default class FolderNotePlugin extends Plugin {
 					editor.replaceSelection(folderBrief, "end");
 				}
 			},
-            hotkeys: []
+			hotkeys: []
 		});
-		
+
 		// interval func - keep it, maybe used for auto generation
 		// this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
 	}
 
 	onunload() {
 		console.log('Unloading Folder Note plugin');
+		MarkdownPreviewRenderer.unregisterPostProcessor(FolderNotePlugin.ccardProcessor)
 	}
 
 	async loadSettings() {
@@ -110,8 +118,8 @@ export default class FolderNotePlugin extends Plugin {
 		let hasFolderNote = await this.app.vault.adapter.exists(folderNotePath);
 		var showFolderNote = hasFolderNote;
 		if (!hasFolderNote) {
-		    if(doCreate) {
-				let noteStrInit = await this.expandContent(folderPath, 
+			if (doCreate) {
+				let noteStrInit = await this.expandContent(folderPath,
 					this.settings.folderNoteStrInit);
 				await this.app.vault.adapter.write(folderNotePath, noteStrInit);
 				showFolderNote = true;
@@ -136,7 +144,7 @@ export default class FolderNotePlugin extends Plugin {
 					else {
 						fileElem.removeClass('is-folder-note');
 					}
-			});
+				});
 
 			// show the note
 			this.app.workspace.openLinkText(folderNotePath, '', false, { active: true });
@@ -211,11 +219,11 @@ export default class FolderNotePlugin extends Plugin {
 		var folderBrief = 'Contains ';
 		folderBrief += subPathList.folders.length.toString() + ' folders, ';
 		folderBrief += subPathList.files.length.toString() + ' notes.';
-		card.setDesc(folderBrief);
+		card.setAbstract(folderBrief);
 		// title link?
 		var subFolderNoteName = '';
 		var noteName = this.getFolderNoteName(subFolderPath);
-		const subFileList = subPathList.files; 
+		const subFileList = subPathList.files;
 		for (var i = 0; i < subFileList.length; i++) {
 			var subFilePath = subFileList[i];
 			if (subFilePath.endsWith(noteName)) {
@@ -236,7 +244,7 @@ export default class FolderNotePlugin extends Plugin {
 	async makeNoteCard(folderPath: string, notePath: string) {
 		// titile
 		var noteName = notePath.split('/').pop();
-		var noteTitle = noteName.substring(0, noteName.length-3);
+		var noteTitle = noteName.substring(0, noteName.length - 3);
 		let card = new CardItem(noteTitle, CardStyle.Note);
 		card.setTitleLink(notePath);
 		// read content
@@ -248,14 +256,14 @@ export default class FolderNotePlugin extends Plugin {
 			var imageUrl = match[2];
 			if (!imageUrl.startsWith('http')) {
 				var headPath = folderPath;
-				while(imageUrl.startsWith('../')) {
+				while (imageUrl.startsWith('../')) {
 					imageUrl = imageUrl.substring(3);
 					headPath = headPath.substring(0, headPath.lastIndexOf('/'))
 				}
 				imageUrl = headPath + '/' + imageUrl;
 				imageUrl = this.app.vault.adapter.getResourcePath(imageUrl);
 			}
-			card.setImageLink(imageUrl);
+			card.setHeadImage(imageUrl);
 		}
 		// content?
 		var contentBrief = '';
@@ -267,12 +275,38 @@ export default class FolderNotePlugin extends Plugin {
 			}
 		}
 		if (contentBrief.length > 0) {
-			card.setDesc(contentBrief);
+			card.setAbstract(contentBrief);
 		}
 		// foot note
 		card.setFootnote(notePath);
 		// return
 		return card;
+	}
+
+	// form ccard code block
+	static ccardProcessor: MarkdownPostProcessor = (el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
+		// Assumption: One section always contains only the code block
+
+		//Which Block should be replaced? -> Codeblocks
+		const blockToReplace = el.querySelector('pre')
+		if (!blockToReplace) return
+
+		//Only Codeblocks with the Language "chart" should be replaced
+		// console.log('has yaml code.')
+		const ccardBlock = blockToReplace.querySelector('code.language-ccard')
+		if (!ccardBlock) return
+
+		// Change ccard code to html element
+		let cardBlock = new CardBlock();
+		try {
+			if (cardBlock.formYamlString(ccardBlock.textContent)) {
+				const ccardElem = cardBlock.getDocElement();
+				el.replaceChild(ccardElem, blockToReplace);
+			}
+		}
+		catch {
+			console.log('Folder Note', 'Failed to paser yaml code.')
+		}
 	}
 
 }
@@ -282,19 +316,26 @@ export default class FolderNotePlugin extends Plugin {
 // Card block
 // ------------------------------------------------------------
 
-enum CardStyle { 
+enum CardStyle {
 	Folder, Note, Image,
 }
 
 class CardBlock {
+	style: string;
+	col: number;
 	cards: CardItem[];
 
 	constructor() {
+		this.style = 'cute';
 		this.cards = [];
 	}
 
 	addCard(card: CardItem) {
 		this.cards.push(card);
+	}
+
+	clear() {
+		this.cards = [];
 	}
 
 	getCardNum() {
@@ -309,47 +350,103 @@ class CardBlock {
 		htmlSec += '</div>\n\n';
 		return htmlSec;
 	}
+
+	getDocElement() {
+		const cardDiv = document.createElement('div');
+		cardDiv.addClass('cute-card-band');
+		var htmlSec = '';
+		for (var i in this.cards) {
+			htmlSec += this.cards[i].getHtmlCode();
+		}
+		cardDiv.innerHTML = htmlSec;
+		return cardDiv;
+	}
+
+	formYamlString(yamlStr: string) {
+		// Parse the Yaml content of the codeblock
+		const yaml = Yaml.parse(yamlStr);
+		if (!yaml || !yaml.cards) return false;
+
+		// parser
+		this.clear();
+		const cardsInfo = yaml.cards;
+		for (var i in cardsInfo) {
+			const cardInfo = cardsInfo[i];
+			if ('title' in cardInfo) {
+				let cardItem = new CardItem(cardInfo['title'], CardStyle.Note);
+				cardItem.fromDict(cardInfo);
+				this.addCard(cardItem);
+			}
+		}
+
+		return true;
+	}
 }
 
 class CardItem {
-	title: string;
-	description: string;
-	footnote: string;
 	cardStyle: CardStyle;
+	headText: string;
+	headImage: string;
+	title: string;
 	titleLink: string;
-	imageLink: string;
+	abstract: string;
+	footnote: string;
 
 	constructor(title: string, style: CardStyle) {
 		this.title = title;
+		this.abstract = "No abstract.";
 		this.cardStyle = style;
-		this.description = "No descrition.";
-		this.footnote = "";
 	}
 
-	setImageLink(linkUrl: string) {
-		this.imageLink = linkUrl;
+	setHeadText(text: string) {
+		this.headText = text;
+	}
+
+	setHeadImage(linkUrl: string) {
+		this.headImage = linkUrl;
+	}
+
+	setTitle(title: string) {
+		this.title = title;
 	}
 
 	setTitleLink(linkUrl: string) {
 		this.titleLink = linkUrl;
 	}
 
-	setDesc(desc: string) {
-		this.description = desc;
+	setAbstract(abstract: string) {
+		this.abstract = abstract;
 	}
 
 	setFootnote(footnote: string) {
 		this.footnote = footnote;
 	}
 
+	fromDict(dict: any) {
+		if ('head' in dict) this.headText = dict['head'];
+		if ('image' in dict) this.headImage = dict['image'];
+		if ('link' in dict) this.titleLink = dict['link'];
+		if ('brief' in dict) this.abstract = dict['brief'];
+		if ('foot' in dict) this.footnote = dict['foot'];
+	}
+
 	getHtmlCode() {
 		var htmlSec = '<div class="cute-card-view">\n';
 		// Heading
-		if (this.imageLink) {
+		if (this.headImage) {
 			this.cardStyle = CardStyle.Image;
-			htmlSec += '<div class="thumb" style="background-image: url(';
-			htmlSec += this.imageLink;
-			htmlSec += ');"></div>\n'
+			if (this.headImage.startsWith("#")) {
+				htmlSec += '<div class="thumb-color" style="background-color: ';
+				htmlSec += this.headImage + ';">';
+			}
+			else {
+				htmlSec += '<div class="thumb" style="background-image: url(';
+				htmlSec += this.headImage + ');">';
+			}
+			if (this.headText) {
+				htmlSec += this.headText;
+			}
+			htmlSec += '</div>\n'
 		}
 		else if (this.cardStyle == CardStyle.Folder) {
 			htmlSec += '<div class="thumb-color thumb-color-folder">';
@@ -366,7 +463,7 @@ class CardItem {
 		if (this.titleLink) {
 			if (this.titleLink.endsWith('.md')) {
 				htmlSec += '<a class="internal-link" href="';
-			} 
+			}
 			else {
 				htmlSec += '<a href="';
 			}
@@ -375,10 +472,12 @@ class CardItem {
 		else {
 			htmlSec += '<h1>' + this.title + '</h1>\n';
 		}
-		// description
-		htmlSec += '<p>' + this.description + '</p>\n';
+		// abstract
+		htmlSec += '<p>' + this.abstract + '</p>\n';
 		// footnote
-		htmlSec +=  '<span> ' + this.footnote + '</span>\n';
+		if (this.footnote) {
+			htmlSec += '<span> ' + this.footnote + '</span>\n';
+		}
 		// close
 		htmlSec += '</article>\n</div>\n';
 		return htmlSec;
@@ -398,11 +497,11 @@ class FolderNoteSettingTab extends PluginSettingTab {
 	}
 
 	display(): void {
-		let {containerEl} = this;
+		let { containerEl } = this;
 
 		containerEl.empty();
 
-		containerEl.createEl('h2', {text: 'Folder Note Plugin: Settings.'});
+		containerEl.createEl('h2', { text: 'Folder Note Plugin: Settings.' });
 
 		new Setting(containerEl)
 			.setName('Hide Note')
@@ -430,20 +529,20 @@ class FolderNoteSettingTab extends PluginSettingTab {
 			.setName('Inital Content')
 			.setDesc('Set the inital content for new folder note. {{FOLDER_NAME}} will be replaced with current folder name.')
 			.addTextArea(text => {
-                    text
-                        .setPlaceholder('About the folder.')
-                        .setValue(this.plugin.settings.folderNoteStrInit)
-                        .onChange(async (value) => {
-                            try {
-                                this.plugin.settings.folderNoteStrInit = value;
-                                await this.plugin.saveSettings();
-                            } catch (e) {
-                                return false;
-                            }
-                        })
-                    text.inputEl.rows = 8;
-                    text.inputEl.cols = 50;
-                }
-            );
+				text
+					.setPlaceholder('About the folder.')
+					.setValue(this.plugin.settings.folderNoteStrInit)
+					.onChange(async (value) => {
+						try {
+							this.plugin.settings.folderNoteStrInit = value;
+							await this.plugin.saveSettings();
+						} catch (e) {
+							return false;
+						}
+					})
+				text.inputEl.rows = 8;
+				text.inputEl.cols = 50;
+			}
+			);
 	}
 }
