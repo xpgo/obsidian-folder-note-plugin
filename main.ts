@@ -24,7 +24,7 @@ interface FolderNotePluginSettings {
 const DEFAULT_SETTINGS: FolderNotePluginSettings = {
 	folderNoteHide: true,
 	folderNoteName: '_about_',
-	folderNoteStrInit: '# About {{FOLDER_NAME}}\n {{FOLDER_BRIEF}} \n'
+	folderNoteStrInit: '# {{FOLDER_NAME}} Overview\n {{FOLDER_BRIEF_LIVE}} \n'
 }
 
 export default class FolderNotePlugin extends Plugin {

@@ -25,6 +25,7 @@ Just a simple trick. When create description note for a folder, a note file name
 - **Note Initial Content**: set the initial content for a new folder note.
     - {{FOLDER_NAME}} in the content will be replaced with the folder name.
     - {{FOLDER_BRIEF}} in the content will be replaced with a card-style overview of current folder.
+    - {{FOLDER_BRIEF_LIVE}} in the content will be replaced with a tiny code block which will be rendered to the folder overview in real time.
 
 ## Card-style overview of folder
 
@@ -38,6 +39,10 @@ The card-style overview of a folder by keyword {{FOLDER_BRIEF}} is a block of ht
 - If you want to update the overview of a folder, it can be inserted to a note by command: Ctrl+P, Insert Folder Overview.
 
 ## Change log
+
+### 0.3.3
+
+- add keyword {{FOLDER_BRIEF_LIVE}} for inital content to generate folder overview in real time.
 
 ### 0.3.2
 
