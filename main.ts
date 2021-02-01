@@ -24,7 +24,7 @@ interface FolderNotePluginSettings {
 const DEFAULT_SETTINGS: FolderNotePluginSettings = {
 	folderNoteHide: true,
 	folderNoteName: '_about_',
-	folderNoteStrInit: '# {{FOLDER_NAME}} Overview\n {{FOLDER_BRIEF_LIVE}} \n'
+	folderNoteStrInit: '# {{FOLDER_NAME}} Overview\n {{FOLDER_BRIEF}} \n'
 }
 
 export default class FolderNotePlugin extends Plugin {
@@ -335,16 +335,24 @@ export default class FolderNotePlugin extends Plugin {
 			}
 			else if (yaml.type == 'folder_brief_live') {
 				// console.log('hello overview');
-				const activeFile = this.app.workspace.getActiveFile();
-				var folderPath = activeFile.parent.path;
-				
-				const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-				if (view) {
+				var folderPath = '';
+				if (yaml.folder) {
+					if (this.app.vault.adapter.exists(yaml.folder)) {
+						folderPath = yaml.folder;
+					}
+				}
+				else {
 					const activeFile = this.app.workspace.getActiveFile();
-					var folderPath = activeFile.parent.path;
-					let briefCards = await this.makeFolderBriefCards(folderPath);
-					const ccardElem = briefCards.getDocElement();
-					el.replaceChild(ccardElem, blockToReplace);
+					folderPath = activeFile.parent.path;
+				}
+				
+				if (folderPath.length > 0) {
+					const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+					if (view) {
+						let briefCards = await this.makeFolderBriefCards(folderPath);
+						const ccardElem = briefCards.getDocElement();
+						el.replaceChild(ccardElem, blockToReplace);
+					}
 				}
 			}
 		}
