@@ -38,6 +38,8 @@ The card-style overview of a folder by keyword {{FOLDER_BRIEF}} is a block of ht
 - The background image of a note item is the first image of the note, you can manually change it.
 - If you want to update the overview of a folder, it can be inserted to a note by command: Ctrl+P, Insert Folder Overview.
 
+The keyword {{FOLDER_BRIEF_LIVE}} is useful when you put some notes with image in a folder, it will generate a card view of all the notes dynamically.
+
 ## Change log
 
 ### 0.3.3
