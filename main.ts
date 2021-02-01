@@ -166,6 +166,11 @@ export default class FolderNotePlugin extends Plugin {
 			var folderBrief = briefCards.getHtmlCode()
 			content = content.replace('{{FOLDER_BRIEF}}', folderBrief);
 		}
+		// keyword: {{FOLDER_BRIEF_LIVE}}
+		if (content.contains('{{FOLDER_BRIEF_LIVE}}')) {
+			const briefLiveCode = '\n```ccard\ntype: folder_brief_live\n```\n';
+			content = content.replace('{{FOLDER_BRIEF_LIVE}}', briefLiveCode);
+		}
 		return content;
 	}
 
@@ -328,7 +333,7 @@ export default class FolderNotePlugin extends Plugin {
 				const ccardElem = cardBlock.getDocElement();
 				el.replaceChild(ccardElem, blockToReplace);
 			}
-			else if (yaml.type == 'folder_overview') {
+			else if (yaml.type == 'folder_brief_live') {
 				// console.log('hello overview');
 				const activeFile = this.app.workspace.getActiveFile();
 				var folderPath = activeFile.parent.path;
