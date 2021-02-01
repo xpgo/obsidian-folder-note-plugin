@@ -78,15 +78,15 @@ export default class FolderNotePlugin extends Plugin {
 		});
 
 		this.addCommand({
-			id: 'insert-folder-overview',
-			name: 'Insert Folder Overview',
+			id: 'insert-folder-brief',
+			name: 'Insert Folder Brief',
 			callback: async () => {
 				const view = this.app.workspace.getActiveViewOfType(MarkdownView);
 				if (view) {
 					const editor = view.sourceMode.cmEditor;
 					const activeFile = this.app.workspace.getActiveFile();
 					var folderPath = activeFile.parent.path;
-					let briefCards = await this.makeOverviewCards(folderPath);
+					let briefCards = await this.makeFolderBriefCards(folderPath);
 					var folderBrief = briefCards.getHtmlCode();
 					editor.replaceSelection(folderBrief, "end");
 				}
@@ -162,7 +162,7 @@ export default class FolderNotePlugin extends Plugin {
 		var content = template.replace('{{FOLDER_NAME}}', folderName);
 		// keyword: {{FOLDER_BRIEF}}
 		if (content.contains('{{FOLDER_BRIEF}}')) {
-			let briefCards = await this.makeOverviewCards(folderPath);
+			let briefCards = await this.makeFolderBriefCards(folderPath);
 			var folderBrief = briefCards.getHtmlCode()
 			content = content.replace('{{FOLDER_BRIEF}}', folderBrief);
 		}
@@ -185,7 +185,7 @@ export default class FolderNotePlugin extends Plugin {
 	}
 
 	// generate folder overview
-	async makeOverviewCards(folderPath: string) {
+	async makeFolderBriefCards(folderPath: string) {
 		// set note name
 		let cardBlock = new CardBlock();
 
@@ -342,7 +342,7 @@ export default class FolderNotePlugin extends Plugin {
 				if (view) {
 					const activeFile = this.app.workspace.getActiveFile();
 					var folderPath = activeFile.parent.path;
-					let briefCards = await this.makeOverviewCards(folderPath);
+					let briefCards = await this.makeFolderBriefCards(folderPath);
 					const ccardElem = briefCards.getDocElement();
 					el.replaceChild(ccardElem, blockToReplace);
 				}
