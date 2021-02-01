@@ -29,16 +29,19 @@ const DEFAULT_SETTINGS: FolderNotePluginSettings = {
 
 export default class FolderNotePlugin extends Plugin {
 	settings: FolderNotePluginSettings;
+	folderNoteNameVar: boolean;
 
 	async onload() {
 		console.log('Loading Folder Note plugin');
 
+		this.folderNoteNameVar = false;
 		await this.loadSettings();
 
 		// this.addRibbonIcon('dice', 'Folder Note Plugin', () => {
 		// 	new Notice('Auto generate brief description for folder note!');
 		// });
-		MarkdownPreviewRenderer.registerPostProcessor(FolderNotePlugin.ccardProcessor);
+		MarkdownPreviewRenderer.registerPostProcessor(this.ccardProcessor);
+		this.registerEvent(this.app.vault.on('rename', (newPath, oldPath) => this.handleFileRename(newPath, oldPath)));
 
 		this.addSettingTab(new FolderNoteSettingTab(this.app, this));
 
@@ -96,23 +99,23 @@ export default class FolderNotePlugin extends Plugin {
 
 	onunload() {
 		console.log('Unloading Folder Note plugin');
-		MarkdownPreviewRenderer.unregisterPostProcessor(FolderNotePlugin.ccardProcessor)
+		MarkdownPreviewRenderer.unregisterPostProcessor(this.ccardProcessor)
 	}
 
 	async loadSettings() {
 		this.settings = Object.assign(DEFAULT_SETTINGS, await this.loadData());
+		this.folderNoteNameVar = this.settings.folderNoteName.contains('{{FOLDER_NAME}}');
 	}
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+		this.folderNoteNameVar = this.settings.folderNoteName.contains('{{FOLDER_NAME}}');
 	}
 
 	async openFoldNote(folderElem: Element, folderPath: string, doCreate: boolean) {
 		// set note name
-		var noteName = this.settings.folderNoteName;
-		var folderName = folderPath.split('/').pop();
-		noteName = noteName.replace('{{FOLDER_NAME}}', folderName);
-		var folderNotePath = folderPath + '/' + noteName + '.md';
+		var noteBaseName = this.getFolderNoteBaseName(folderPath);
+		var folderNotePath = folderPath + '/' + noteBaseName + '.md';
 
 		// check note file
 		let hasFolderNote = await this.app.vault.adapter.exists(folderNotePath);
@@ -138,7 +141,7 @@ export default class FolderNotePlugin extends Plugin {
 				.querySelectorAll('div.nav-folder-children > div.nav-file > div.nav-file-title')
 				.forEach(function (fileElem) {
 					var fileNodeTitle = fileElem.firstElementChild.textContent;
-					if (hideSetting && (fileNodeTitle == noteName)) {
+					if (hideSetting && (fileNodeTitle == noteBaseName)) {
 						fileElem.addClass('is-folder-note');
 					}
 					else {
@@ -165,11 +168,13 @@ export default class FolderNotePlugin extends Plugin {
 	}
 
 	// get folder note name
-	getFolderNoteName(folderPath: string) {
-		var folderName = folderPath.split('/').pop();
-		var noteName = this.settings.folderNoteName + '.md';
-		noteName = noteName.replace('{{FOLDER_NAME}}', folderName);
-		return noteName;
+	getFolderNoteBaseName(folderPath: string) {
+		var noteBaseName = this.settings.folderNoteName;
+		if (this.folderNoteNameVar) {
+			var folderName = folderPath.split('/').pop();
+			noteBaseName = noteBaseName.replace('{{FOLDER_NAME}}', folderName);
+		}
+		return noteBaseName;
 	}
 
 	// generate folder brief
@@ -190,7 +195,7 @@ export default class FolderNotePlugin extends Plugin {
 		}
 
 		// notes
-		var noteFileName = this.getFolderNoteName(folderPath)
+		var noteFileName = this.getFolderNoteBaseName(folderPath) + '.md';
 		for (var i = 0; i < subFileList.length; i++) {
 			var subFilePath = subFileList[i];
 			var subFileName = subFilePath.split('/').pop();
@@ -222,7 +227,7 @@ export default class FolderNotePlugin extends Plugin {
 		card.setAbstract(folderBrief);
 		// title link?
 		var subFolderNoteName = '';
-		var noteName = this.getFolderNoteName(subFolderPath);
+		var noteName = this.getFolderNoteBaseName(subFolderPath) + '.md';
 		const subFileList = subPathList.files;
 		for (var i = 0; i < subFileList.length; i++) {
 			var subFilePath = subFileList[i];
@@ -283,8 +288,26 @@ export default class FolderNotePlugin extends Plugin {
 		return card;
 	}
 
+	// keep notefile name to be the folder name
+	handleFileRename(newPath: any, oldPath: any) {
+		if (this.folderNoteNameVar && (!oldPath.endsWith('.md'))) {
+			// maybe this is a folder
+			const newPathStr = newPath.path;
+			var oldFolderNoteBaseName = this.getFolderNoteBaseName(oldPath);
+			var oldFolderNotePath = newPathStr + '/' + oldFolderNoteBaseName + '.md';
+			if (this.app.vault.adapter.exists(oldFolderNotePath)) {
+				var newFolderNoteBaseName = this.getFolderNoteBaseName(newPathStr);
+				var newFolderNotePath = newPathStr + '/' + newFolderNoteBaseName + '.md';
+				// the rename func will not delete the old file.
+				// and will not update the old links
+				this.app.vault.adapter.rename(oldFolderNotePath, newFolderNotePath);
+			}
+		}
+	}
+
+
 	// form ccard code block
-	static ccardProcessor: MarkdownPostProcessor = (el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
+	ccardProcessor: MarkdownPostProcessor = (el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
 		// Assumption: One section always contains only the code block
 
 		//Which Block should be replaced? -> Codeblocks
@@ -542,7 +565,6 @@ class FolderNoteSettingTab extends PluginSettingTab {
 					})
 				text.inputEl.rows = 8;
 				text.inputEl.cols = 50;
-			}
-			);
+			});
 	}
 }
