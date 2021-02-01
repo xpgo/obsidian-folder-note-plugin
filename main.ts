@@ -86,7 +86,8 @@ export default class FolderNotePlugin extends Plugin {
 					const editor = view.sourceMode.cmEditor;
 					const activeFile = this.app.workspace.getActiveFile();
 					var folderPath = activeFile.parent.path;
-					let folderBrief = await this.generateFolderBrief(folderPath);
+					let briefCards = await this.makeOverviewCards(folderPath);
+					var folderBrief = briefCards.getHtmlCode();
 					editor.replaceSelection(folderBrief, "end");
 				}
 			},
@@ -161,7 +162,8 @@ export default class FolderNotePlugin extends Plugin {
 		var content = template.replace('{{FOLDER_NAME}}', folderName);
 		// keyword: {{FOLDER_BRIEF}}
 		if (content.contains('{{FOLDER_BRIEF}}')) {
-			let folderBrief = await this.generateFolderBrief(folderPath);
+			let briefCards = await this.makeOverviewCards(folderPath);
+			var folderBrief = briefCards.getHtmlCode()
 			content = content.replace('{{FOLDER_BRIEF}}', folderBrief);
 		}
 		return content;
@@ -177,8 +179,8 @@ export default class FolderNotePlugin extends Plugin {
 		return noteBaseName;
 	}
 
-	// generate folder brief
-	async generateFolderBrief(folderPath: string) {
+	// generate folder overview
+	async makeOverviewCards(folderPath: string) {
 		// set note name
 		let cardBlock = new CardBlock();
 
@@ -206,12 +208,7 @@ export default class FolderNotePlugin extends Plugin {
 		}
 
 		// return
-		var htmlSect = '';
-		if (cardBlock.getCardNum() > 0) {
-			htmlSect = cardBlock.getHtmlCode();
-		}
-
-		return htmlSect;
+		return cardBlock;
 	}
 
 	// make folder brief card
@@ -307,7 +304,7 @@ export default class FolderNotePlugin extends Plugin {
 
 
 	// form ccard code block
-	ccardProcessor: MarkdownPostProcessor = (el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
+	ccardProcessor: MarkdownPostProcessor = async (el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
 		// Assumption: One section always contains only the code block
 
 		//Which Block should be replaced? -> Codeblocks
@@ -320,11 +317,30 @@ export default class FolderNotePlugin extends Plugin {
 		if (!ccardBlock) return
 
 		// Change ccard code to html element
-		let cardBlock = new CardBlock();
 		try {
-			if (cardBlock.formYamlString(ccardBlock.textContent)) {
+			const yaml = Yaml.parse(ccardBlock.textContent);
+			if (!yaml || !yaml.type) return;
+
+			if (yaml.type == 'cute') {
+				// console.log('hello cute');
+				let cardBlock = new CardBlock();
+				cardBlock.fromYamlCards(yaml);
 				const ccardElem = cardBlock.getDocElement();
 				el.replaceChild(ccardElem, blockToReplace);
+			}
+			else if (yaml.type == 'folder_overview') {
+				// console.log('hello overview');
+				const activeFile = this.app.workspace.getActiveFile();
+				var folderPath = activeFile.parent.path;
+				
+				const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+				if (view) {
+					const activeFile = this.app.workspace.getActiveFile();
+					var folderPath = activeFile.parent.path;
+					let briefCards = await this.makeOverviewCards(folderPath);
+					const ccardElem = briefCards.getDocElement();
+					el.replaceChild(ccardElem, blockToReplace);
+				}
 			}
 		}
 		catch {
@@ -385,24 +401,22 @@ class CardBlock {
 		return cardDiv;
 	}
 
-	formYamlString(yamlStr: string) {
-		// Parse the Yaml content of the codeblock
-		const yaml = Yaml.parse(yamlStr);
-		if (!yaml || !yaml.cards) return false;
-
-		// parser
-		this.clear();
-		const cardsInfo = yaml.cards;
-		for (var i in cardsInfo) {
-			const cardInfo = cardsInfo[i];
-			if ('title' in cardInfo) {
-				let cardItem = new CardItem(cardInfo['title'], CardStyle.Note);
-				cardItem.fromDict(cardInfo);
-				this.addCard(cardItem);
+	fromYamlCards(yaml: any) {
+		if (yaml.cards) {
+			this.clear();
+			const cardsInfo = yaml.cards;
+			for (var i in cardsInfo) {
+				const cardInfo = cardsInfo[i];
+				if ('title' in cardInfo) {
+					let cardItem = new CardItem(cardInfo['title'], CardStyle.Note);
+					cardItem.fromDict(cardInfo);
+					this.addCard(cardItem);
+				}
 			}
-		}
+			return true;
+		} 
 
-		return true;
+		return false;
 	}
 }
 
