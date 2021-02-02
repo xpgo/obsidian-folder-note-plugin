@@ -21,7 +21,7 @@ Although the mechanism is simple, it would be better to know that there are two 
 | **Folder Note Path** | parent/myFolder/\_about\_.md                           | parent/myFolder.md                                     |
 | **Configure Note Name**        | \_about\_ (or other name you like)               | {{FOLDER_NAME}}                                              |
 | **Pros**             | - The note file belongs to the folder. <br />- The note filename keeps the same if you rename a folder. | - The note file has the same name as folder, the note title looks better.<br />- Wiki-style of linking, easy to insert link like [\[myFolder]] |
-| **Cons**             | - The note filename and title may looks weird.<br />- Have to use additional file name for linking. | - The note file does not belong to the folder.<br />- The note filename will be changed if you change the folder name. |
+| **Cons**             | - The note filename and title may looks weird.<br />- Have to use additional file name for linking. | - The note file does not belong to the folder. You have to move the note file manually if a folder is moved. <br />- The note filename will be changed if you change the folder name. |
 
 - The **default** configuration is the **In-Folder** type with note filename of  `_about_.md`. When create description note for a folder, a note file named `_about_.md` will be created in the clicked folder. However, the file `_about_.md` is hidden by the CSS rules of the plugin. You can let it shown by configure the **Hide Note** option.
 
