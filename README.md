@@ -15,7 +15,7 @@ Obsidian Plugin: Add description note to a folder. Generate card-style overview 
 
 Although the mechanism is simple, it would be better to know that there are two ways of creating description note for a folder. 
 
-| Type                 | In-Folder                                                    | Out-Folder                                                   |
+| Type                 | Inside-Folder                                                    | Outside-Folder                                                   |
 | -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | **Folder Path**      | parent/myFolder                                        | parent/myFolder                                        |
 | **Folder Note Path** | parent/myFolder/\_about\_.md                           | parent/myFolder.md                                     |
@@ -23,9 +23,9 @@ Although the mechanism is simple, it would be better to know that there are two 
 | **Pros**             | - The note file belongs to the folder. <br />- The note filename keeps the same if you rename a folder. | - The note file has the same name as folder, the note title looks better.<br />- Wiki-style of linking, easy to insert link like [\[myFolder]] |
 | **Cons**             | - The note filename and title may looks weird.<br />- Have to use additional file name for linking. | - The note file does not belong to the folder. You have to move the note file manually if a folder is moved. <br />- The note filename will be changed if you change the folder name. |
 
-- The **default** configuration is the **In-Folder** type with note filename of  `_about_.md`. When create description note for a folder, a note file named `_about_.md` will be created in the clicked folder. However, the file `_about_.md` is hidden by the CSS rules of the plugin. You can let it shown by configure the **Hide Note** option.
+- The **default** configuration is the **Inside-Folder** type with note filename of  `_about_.md`. When create description note for a folder, a note file named `_about_.md` will be created in the clicked folder. However, the file `_about_.md` is hidden by the CSS rules of the plugin. You can let it shown by configure the **Hide Note** option.
 
-- If you like the **Out-Folder** style, please configure the note name as {{FOLDER_NAME}} before using the plugin. 
+- If you like the **Outside-Folder** style, please configure the note name as {{FOLDER_NAME}} before using the plugin. 
 
 - **NOTICE**: For those who use the plugin with version < 0.4 and use {{FOLDER_NAME}} as folder name, please manually move all you note files out of the folders and update the plugin. Sorry for the inconvinience.
 
