@@ -29,22 +29,36 @@ const DEFAULT_SETTINGS: FolderNotePluginSettings = {
 
 export default class FolderNotePlugin extends Plugin {
 	settings: FolderNotePluginSettings;
-	folderNoteNameVar: boolean;
+	useFolderName: boolean;
+	keyFOLDER_NAME: string;
 
 	async onload() {
 		console.log('Loading Folder Note plugin');
 
-		this.folderNoteNameVar = false;
+		// class vars
+		this.useFolderName = false;
+		this.keyFOLDER_NAME = '{{FOLDER_NAME}}';
+
+		// load settings
 		await this.loadSettings();
+
+		// hide sth
+		this.hideRootNoteFiles();
 
 		// this.addRibbonIcon('dice', 'Folder Note Plugin', () => {
 		// 	new Notice('Auto generate brief description for folder note!');
 		// });
+
+		// for ccard rendering
 		MarkdownPreviewRenderer.registerPostProcessor(this.ccardProcessor);
+
+		// for rename event
 		this.registerEvent(this.app.vault.on('rename', (newPath, oldPath) => this.handleFileRename(newPath, oldPath)));
 
+		// for settings
 		this.addSettingTab(new FolderNoteSettingTab(this.app, this));
 
+		// for file explorer click
 		this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
 			// get the folder path
 			var folderPath = '';
@@ -62,18 +76,19 @@ export default class FolderNotePlugin extends Plugin {
 				folderName = elemTarget.lastElementChild.getText();
 			}
 
-			// open the infor note
+			// fix the folder path
 			if (folderPath.length > 0) {
-
-				// fix the polderPath
 				var slashLast = folderPath.lastIndexOf('/');
-				var folderPathLast = folderPath.substring(slashLast + 1)
+				var folderPathLast = folderPath.split('/').pop();
 				if (folderPathLast != folderName) {
 					folderPath = folderPath.substring(0, slashLast + 1) + folderName;
 				}
+			}
 
+			// open the infor note
+			if (folderPath.length > 0) {
 				var ctrlKey = (evt.ctrlKey || evt.metaKey);
-				this.openFoldNote(folderElem, folderPath, ctrlKey);
+				this.openFolderNote(folderElem, folderPath, ctrlKey);
 			}
 		});
 
@@ -85,7 +100,8 @@ export default class FolderNotePlugin extends Plugin {
 				if (view) {
 					const editor = view.sourceMode.cmEditor;
 					const activeFile = this.app.workspace.getActiveFile();
-					var folderPath = activeFile.parent.path;
+					// generate brief
+					var folderPath = this.getNoteFolderBriefPath(activeFile.path);
 					let briefCards = await this.makeFolderBriefCards(folderPath);
 					var folderBrief = briefCards.getHtmlCode();
 					editor.replaceSelection(folderBrief, "end");
@@ -105,21 +121,99 @@ export default class FolderNotePlugin extends Plugin {
 
 	async loadSettings() {
 		this.settings = Object.assign(DEFAULT_SETTINGS, await this.loadData());
-		this.folderNoteNameVar = this.settings.folderNoteName.contains('{{FOLDER_NAME}}');
+		this.useFolderName = this.settings.folderNoteName.contains(this.keyFOLDER_NAME);
 	}
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-		this.folderNoteNameVar = this.settings.folderNoteName.contains('{{FOLDER_NAME}}');
+		this.useFolderName = this.settings.folderNoteName.contains(this.keyFOLDER_NAME);
 	}
 
-	async openFoldNote(folderElem: Element, folderPath: string, doCreate: boolean) {
-		// set note name
-		var noteBaseName = this.getFolderNoteBaseName(folderPath);
-		var folderNotePath = folderPath + '/' + noteBaseName + '.md';
+	// get folder note path
+	getFolderNotePath(folderPath: string) {
+		var notePath = '';
+		var noteBaseName = this.settings.folderNoteName;
+		if (this.useFolderName) {
+			var folderName = folderPath.split('/').pop();
+			noteBaseName = noteBaseName.replace(this.keyFOLDER_NAME, folderName);
+			var folderParentPath = folderPath.substring(0, folderPath.lastIndexOf('/'));
+			if (folderParentPath.length > 0) {
+				notePath = folderParentPath + '/' + noteBaseName + '.md';
+			}
+			else {
+				notePath = noteBaseName + '.md';
+			}
+		} 
+		else {
+			notePath = folderPath + '/' + noteBaseName + '.md';
+		}
+		return [notePath, noteBaseName];
+	}
+
+	// get note folder
+	getNoteFolderPath(notePath: string) {
+		var folderPath = '';
+		if (this.useFolderName && notePath.endsWith('.md')) {
+			var noteBaseName = this.settings.folderNoteName;
+			if (noteBaseName == this.keyFOLDER_NAME) {
+				folderPath = notePath.substring(0,  notePath.length-3);
+			}
+			else {
+				var realBaseName = notePath.split('/').pop();
+				realBaseName = realBaseName.substring(0, realBaseName.length - 3);
+				var pos1 = noteBaseName.indexOf(this.keyFOLDER_NAME);
+				var pos2 = pos1 + this.keyFOLDER_NAME.length;
+				var prefix = noteBaseName.substring(0, pos1);
+				var posfix = noteBaseName.substring(pos2);
+				folderPath = realBaseName.replace(prefix, '');
+				folderPath = folderPath.replace(posfix, '');
+				var parentPath = notePath.substring(0, notePath.lastIndexOf('/'));
+				if (parentPath.length > 0) parentPath += '/';
+				folderPath = parentPath + folderPath;
+			}
+		}
+		else {
+			// be the folder including me
+			folderPath = notePath.substring(0, notePath.lastIndexOf('/'));
+		}
+		return folderPath;
+	}
+
+	// get the file breif path
+	getNoteFolderBriefPath(notePath: string) {
+		var folderPath = '';
+		if (this.isFolderNote(notePath)) {
+			folderPath = this.getNoteFolderPath(notePath);
+		}
+		else {
+			folderPath = notePath.substring(0, notePath.lastIndexOf('/'));
+		}
+		return folderPath;
+	}
+
+	// check is folder note file?
+	isFolderNote(notePath: string) {
+		var folderPath = this.getNoteFolderPath(notePath);
+		var folderNotePaths = this.getFolderNotePath(folderPath);
+		return (folderNotePaths[0] == notePath);
+	} 
+
+	// check existence of folder note
+	async hasFolderNote(folderPath: string) {
+		var notePaths = this.getFolderNotePath(folderPath);
+		let noteExists = await this.app.vault.adapter.exists(notePaths[0]);
+		return noteExists;
+	}
+
+	// open the folder note
+	async openFolderNote(folderElem: Element, folderPath: string, doCreate: boolean) {
+		// check note file
+		let notePaths = this.getFolderNotePath(folderPath);
+		var folderNotePath = notePaths[0];
+		var noteBaseName = notePaths[1];
+		let hasFolderNote = await this.app.vault.adapter.exists(folderNotePath);
 
 		// check note file
-		let hasFolderNote = await this.app.vault.adapter.exists(folderNotePath);
 		var showFolderNote = hasFolderNote;
 		if (!hasFolderNote) {
 			if (doCreate) {
@@ -136,34 +230,81 @@ export default class FolderNotePlugin extends Plugin {
 		// show the note
 		if (showFolderNote) {
 			// modify the element
-			const hideSetting = this.settings.folderNoteHide;
-			folderElem.addClass('has-folder-note');
-			folderElem.parentElement
-				.querySelectorAll('div.nav-folder-children > div.nav-file > div.nav-file-title')
-				.forEach(function (fileElem) {
-					var fileNodeTitle = fileElem.firstElementChild.textContent;
-					if (hideSetting && (fileNodeTitle == noteBaseName)) {
-						fileElem.addClass('is-folder-note');
-					}
-					else {
-						fileElem.removeClass('is-folder-note');
-					}
-				});
-
+			this.hideFolderNote(folderElem, noteBaseName);
 			// show the note
 			this.app.workspace.openLinkText(folderNotePath, '', false, { active: true });
 		}
+	}
+
+	// hide folder note
+	hideFolderNote(folderElem: Element, noteBaseName: string) {
+		// modify the element
+		const hideSetting = this.settings.folderNoteHide;
+		folderElem.addClass('has-folder-note');
+		var parentElem = folderElem.parentElement;
+		var fileSelector = 'div.nav-folder-children > div.nav-file > div.nav-file-title';
+		if (this.useFolderName) {
+			parentElem = parentElem.parentElement;
+			fileSelector = 'div.nav-file > div.nav-file-title';
+		}
+		parentElem.querySelectorAll(fileSelector)
+			.forEach(function (fileElem) {
+				var fileNodeTitle = fileElem.firstElementChild.textContent;
+				if (hideSetting && (fileNodeTitle == noteBaseName)) {
+					fileElem.addClass('is-folder-note');
+				}
+				// else {
+				// 	fileElem.removeClass('is-folder-note');
+				// }
+			}
+		);
+	}
+
+	// hide root note files
+	hideRootNoteFiles() {
+		if (!this.useFolderName) return;
+		if (!this.settings.folderNoteHide) return;
+		var rootElems = document.getElementsByClassName('mod-root');
+		if (rootElems.length == 0) return;
+		var rootElem = rootElems[0];
+
+		// hide
+		var folderPaths : string[] = [];
+		var folderSelector = 'div.nav-folder > div.nav-folder-title';
+		rootElem.querySelectorAll(folderSelector)
+			.forEach(function (folderElem) {
+				var folderPath = folderElem.attributes.getNamedItem('data-path').textContent;
+				folderPaths.push(folderPath);
+			}
+		);
+		var folderNotePaths : string[] = [];
+		for (var i in folderPaths) {
+			var folderNotePath = this.getFolderNotePath(folderPaths[i]);
+			folderNotePaths.push(folderNotePath[0]);
+		}
+		console.log('folders: ', folderNotePaths);
+		var fileSelector = 'div.nav-file > div.nav-file-title';
+		rootElem.querySelectorAll(fileSelector)
+			.forEach(function (fileElem) {
+				var filePath = fileElem.attributes.getNamedItem('data-path').textContent;
+				console.log('filePath: ', filePath);
+				if (folderNotePaths.indexOf(filePath) > -1) {
+					console.log('Folder Note: ', filePath);
+					fileElem.addClass('is-folder-note');
+				}
+			}
+		);
 	}
 
 	// expand content template
 	async expandContent(folderPath: string, template: string) {
 		// keyword: {{FOLDER_NAME}}
 		var folderName = folderPath.split('/').pop();
-		var content = template.replace('{{FOLDER_NAME}}', folderName);
+		var content = template.replace(this.keyFOLDER_NAME, folderName);
 		// keyword: {{FOLDER_BRIEF}}
 		if (content.contains('{{FOLDER_BRIEF}}')) {
 			let briefCards = await this.makeFolderBriefCards(folderPath);
-			var folderBrief = briefCards.getHtmlCode()
+			var folderBrief = briefCards.getHtmlCode();
 			content = content.replace('{{FOLDER_BRIEF}}', folderBrief);
 		}
 		// keyword: {{FOLDER_BRIEF_LIVE}}
@@ -172,16 +313,6 @@ export default class FolderNotePlugin extends Plugin {
 			content = content.replace('{{FOLDER_BRIEF_LIVE}}', briefLiveCode);
 		}
 		return content;
-	}
-
-	// get folder note name
-	getFolderNoteBaseName(folderPath: string) {
-		var noteBaseName = this.settings.folderNoteName;
-		if (this.folderNoteNameVar) {
-			var folderName = folderPath.split('/').pop();
-			noteBaseName = noteBaseName.replace('{{FOLDER_NAME}}', folderName);
-		}
-		return noteBaseName;
 	}
 
 	// generate folder overview
@@ -197,19 +328,26 @@ export default class FolderNotePlugin extends Plugin {
 		// sub folders
 		for (var i = 0; i < subFolderList.length; i++) {
 			var subFolderPath = subFolderList[i];
+			let hasFolderNote = await this.hasFolderNote(subFolderPath);
+			if (hasFolderNote) continue;
 			let folderCard = await this.makeFolderCard(folderPath, subFolderPath);
 			cardBlock.addCard(folderCard);
 		}
 
 		// notes
-		var noteFileName = this.getFolderNoteBaseName(folderPath) + '.md';
+		var notePaths = this.getFolderNotePath(folderPath);
+		var noteFileName = notePaths[1] + '.md';
 		for (var i = 0; i < subFileList.length; i++) {
 			var subFilePath = subFileList[i];
-			var subFileName = subFilePath.split('/').pop();
-			if (subFileName != noteFileName) {
-				let noteCard = await this.makeNoteCard(folderPath, subFilePath);
-				cardBlock.addCard(noteCard);
+			if (!this.useFolderName) {
+				var subFileName = subFilePath.split('/').pop();
+				if (subFileName == noteFileName) {
+					continue;
+				}
 			}
+			// check it
+			let noteCard = await this.makeNoteCard(folderPath, subFilePath);
+			cardBlock.addCard(noteCard);
 		}
 
 		// return
@@ -221,31 +359,28 @@ export default class FolderNotePlugin extends Plugin {
 		// title
 		var subFolderName = subFolderPath.split('/').pop();
 		let card = new CardItem(subFolderName, CardStyle.Folder);
+
 		// description
 		let subPathList = await this.app.vault.adapter.list(subFolderPath);
 		var folderBrief = 'Contains ';
 		folderBrief += subPathList.folders.length.toString() + ' folders, ';
 		folderBrief += subPathList.files.length.toString() + ' notes.';
 		card.setAbstract(folderBrief);
+
 		// title link?
-		var subFolderNoteName = '';
-		var noteName = this.getFolderNoteBaseName(subFolderPath) + '.md';
-		const subFileList = subPathList.files;
-		for (var i = 0; i < subFileList.length; i++) {
-			var subFilePath = subFileList[i];
-			if (subFilePath.endsWith(noteName)) {
-				subFolderNoteName = subFolderPath + '/' + noteName;
-				break;
-			}
-		}
-		if (subFolderNoteName.length > 0) {
+		let hasFolderNote = await this.hasFolderNote(subFolderPath);
+		if (hasFolderNote) {
+			var notePaths = this.getFolderNotePath(subFolderPath);
+			var subFolderNoteName = notePaths[0].replace(folderPath, '');
 			card.setTitleLink(subFolderNoteName);
 		}
-		// footnote
-		card.setFootnote(subFolderPath);
+
+		// footnote, use date in the future
+		card.setFootnote(subFolderPath.replace(folderPath + '/', ''));
+		
+		// return
 		return card;
 	}
-
 
 	// make note brief card
 	async makeNoteCard(folderPath: string, notePath: string) {
@@ -254,6 +389,7 @@ export default class FolderNotePlugin extends Plugin {
 		var noteTitle = noteName.substring(0, noteName.length - 3);
 		let card = new CardItem(noteTitle, CardStyle.Note);
 		card.setTitleLink(notePath);
+
 		// read content
 		let content = await this.app.vault.adapter.read(notePath);
 		// console.log(content);
@@ -284,29 +420,29 @@ export default class FolderNotePlugin extends Plugin {
 		if (contentBrief.length > 0) {
 			card.setAbstract(contentBrief);
 		}
+
 		// foot note
-		card.setFootnote(notePath);
+		card.setFootnote(notePath.replace(folderPath + '/', ''));
+
 		// return
 		return card;
 	}
 
 	// keep notefile name to be the folder name
-	handleFileRename(newPath: any, oldPath: any) {
-		if (this.folderNoteNameVar && (!oldPath.endsWith('.md'))) {
+	async handleFileRename(newPath: any, oldPath: any) {
+		if (this.useFolderName && (!oldPath.endsWith('.md'))) {
 			// maybe this is a folder
-			const newPathStr = newPath.path;
-			var oldFolderNoteBaseName = this.getFolderNoteBaseName(oldPath);
-			var oldFolderNotePath = newPathStr + '/' + oldFolderNoteBaseName + '.md';
-			if (this.app.vault.adapter.exists(oldFolderNotePath)) {
-				var newFolderNoteBaseName = this.getFolderNoteBaseName(newPathStr);
-				var newFolderNotePath = newPathStr + '/' + newFolderNoteBaseName + '.md';
-				// the rename func will not delete the old file.
-				// and will not update the old links
-				this.app.vault.adapter.rename(oldFolderNotePath, newFolderNotePath);
+			// console.log('changing folder!!!')
+			let hasFolderNote = await this.hasFolderNote(oldPath);
+			if (hasFolderNote) {
+				var oldNotePaths = this.getFolderNotePath(oldPath);
+				var newNotePaths = this.getFolderNotePath(newPath.path);
+				if (oldNotePaths[1] != newNotePaths[1]) {
+					this.app.vault.adapter.rename(oldNotePaths[0], newNotePaths[0]);
+				}
 			}
 		}
 	}
-
 
 	// form ccard code block
 	ccardProcessor: MarkdownPostProcessor = async (el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
@@ -343,7 +479,7 @@ export default class FolderNotePlugin extends Plugin {
 				}
 				else {
 					const activeFile = this.app.workspace.getActiveFile();
-					folderPath = activeFile.parent.path;
+					folderPath = this.getNoteFolderBriefPath(activeFile.path);
 				}
 				
 				if (folderPath.length > 0) {

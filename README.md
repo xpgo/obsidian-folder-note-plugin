@@ -13,15 +13,24 @@ Obsidian Plugin: Add description note to a folder. Generate card-style overview 
 
 ## How it works
 
-Just a simple trick. When create description note for a folder, a note file named `_about_.md` will be created in the clicked folder. However, the file `_about_.md` is hidden by CSS rules of the plugin. The reason that the file is hidden because:
+Although the mechanism is simple, it would be better to know that there are two ways of creating description note for a folder. 
 
-- The `_about_.md` may not be always shown right after the folder if there are subfolders.
-- The file name may looks abnormal or weird.
+| Type                 | In-Folder                                                    | Out-Folder                                                   |
+| -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| **Folder Path**      | parent/myFolder                                        | parent/myFolder                                        |
+| **Folder Note Path** | parent/myFolder/\_about\_.md                           | parent/myFolder.md                                     |
+| **Configure Note Name**        | \_about\_ (or other name you like)               | {{FOLDER_NAME}}                                              |
+| **Pros**             | - The note file belongs to the folder. <br />- The note filename keeps the same if you rename a folder. | - The note file has the same name as folder, the note title looks better.<br />- Wiki-style of linking, easy to insert link like [\[myFolder]] |
+| **Cons**             | - The note filename and title may looks weird.<br />- Have to use additional file name for linking. | - The note file does not belong to the folder.<br />- The note filename will be changed if you change the folder name. |
 
-## Settings
+- The **default** configuration is the **In-Folder** type with note filename of  `_about_.md`. When create description note for a folder, a note file named `_about_.md` will be created in the clicked folder. However, the file `_about_.md` is hidden by the CSS rules of the plugin. You can let it shown by configure the **Hide Note** option.
+
+- If you like the **Out-Folder** style, please configure the note name as {{FOLDER_NAME}} before using the plugin.
+
+## Configuration
 
 - **Hide Note**: turn off the setting if you want to show the note file in file explorer.
-- **Note Name**: set the default folder note name, like `_overview_` or `index`. Keyword {{FOLDER_NAME}} can be used to set the note name same as folder name, **HOWEVER**, it is not recommended, because you have to manually change the note file name if you rename a folder.
+- **Note Name**: set the default folder note name, like `_overview_` or `index`. Keyword {{FOLDER_NAME}} can be used to set the note name same as folder name.
 - **Note Initial Content**: set the initial content for a new folder note.
     - {{FOLDER_NAME}} in the content will be replaced with the folder name.
     - {{FOLDER_BRIEF}} in the content will be replaced with a card-style overview of current folder.
@@ -29,30 +38,33 @@ Just a simple trick. When create description note for a folder, a note file name
 
 ## Card-style overview of folder
 
+**Keyword: {{FOLDER_BRIEF}}**
+
 The card-style overview of a folder by keyword {{FOLDER_BRIEF}} is a block of html codes which are generated based on the content of subfolders and note files in the folder. There are some tips:
 
 - Modify the html code of each card item to dispaly whatever contents you want.
-- The color, title, description, note links and footnote of each card item can be changed.
 - The title of card item is linked to a note, so click it to jump or hover it to preview.
 - You can reorder the card items as you wish. 
 - The background image of a note item is the first image of the note, you can manually change it.
 - If you want to update the overview of a folder, it can be inserted to a note by command: Ctrl+P, Insert Folder Overview.
 
-The keyword {{FOLDER_BRIEF_LIVE}} is useful when you put some notes with image in a folder, it will generate a card view of all the notes dynamically.
+**Keyword: {{FOLDER_BRIEF_LIVE}}**
+
+The keyword {{FOLDER_BRIEF_LIVE}} is a block of yaml codes which will be rendered to the folder overview in real time. It is useful when you put some notes with image in a folder, e.g. things collecions, it will generate a card view of all the notes dynamically.
 
 ## Change log
 
-### 0.3.3
+Remember to update the plugin, if you find some issues.
 
-- add keyword {{FOLDER_BRIEF_LIVE}} for inital content to generate folder overview in real time.
+### 0.4.0
 
-### 0.3.2
-
-- Insert folder overview by command: ctrl+p, Insert Folder Overview
-- Reorganized source code and fixed a mini bug
+- move note filename with {{FOLDER_NAME}} to out of folder for better orgnization. 
 
 ### 0.3.x
 
+- add keyword {{FOLDER_BRIEF_LIVE}} for inital content to generate folder overview in real time. (0.3.3)
+- Insert folder overview by command: ctrl+p, Insert Folder Overview (0.3.2)
+- Reorganized source code and fixed a mini bug (0.3.2)
 - Fix the command key on Mac (0.3.1)
 - Automatically generate card-view of folder overview (Experimental).
 - Add keyword {{FOLDER_BRIEF}} for generating the folder overview.
@@ -70,7 +82,6 @@ The keyword {{FOLDER_BRIEF_LIVE}} is useful when you put some notes with image i
 
 - Add more template option for generating the initial content.
 - Automaticaly generate overview contents for the folder note file based on contents in the folder, like the software [Trilium](https://github.com/zadam/trilium) does. (Partialy done.)
-- Generate card view with code block
 
 ## Known issues
 
