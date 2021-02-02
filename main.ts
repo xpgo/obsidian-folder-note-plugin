@@ -101,7 +101,7 @@ export default class FolderNotePlugin extends Plugin {
 					const editor = view.sourceMode.cmEditor;
 					const activeFile = this.app.workspace.getActiveFile();
 					// generate brief
-					var folderPath = this.getNoteFolderBriefPath(activeFile.path);
+					let folderPath = await this.getNoteFolderBriefPath(activeFile.path);
 					let briefCards = await this.makeFolderBriefCards(folderPath);
 					var folderBrief = briefCards.getHtmlCode();
 					editor.replaceSelection(folderBrief, "end");
@@ -180,9 +180,10 @@ export default class FolderNotePlugin extends Plugin {
 	}
 
 	// get the file breif path
-	getNoteFolderBriefPath(notePath: string) {
+	async getNoteFolderBriefPath(notePath: string) {
 		var folderPath = '';
-		if (this.isFolderNote(notePath)) {
+		let isFN = await this.isFolderNote(notePath);
+		if (isFN) {
 			folderPath = this.getNoteFolderPath(notePath);
 		}
 		else {
@@ -192,10 +193,17 @@ export default class FolderNotePlugin extends Plugin {
 	}
 
 	// check is folder note file?
-	isFolderNote(notePath: string) {
-		var folderPath = this.getNoteFolderPath(notePath);
-		var folderNotePaths = this.getFolderNotePath(folderPath);
-		return (folderNotePaths[0] == notePath);
+	async isFolderNote(notePath: string) {
+		var isFN = false;
+		var folderNoteName = this.settings.folderNoteName;
+		if (this.useFolderName) {
+			var folderPath = this.getNoteFolderPath(notePath);
+			isFN = await this.app.vault.adapter.exists(folderPath);
+		}
+		else if (notePath.endsWith('/' + folderNoteName + '.md')) {
+			isFN = true;
+		}
+		return isFN;
 	} 
 
 	// check existence of folder note
@@ -430,15 +438,27 @@ export default class FolderNotePlugin extends Plugin {
 
 	// keep notefile name to be the folder name
 	async handleFileRename(newPath: any, oldPath: any) {
-		if (this.useFolderName && (!oldPath.endsWith('.md'))) {
-			// maybe this is a folder
-			// console.log('changing folder!!!')
-			let hasFolderNote = await this.hasFolderNote(oldPath);
-			if (hasFolderNote) {
-				var oldNotePaths = this.getFolderNotePath(oldPath);
-				var newNotePaths = this.getFolderNotePath(newPath.path);
-				if (oldNotePaths[1] != newNotePaths[1]) {
-					this.app.vault.adapter.rename(oldNotePaths[0], newNotePaths[0]);
+		if (this.useFolderName) {
+			if (!oldPath.endsWith('.md')) {
+				// maybe this is a folder
+				// console.log('changing folder!!!')
+				let hasFolderNote = await this.hasFolderNote(oldPath);
+				if (hasFolderNote) {
+					var oldNotePaths = this.getFolderNotePath(oldPath);
+					var newNotePaths = this.getFolderNotePath(newPath.path);
+					if (oldNotePaths[1] != newNotePaths[1]) {
+						this.app.vault.adapter.rename(oldNotePaths[0], newNotePaths[0]);
+					}
+				}
+			}
+			else {
+				let isFN = await this.isFolderNote(oldPath);
+				if (isFN) {
+					// console.log('oldPath: ', oldPath);
+					// console.log('newPath: ', newPath.path);
+					var oldFolderPath = this.getNoteFolderPath(oldPath);
+					var newFolderPath = this.getNoteFolderPath(newPath.path);
+					this.app.vault.adapter.rename(oldFolderPath, newFolderPath);
 				}
 			}
 		}
@@ -479,7 +499,7 @@ export default class FolderNotePlugin extends Plugin {
 				}
 				else {
 					const activeFile = this.app.workspace.getActiveFile();
-					folderPath = this.getNoteFolderBriefPath(activeFile.path);
+					folderPath = await this.getNoteFolderBriefPath(activeFile.path);
 				}
 				
 				if (folderPath.length > 0) {

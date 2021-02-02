@@ -58,6 +58,10 @@ The keyword {{FOLDER_BRIEF_LIVE}} is a block of yaml codes which will be rendere
 
 Remember to update the plugin, if you find some issues.
 
+### 0.4.1
+
+- auto rename folder when the note file name changes. 
+
 ### 0.4.0
 
 - move note filename with {{FOLDER_NAME}} to out of folder for better orgnization. 
