@@ -282,14 +282,14 @@ export default class FolderNotePlugin extends Plugin {
 			var folderNotePath = this.getFolderNotePath(folderPaths[i]);
 			folderNotePaths.push(folderNotePath[0]);
 		}
-		console.log('folders: ', folderNotePaths);
+		// console.log('folders: ', folderNotePaths);
 		var fileSelector = 'div.nav-file > div.nav-file-title';
 		rootElem.querySelectorAll(fileSelector)
 			.forEach(function (fileElem) {
 				var filePath = fileElem.attributes.getNamedItem('data-path').textContent;
-				console.log('filePath: ', filePath);
+				// console.log('filePath: ', filePath);
 				if (folderNotePaths.indexOf(filePath) > -1) {
-					console.log('Folder Note: ', filePath);
+					// console.log('Folder Note: ', filePath);
 					fileElem.addClass('is-folder-note');
 				}
 			}

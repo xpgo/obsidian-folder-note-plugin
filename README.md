@@ -25,7 +25,9 @@ Although the mechanism is simple, it would be better to know that there are two 
 
 - The **default** configuration is the **In-Folder** type with note filename of  `_about_.md`. When create description note for a folder, a note file named `_about_.md` will be created in the clicked folder. However, the file `_about_.md` is hidden by the CSS rules of the plugin. You can let it shown by configure the **Hide Note** option.
 
-- If you like the **Out-Folder** style, please configure the note name as {{FOLDER_NAME}} before using the plugin.
+- If you like the **Out-Folder** style, please configure the note name as {{FOLDER_NAME}} before using the plugin. 
+
+- **NOTICE**: For those who use the plugin with version < 0.4 and use {{FOLDER_NAME}} as folder name, please manually move all you note files out of the folders and update the plugin. Sorry for the inconvinience.
 
 ## Configuration
 
