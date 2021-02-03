@@ -24,7 +24,7 @@ The mechanism is simple: attaching a note file to a folder. But there is a quest
 | **Cons**             | - The note filename and title may looks weird.<br />- Have to use additional file name for linking. | - Linking outside of the folder will be [\[myFolder/myFolder]].<br />- The note filename will be changed if you change the folder name. | - The note file does not belong to the folder. You have to move the note file manually if a folder is moved. <br />- The note filename will be changed if you change the folder name. |
 
 - The **default** configuration is the **Inside-File** method.
-- The **Index-File** method uses a note filename of  `_about_.md` (is is configurable). When create description note for a folder, a note file named `_about_.md` will be created in the clicked folder. However, the file `_about_.md` is hidden by the CSS rules of the plugin. You can let it shown by configure the **Hide Note** option.
+- The **Index-File** method uses a note filename of  `_about_.md` (it is configurable). When create description note for a folder, a note file named `_about_.md` will be created in the clicked folder. However, the file `_about_.md` is hidden by the CSS rules of the plugin. You can let it shown by configure the **Hide Note** option.
 - If you prefer the **Outside-Folder** or **Index-File**  method, please change the settings.
 - **NOTICE**: For those who use the plugin of old versions, please change the **Note File Method** in the settings panel for your choice, and reopen Obsidian to take effect.
 
