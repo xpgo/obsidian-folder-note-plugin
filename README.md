@@ -13,7 +13,7 @@ Obsidian Plugin: Add description note to a folder. Generate card-style overview 
 
 ## How it works
 
-The mechanism is simple: attaching a note file to a folder. However, it would be better to know that there are three ways of creating description note for a folder. 
+The mechanism is simple: attaching a note file to a folder. However, it would be better to know that there are three ways of creating description note for a folder. (See the dicussion at [Folder as markdown note](https://forum.obsidian.md/t/folder-as-markdown-note/2902/2) ) 
 
 | Method          | Index-File                                         | Inside-Folder                                                   | Outside-Folder                                                   |
 | -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
