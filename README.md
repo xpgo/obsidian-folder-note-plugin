@@ -25,7 +25,7 @@ The mechanism is simple: attaching a note file to a folder, and the folder note 
 
 When CTRL+Click a folder, the plugin will create a description note with the path dependent on the method you choose. You can configure the plugin to hide/show the folder note. It can also be configured to try to automatically keep the folder and note name in syncing for methods **Inside-Folder** and **Outside-Folder** (Experimental). When you Click a folder, the plugin will open the attached note for you.
 
-- The **default** configuration is the **Inside-File** method.
+- The **default** configuration is the **Inside-Folder** method.
 - If you prefer the **Outside-Folder** or **Index-File**  method, please change the settings.
 - The **Index-File** method uses a note filename of  `_about_.md` (it can be configured to be `index` or others).
 
