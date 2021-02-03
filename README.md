@@ -21,12 +21,11 @@ The mechanism is simple: attaching a note file to a folder. But there is a quest
 | **Folder Note Path** | parent/myFolder/\_about\_.md | parent/myFolder/myFolder.md                   | parent/myFolder.md                                     |
 | **Configuration** | - **Note File method:** Index File<br />- **Index File Name:** \_about\_ (or other name you like) | **Note File method:** Folder Name Inside | **Note File method:** Folder Name Outside                  |
 | **Pros**             | - The note file belongs to the folder. <br />- The note filename keeps the same if you rename or move a folder. | - The note file belongs to the folder. <br />- The note file has the same name as folder, the note title looks better. | - The note file has the same name as folder, the note title looks better.<br />- Wiki-style of linking, easy to insert link like [\[myFolder]] |
-| **Cons**             | - The note filename and title may looks weird.<br />- Have to use additional file name for linking. | - You have to manually change the note and folder name, if you change one of them.<br /> | - The note file does not belong to the folder. You have to move the note file manually if a folder is moved. <br />- The note filename will be changed if you change the folder name. |
+| **Cons**             | - The note filename and title may looks weird.<br />- Have to use additional file name for linking. | - Linking outside of the folder will be [[myFolder/myFolder]].<br />- The note filename will be changed if you change the folder name. | - The note file does not belong to the folder. You have to move the note file manually if a folder is moved. <br />- The note filename will be changed if you change the folder name. |
 
-- The **default** configuration is the **Index-File** method with note filename of  `_about_.md`. When create description note for a folder, a note file named `_about_.md` will be created in the clicked folder. However, the file `_about_.md` is hidden by the CSS rules of the plugin. You can let it shown by configure the **Hide Note** option.
-
-- If you prefer the **Outside-Folder** or **Inside-Folder**  method, please change the settings.
-
+- The **default** configuration is the **Inside-File** method.
+- The **Index-File** method uses a note filename of  `_about_.md` (is is configurable). When create description note for a folder, a note file named `_about_.md` will be created in the clicked folder. However, the file `_about_.md` is hidden by the CSS rules of the plugin. You can let it shown by configure the **Hide Note** option.
+- If you prefer the **Outside-Folder** or **Index-File**  method, please change the settings.
 - **NOTICE**: For those who use the plugin of old versions, please change the **Note File Method** in the settings panel for your choice, and reopen Obsidian to take effect.
 
 ## Configuration
@@ -60,33 +59,15 @@ The keyword {{FOLDER_BRIEF_LIVE}} is a block of YAML codes which will be rendere
 
 Remember to update the plugin, if you find some issues.
 
+### 0.5.1
+
+- Fix the hiding issue for Outside-Folder method
+- Add automatically rename for Inside-Folder method
+
 ### 0.5.0
 
 - Add options for three different folder note file method
 - Add options for auto rename
-
-### 0.4.x
-
-- auto rename folder when the note file name changes. (0.4.1)
-- move note filename with {{FOLDER_NAME}} to out of folder for better organization. (0.4.0)
-
-### 0.3.x
-
-- add keyword {{FOLDER_BRIEF_LIVE}} for initial content to generate folder overview in real time. (0.3.3)
-- Insert folder overview by command: ctrl+p, Insert Folder Overview (0.3.2)
-- Reorganized source code and fixed a mini bug (0.3.2)
-- Fix the command key on Mac (0.3.1)
-- Automatically generate card-view of folder overview (Experimental).
-- Add keyword {{FOLDER_BRIEF}} for generating the folder overview.
-
-### 0.2.x
-
-- Fix folder and note name check for hiding. (0.2.5)
-- Add settings option to hide or unhide folder note file. (0.2.3)
-- Fix: failed to create note file when create a new folder. (0.2.2)
-- Change: change the default note name to \_about\_ because of folder rename problem. (0.2.2)
-- Add: settings tab (0.2.1)
-- Note name and contents can be configured. (0.2.1)
 
 ## Plans for future
 

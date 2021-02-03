@@ -25,7 +25,7 @@ interface FolderNotePluginSettings {
 
 const DEFAULT_SETTINGS: FolderNotePluginSettings = {
 	folderNoteHide: true,
-	folderNoteType: 'index',
+	folderNoteType: 'inside',
 	folderNoteName: '_about_',
 	folderNoteAutoRename: true,
 	folderNoteStrInit: '# {{FOLDER_NAME}} Overview\n {{FOLDER_BRIEF}} \n'
@@ -39,6 +39,8 @@ export default class FolderNotePlugin extends Plugin {
 	settings: FolderNotePluginSettings;
 	noteFileMethod: NoteFileMethod;
 	keyFOLDER_NAME: string;
+	filesToRename: string[];
+	filesToRenameSet: boolean;
 
 	async onload() {
 		console.log('Loading Folder Note plugin');
@@ -46,6 +48,8 @@ export default class FolderNotePlugin extends Plugin {
 		// class vars
 		this.noteFileMethod = NoteFileMethod.Index;
 		this.keyFOLDER_NAME = '{{FOLDER_NAME}}';
+		this.filesToRename = [];
+		this.filesToRenameSet = false;
 
 		// load settings
 		await this.loadSettings();
@@ -66,7 +70,6 @@ export default class FolderNotePlugin extends Plugin {
 		
 		// hide sth
 		// this.hideRootNoteFiles();
-		// this.registerEvent(this.app.workspace.on("layout-ready", this.hideRootNoteFiles));
 
 		// for settings
 		this.addSettingTab(new FolderNoteSettingTab(this.app, this));
@@ -177,6 +180,7 @@ export default class FolderNotePlugin extends Plugin {
 	}
 
 	// get note folder
+	// make sure it is a note file
 	getNoteFolderPath(notePath: string) {
 		var folderPath = '';
 		if (this.noteFileMethod == NoteFileMethod.Index) {
@@ -184,6 +188,7 @@ export default class FolderNotePlugin extends Plugin {
 		}
 		else if (this.noteFileMethod == NoteFileMethod.Inside) {
 			folderPath = notePath.substring(0, notePath.lastIndexOf('/'));
+
 		}
 		else if (this.noteFileMethod == NoteFileMethod.Outside) {
 			// just remove .md
@@ -214,8 +219,15 @@ export default class FolderNotePlugin extends Plugin {
 				isFN = true;
 			}
 		}
-		else {
-			var folderPath = this.getNoteFolderPath(notePath);
+		else if (this.noteFileMethod == NoteFileMethod.Inside) {
+			var noteBaseName = notePath.split('/').pop();
+			noteBaseName = noteBaseName.substring(0, noteBaseName.length-3);
+			if (notePath.endsWith(noteBaseName + '/' + noteBaseName + '.md'))  {
+				isFN = true;
+			}
+		}
+		else if (this.noteFileMethod == NoteFileMethod.Outside) {
+			var folderPath = notePath.substring(0, notePath.length-3);
 			isFN = await this.app.vault.adapter.exists(folderPath);
 		}
 		return isFN;
@@ -246,9 +258,9 @@ export default class FolderNotePlugin extends Plugin {
 				await this.app.vault.adapter.write(folderNotePath, noteStrInit);
 				showFolderNote = true;
 			}
-			else if (folderElem.hasClass('has-folder-note')) {
-				folderElem.removeClass('has-folder-note');
-			}
+			// else if (folderElem.hasClass('has-folder-note')) {
+			// 	folderElem.removeClass('has-folder-note');
+			// }
 		}
 
 		// show the note
@@ -420,7 +432,7 @@ export default class FolderNotePlugin extends Plugin {
 	// keep notefile name to be the folder name
 	async handleFileRename(newPath: any, oldPath: any) {
 		if (!this.settings.folderNoteAutoRename) return;
-		if (this.noteFileMethod != NoteFileMethod.Index) {
+		if (this.noteFileMethod == NoteFileMethod.Outside) {
 			if (!oldPath.endsWith('.md')) {
 				// changing folder name
 				// console.log('changing folder!!!')
@@ -443,6 +455,63 @@ export default class FolderNotePlugin extends Plugin {
 					var newFolderPath = this.getNoteFolderPath(newPath.path);
 					await this.app.vault.adapter.rename(oldFolderPath, newFolderPath);
 				}
+			}
+		}
+		else if (this.noteFileMethod == NoteFileMethod.Inside) {
+			if (!oldPath.endsWith('.md')) {
+				// changing folder name
+				var oldNotePaths = this.getFolderNotePath(oldPath);
+				var newNotePaths = this.getFolderNotePath(newPath.path);
+				var oldNotePathNew = newPath.path + '/' + oldNotePaths[1] + '.md';
+				let noteExists = await this.app.vault.adapter.exists(oldNotePathNew);
+				if (noteExists) {
+					if (newNotePaths[0] != oldNotePathNew) {
+						// put it to rename
+						this.filesToRename.push(oldNotePathNew);
+						this.filesToRename.push(newNotePaths[0]);
+					}
+				}
+			}
+			else if (this.filesToRename.length == 0) {
+				// changeing note name
+				let isFN = await this.isFolderNote(oldPath);
+				if (isFN) {
+					var oldFolderPath = this.getNoteFolderPath(oldPath);
+					// find the new path
+					var noteDir = newPath.path;
+					noteDir = noteDir.substring(0, noteDir.lastIndexOf('/'));
+					noteDir = noteDir.substring(0, noteDir.lastIndexOf('/'));
+					var noteBase = newPath.path.split('/').pop();
+					noteBase = noteBase.substring(0, noteBase.length-3);
+					var newFolderPath = '';
+					if (noteDir.length > 0) {
+						newFolderPath = noteDir + '/' + noteBase;
+					} 
+					else {
+						newFolderPath = noteBase;
+					}
+					// put it to rename
+					if (oldFolderPath != newFolderPath) {
+						this.filesToRename.push(oldFolderPath);
+						this.filesToRename.push(newFolderPath);
+					}
+				}
+			}
+			// only do once a time
+			if (!this.filesToRenameSet && this.filesToRename.length > 0) {
+				this.filesToRenameSet = true;
+				setTimeout(() => {
+					console.log('rename is running after 1 s.');
+					if (this.filesToRename.length) {
+						var oldFolderPath = this.filesToRename[0];
+						var newFolderPath = this.filesToRename[1];
+						// console.log('Mod Old Path:', oldFolderPath);
+						// console.log('Mod New Path:', newFolderPath);
+						this.app.vault.adapter.rename(oldFolderPath, newFolderPath);
+						this.filesToRename = [];
+						this.filesToRenameSet = false;
+					}
+				}, 1000);
 			}
 		}
 	}
