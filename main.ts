@@ -17,31 +17,41 @@ import * as Yaml from 'yaml';
 
 interface FolderNotePluginSettings {
 	folderNoteHide: boolean;
+	folderNoteType: string;
 	folderNoteName: string;
+	folderNoteAutoRename: boolean;
 	folderNoteStrInit: string;
 }
 
 const DEFAULT_SETTINGS: FolderNotePluginSettings = {
 	folderNoteHide: true,
+	folderNoteType: 'index',
 	folderNoteName: '_about_',
+	folderNoteAutoRename: true,
 	folderNoteStrInit: '# {{FOLDER_NAME}} Overview\n {{FOLDER_BRIEF}} \n'
+}
+
+enum NoteFileMethod {
+	Index, Inside, Outside,
 }
 
 export default class FolderNotePlugin extends Plugin {
 	settings: FolderNotePluginSettings;
-	useFolderName: boolean;
+	noteFileMethod: NoteFileMethod;
 	keyFOLDER_NAME: string;
 
 	async onload() {
 		console.log('Loading Folder Note plugin');
 
 		// class vars
-		this.useFolderName = false;
+		this.noteFileMethod = NoteFileMethod.Index;
 		this.keyFOLDER_NAME = '{{FOLDER_NAME}}';
 
 		// load settings
 		await this.loadSettings();
-
+		if (this.settings.folderNoteName.contains(this.keyFOLDER_NAME)) {
+			this.settings.folderNoteType = 'outside';
+		}
 
 		// this.addRibbonIcon('dice', 'Folder Note Plugin', () => {
 		// 	new Notice('Auto generate brief description for folder note!');
@@ -55,7 +65,7 @@ export default class FolderNotePlugin extends Plugin {
 			(newPath, oldPath) => this.handleFileRename(newPath, oldPath)));
 		
 		// hide sth
-		this.hideRootNoteFiles();
+		// this.hideRootNoteFiles();
 		// this.registerEvent(this.app.workspace.on("layout-ready", this.hideRootNoteFiles));
 
 		// for settings
@@ -122,62 +132,60 @@ export default class FolderNotePlugin extends Plugin {
 		MarkdownPreviewRenderer.unregisterPostProcessor(this.ccardProcessor)
 	}
 
+	setNoteFileMethod() {
+		if (this.settings.folderNoteType == 'index') {
+			this.noteFileMethod = NoteFileMethod.Index;
+		} 
+		else if (this.settings.folderNoteType == 'inside') { 
+			this.noteFileMethod = NoteFileMethod.Inside;
+		}
+		else if (this.settings.folderNoteType == 'outside') { 
+			this.noteFileMethod = NoteFileMethod.Outside;
+		}
+	}
+
 	async loadSettings() {
 		this.settings = Object.assign(DEFAULT_SETTINGS, await this.loadData());
-		this.useFolderName = this.settings.folderNoteName.contains(this.keyFOLDER_NAME);
+		this.setNoteFileMethod();
 	}
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-		this.useFolderName = this.settings.folderNoteName.contains(this.keyFOLDER_NAME);
+		this.setNoteFileMethod();
 	}
 
 	// get folder note path
 	getFolderNotePath(folderPath: string) {
 		var notePath = '';
 		var noteBaseName = this.settings.folderNoteName;
-		if (this.useFolderName) {
-			var folderName = folderPath.split('/').pop();
-			noteBaseName = noteBaseName.replace(this.keyFOLDER_NAME, folderName);
-			var folderParentPath = folderPath.substring(0, folderPath.lastIndexOf('/'));
-			if (folderParentPath.length > 0) {
-				notePath = folderParentPath + '/' + noteBaseName + '.md';
-			}
-			else {
-				notePath = noteBaseName + '.md';
-			}
-		} 
-		else {
+		if (this.noteFileMethod == NoteFileMethod.Index) {
 			notePath = folderPath + '/' + noteBaseName + '.md';
 		}
+		else {
+			noteBaseName = folderPath.split('/').pop();
+			if (this.noteFileMethod == NoteFileMethod.Inside) {
+				notePath = folderPath + '/' + noteBaseName + '.md';
+			}
+			else if  (this.noteFileMethod == NoteFileMethod.Outside) {
+				notePath = folderPath + '.md';
+			}
+		}
+		// console.log('notePath: ', notePath);
 		return [notePath, noteBaseName];
 	}
 
 	// get note folder
 	getNoteFolderPath(notePath: string) {
 		var folderPath = '';
-		if (this.useFolderName && notePath.endsWith('.md')) {
-			var noteBaseName = this.settings.folderNoteName;
-			if (noteBaseName == this.keyFOLDER_NAME) {
-				folderPath = notePath.substring(0,  notePath.length-3);
-			}
-			else {
-				var realBaseName = notePath.split('/').pop();
-				realBaseName = realBaseName.substring(0, realBaseName.length - 3);
-				var pos1 = noteBaseName.indexOf(this.keyFOLDER_NAME);
-				var pos2 = pos1 + this.keyFOLDER_NAME.length;
-				var prefix = noteBaseName.substring(0, pos1);
-				var posfix = noteBaseName.substring(pos2);
-				folderPath = realBaseName.replace(prefix, '');
-				folderPath = folderPath.replace(posfix, '');
-				var parentPath = notePath.substring(0, notePath.lastIndexOf('/'));
-				if (parentPath.length > 0) parentPath += '/';
-				folderPath = parentPath + folderPath;
-			}
-		}
-		else {
-			// be the folder including me
+		if (this.noteFileMethod == NoteFileMethod.Index) {
 			folderPath = notePath.substring(0, notePath.lastIndexOf('/'));
+		}
+		else if (this.noteFileMethod == NoteFileMethod.Inside) {
+			folderPath = notePath.substring(0, notePath.lastIndexOf('/'));
+		}
+		else if (this.noteFileMethod == NoteFileMethod.Outside) {
+			// just remove .md
+			folderPath = notePath.substring(0,  notePath.length-3);
 		}
 		return folderPath;
 	}
@@ -198,16 +206,18 @@ export default class FolderNotePlugin extends Plugin {
 	// check is folder note file?
 	async isFolderNote(notePath: string) {
 		var isFN = false;
-		var folderNoteName = this.settings.folderNoteName;
-		if (this.useFolderName) {
+		if (this.noteFileMethod == NoteFileMethod.Index) {
+			var folderNoteName = this.settings.folderNoteName;
+			if (notePath.endsWith('/' + folderNoteName + '.md'))  {
+				isFN = true;
+			}
+		}
+		else {
 			var folderPath = this.getNoteFolderPath(notePath);
 			isFN = await this.app.vault.adapter.exists(folderPath);
 		}
-		else if (notePath.endsWith('/' + folderNoteName + '.md')) {
-			isFN = true;
-		}
 		return isFN;
-	} 
+	}
 
 	// check existence of folder note
 	async hasFolderNote(folderPath: string) {
@@ -228,7 +238,8 @@ export default class FolderNotePlugin extends Plugin {
 		var showFolderNote = hasFolderNote;
 		if (!hasFolderNote) {
 			if (doCreate) {
-				let noteStrInit = await this.expandContent(folderPath,
+				let noteStrInit = await this.expandContent(
+					folderPath,
 					this.settings.folderNoteStrInit);
 				await this.app.vault.adapter.write(folderNotePath, noteStrInit);
 				showFolderNote = true;
@@ -254,7 +265,7 @@ export default class FolderNotePlugin extends Plugin {
 		folderElem.addClass('has-folder-note');
 		var parentElem = folderElem.parentElement;
 		var fileSelector = 'div.nav-folder-children > div.nav-file > div.nav-file-title';
-		if (this.useFolderName) {
+		if (this.noteFileMethod == NoteFileMethod.Outside) {
 			parentElem = parentElem.parentElement;
 			fileSelector = 'div.nav-file > div.nav-file-title';
 		}
@@ -264,51 +275,11 @@ export default class FolderNotePlugin extends Plugin {
 				if (hideSetting && (fileNodeTitle == noteBaseName)) {
 					fileElem.addClass('is-folder-note');
 				}
-				// else {
-				// 	fileElem.removeClass('is-folder-note');
-				// }
-			}
-		);
-	}
-
-	// hide root note files
-	async hideRootNoteFiles() {
-		if (!this.useFolderName) return;
-		if (!this.settings.folderNoteHide) return;
-		var rootElems = document.getElementsByClassName('mod-root');
-		if (rootElems.length == 0) return;
-		var rootElem = rootElems[0];
-
-		// hide
-		var folderPaths : string[] = [];
-		var folderSelector = 'div.nav-folder > div.nav-folder-title';
-		rootElem.querySelectorAll(folderSelector)
-			.forEach(function (folderElem) {
-				var folderPath = folderElem.attributes.getNamedItem('data-path').textContent;
-				folderPaths.push(folderPath);
-			}
-		);
-		var folderNotePaths : string[] = [];
-		for (var i in folderPaths) {
-			var folderNotePath = this.getFolderNotePath(folderPaths[i]);
-			folderNotePaths.push(folderNotePath[0]);
-		}
-		// console.log('folders: ', folderNotePaths);
-		var fileSelector = 'div.nav-file > div.nav-file-title';
-		rootElem.querySelectorAll(fileSelector)
-			.forEach(function (fileElem) {
-				var filePath = fileElem.attributes.getNamedItem('data-path').textContent;
-				// console.log('filePath: ', filePath);
-				if (folderNotePaths.indexOf(filePath) > -1) {
-					// console.log('Folder Note: ', filePath);
-					fileElem.addClass('is-folder-note');
+				else {
+					fileElem.removeClass('is-folder-note');
 				}
 			}
 		);
-		// refresh?
-		// const rootElemH = rootElem as HTMLElement;
-		// rootElemH.hide();
-		// rootElemH.show();
 	}
 
 	// expand content template
@@ -354,7 +325,7 @@ export default class FolderNotePlugin extends Plugin {
 		var noteFileName = notePaths[1] + '.md';
 		for (var i = 0; i < subFileList.length; i++) {
 			var subFilePath = subFileList[i];
-			if (!this.useFolderName) {
+			if (this.noteFileMethod != NoteFileMethod.Outside) {
 				var subFileName = subFilePath.split('/').pop();
 				if (subFileName == noteFileName) {
 					continue;
@@ -445,9 +416,10 @@ export default class FolderNotePlugin extends Plugin {
 
 	// keep notefile name to be the folder name
 	async handleFileRename(newPath: any, oldPath: any) {
-		if (this.useFolderName) {
+		if (!this.settings.folderNoteAutoRename) return;
+		if (this.noteFileMethod != NoteFileMethod.Index) {
 			if (!oldPath.endsWith('.md')) {
-				// maybe this is a folder
+				// changing folder name
 				// console.log('changing folder!!!')
 				let hasFolderNote = await this.hasFolderNote(oldPath);
 				if (hasFolderNote) {
@@ -459,6 +431,7 @@ export default class FolderNotePlugin extends Plugin {
 				}
 			}
 			else {
+				// changeing note name
 				let isFN = await this.isFolderNote(oldPath);
 				if (isFN) {
 					// console.log('oldPath: ', oldPath);
@@ -717,19 +690,22 @@ class FolderNoteSettingTab extends PluginSettingTab {
 		containerEl.createEl('h2', { text: 'Folder Note Plugin: Settings.' });
 
 		new Setting(containerEl)
-			.setName('Hide Note')
-			.setDesc('Hide the folder note file in the file explorer panel.')
-			.addToggle((toggle) => {
-				toggle.setValue(this.plugin.settings.folderNoteHide);
-				toggle.onChange(async (value) => {
-					this.plugin.settings.folderNoteHide = value;
-					await this.plugin.saveSettings();
-				});
-			});
+			.setName('Note File Method')
+			.setDesc('Select the method to put your folder note file. (Read doc for more information.)')
+			.addDropdown(dropDown =>
+				dropDown
+				.addOption('index', 'Index File')
+				.addOption('inside', 'Folder Name Inside')
+				.addOption('outside', 'Folder Name Outside')
+				.setValue(this.plugin.settings.folderNoteType || 'index')
+				.onChange((value: string) => {
+					this.plugin.settings.folderNoteType = value;
+					this.plugin.saveData(this.plugin.settings);
+				}));
 
 		new Setting(containerEl)
-			.setName('Note Name')
-			.setDesc('Set the name for folder note.')
+			.setName('Index File Name')
+			.setDesc('Set the index file name for folder note. (only for the Index method)')
 			.addText(text => text
 				.setValue(this.plugin.settings.folderNoteName)
 				.onChange(async (value) => {
@@ -755,6 +731,28 @@ class FolderNoteSettingTab extends PluginSettingTab {
 					})
 				text.inputEl.rows = 8;
 				text.inputEl.cols = 50;
+			});
+		
+		new Setting(containerEl)
+			.setName('Hide Folder Note')
+			.setDesc('Hide the folder note file in the file explorer panel.')
+			.addToggle((toggle) => {
+				toggle.setValue(this.plugin.settings.folderNoteHide);
+				toggle.onChange(async (value) => {
+					this.plugin.settings.folderNoteHide = value;
+					await this.plugin.saveSettings();
+				});
+			});
+		
+		new Setting(containerEl)
+			.setName('Auto Rename')
+			.setDesc('Try to automatically rename the folder note if a folder name is changed. (Experimental)')
+			.addToggle((toggle) => {
+				toggle.setValue(this.plugin.settings.folderNoteAutoRename);
+				toggle.onChange(async (value) => {
+					this.plugin.settings.folderNoteAutoRename = value;
+					await this.plugin.saveSettings();
+				});
 			});
 	}
 }

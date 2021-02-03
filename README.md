@@ -9,34 +9,36 @@ Obsidian Plugin: Add description note to a folder. Generate card-style overview 
 - **Add** description note: CTRL+Click on a folder in the file explorer panel.
 - **Show** description note: Just Click the folder.
 - **Delete** description note: Just delete the opened note file.
-- **Configure** : configure the note name and template on the settings panel.
+- **Configure** : configure the note file method, file name and template on the settings panel.
 
 ## How it works
 
-Although the mechanism is simple, it would be better to know that there are two ways of creating description note for a folder. 
+The mechanism is simple: attaching a note file to a folder. However, it would be better to know that there are three ways of creating description note for a folder. 
 
-| Type                 | Inside-Folder                                                    | Outside-Folder                                                   |
-| -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| **Folder Path**      | parent/myFolder                                        | parent/myFolder                                        |
-| **Folder Note Path** | parent/myFolder/\_about\_.md                           | parent/myFolder.md                                     |
-| **Configure Note Name**        | \_about\_ (or other name you like)               | {{FOLDER_NAME}}                                              |
-| **Pros**             | - The note file belongs to the folder. <br />- The note filename keeps the same if you rename a folder. | - The note file has the same name as folder, the note title looks better.<br />- Wiki-style of linking, easy to insert link like [\[myFolder]] |
-| **Cons**             | - The note filename and title may looks weird.<br />- Have to use additional file name for linking. | - The note file does not belong to the folder. You have to move the note file manually if a folder is moved. <br />- The note filename will be changed if you change the folder name. |
+| Method          | Index-File                                         | Inside-Folder                                                   | Outside-Folder                                                   |
+| -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| **Folder Path**      | parent/myFolder                         | parent/myFolder                                        | parent/myFolder                                        |
+| **Folder Note Path** | parent/myFolder/\_about\_.md | parent/myFolder/myFolder.md                   | parent/myFolder.md                                     |
+| **Configuration** | - **Note File method:** Index File<br />- **Index File Name:** \_about\_ (or other name you like) | - **Note File method:** Folder Name Inside | - **Note File method:** Folder Name Outside                  |
+| **Pros**             | - The note file belongs to the folder. <br />- The note filename keeps the same if you rename a folder. | - The note file belongs to the folder. <br />- The note file has the same name as folder, the note title looks better. | - The note file has the same name as folder, the note title looks better.<br />- Wiki-style of linking, easy to insert link like [\[myFolder]] |
+| **Cons**             | - The note filename and title may looks weird.<br />- Have to use additional file name for linking. | - You have to manually change the note filename if you change folder name.<br />- You may link the folder note as [[myFolder/myFolder]]. | - The note file does not belong to the folder. You have to move the note file manually if a folder is moved. <br />- The note filename will be changed if you change the folder name. |
 
-- The **default** configuration is the **Inside-Folder** type with note filename of  `_about_.md`. When create description note for a folder, a note file named `_about_.md` will be created in the clicked folder. However, the file `_about_.md` is hidden by the CSS rules of the plugin. You can let it shown by configure the **Hide Note** option.
+- The **default** configuration is the **Index-File** method with note filename of  `_about_.md`. When create description note for a folder, a note file named `_about_.md` will be created in the clicked folder. However, the file `_about_.md` is hidden by the CSS rules of the plugin. You can let it shown by configure the **Hide Note** option.
 
-- If you like the **Outside-Folder** style, please configure the note name as {{FOLDER_NAME}} before using the plugin. 
+- If you prefer the **Outside-Folder** or **Inside-Folder**  method, please change the settings.
 
-- **NOTICE**: For those who use the plugin with version < 0.4 and use {{FOLDER_NAME}} as folder name, please manually move all you note files out of the folders and update the plugin. Sorry for the inconvinience.
+- **NOTICE**: For those who use the old version plugin, please change the **Note File Method** in the settings panel for your choice.
 
 ## Configuration
 
-- **Hide Note**: turn off the setting if you want to show the note file in file explorer.
-- **Note Name**: set the default folder note name, like `_overview_` or `index`. Keyword {{FOLDER_NAME}} can be used to set the note name same as folder name.
+- **Note File method**: select the folder note file method.
+- **Index File Name**: For the "Index File" method, set the default folder note name, like `_overview_` or `index`.
 - **Note Initial Content**: set the initial content for a new folder note.
     - {{FOLDER_NAME}} in the content will be replaced with the folder name.
     - {{FOLDER_BRIEF}} in the content will be replaced with a card-style overview of current folder.
     - {{FOLDER_BRIEF_LIVE}} in the content will be replaced with a tiny code block which will be rendered to the folder overview in real time.
+- **Hide Folder Note**: turn off the setting if you want to show the note file in file explorer.
+- **Auto Rename**: For the method  **Inside-Folder** and **Outside-Folder**, the plugin try to rename the folder note name when a folder name is changed. However, this function is experimental, it does not always work. It is recommended that you manually rename them. Reopen Obsidian if you have some issue related to renameing.
 
 ## Card-style overview of folder
 
@@ -58,13 +60,15 @@ The keyword {{FOLDER_BRIEF_LIVE}} is a block of yaml codes which will be rendere
 
 Remember to update the plugin, if you find some issues.
 
-### 0.4.1
+### 0.5.0
 
-- auto rename folder when the note file name changes. 
+- Add options for three different folder note file method
+- Add options for auto rename
 
-### 0.4.0
+### 0.4.x
 
-- move note filename with {{FOLDER_NAME}} to out of folder for better orgnization. 
+- auto rename folder when the note file name changes. (0.4.1)
+- move note filename with {{FOLDER_NAME}} to out of folder for better orgnization. (0.4.0)
 
 ### 0.3.x
 
