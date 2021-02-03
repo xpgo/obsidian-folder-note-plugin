@@ -258,9 +258,9 @@ export default class FolderNotePlugin extends Plugin {
 				await this.app.vault.adapter.write(folderNotePath, noteStrInit);
 				showFolderNote = true;
 			}
-			// else if (folderElem.hasClass('has-folder-note')) {
-			// 	folderElem.removeClass('has-folder-note');
-			// }
+			else if (folderElem.hasClass('has-folder-note')) {
+				folderElem.removeClass('has-folder-note');
+			}
 		}
 
 		// show the note
@@ -279,7 +279,8 @@ export default class FolderNotePlugin extends Plugin {
 		folderElem.addClass('has-folder-note');
 		var parentElem = folderElem.parentElement;
 		var fileSelector = ':scope > div.nav-folder-children > div.nav-file > div.nav-file-title';
-		if (this.noteFileMethod == NoteFileMethod.Outside) {
+		var isOutsideMethod = (this.noteFileMethod == NoteFileMethod.Outside);
+		if (isOutsideMethod) {
 			parentElem = parentElem.parentElement;
 			fileSelector = ':scope > div.nav-file > div.nav-file-title';
 		}
@@ -290,9 +291,10 @@ export default class FolderNotePlugin extends Plugin {
 				if (hideSetting && (fileNodeTitle == noteBaseName)) {
 					fileElem.addClass('is-folder-note');
 				}
-				else {
+				else if (!isOutsideMethod) {
 					fileElem.removeClass('is-folder-note');
 				}
+				// console.log('isOutsideMethod: ', isOutsideMethod);
 			}
 		);
 	}
