@@ -142,6 +142,8 @@ export default class FolderNotePlugin extends Plugin {
 		else if (this.settings.folderNoteType == 'outside') { 
 			this.noteFileMethod = NoteFileMethod.Outside;
 		}
+		// console.log('folderNoteType', this.settings.folderNoteType);
+		// console.log('noteFileMethod', this.noteFileMethod);
 	}
 
 	async loadSettings() {
@@ -264,14 +266,15 @@ export default class FolderNotePlugin extends Plugin {
 		const hideSetting = this.settings.folderNoteHide;
 		folderElem.addClass('has-folder-note');
 		var parentElem = folderElem.parentElement;
-		var fileSelector = 'div.nav-folder-children > div.nav-file > div.nav-file-title';
+		var fileSelector = ':scope > div.nav-folder-children > div.nav-file > div.nav-file-title';
 		if (this.noteFileMethod == NoteFileMethod.Outside) {
 			parentElem = parentElem.parentElement;
-			fileSelector = 'div.nav-file > div.nav-file-title';
+			fileSelector = ':scope > div.nav-file > div.nav-file-title';
 		}
 		parentElem.querySelectorAll(fileSelector)
 			.forEach(function (fileElem) {
 				var fileNodeTitle = fileElem.firstElementChild.textContent;
+				// console.log('fileNoteTitle: ', fileNodeTitle);
 				if (hideSetting && (fileNodeTitle == noteBaseName)) {
 					fileElem.addClass('is-folder-note');
 				}
@@ -700,7 +703,7 @@ class FolderNoteSettingTab extends PluginSettingTab {
 				.setValue(this.plugin.settings.folderNoteType || 'index')
 				.onChange((value: string) => {
 					this.plugin.settings.folderNoteType = value;
-					this.plugin.saveData(this.plugin.settings);
+					this.plugin.saveSettings();
 				}));
 
 		new Setting(containerEl)
