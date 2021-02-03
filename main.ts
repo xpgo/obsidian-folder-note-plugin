@@ -42,8 +42,6 @@ export default class FolderNotePlugin extends Plugin {
 		// load settings
 		await this.loadSettings();
 
-		// hide sth
-		this.hideRootNoteFiles();
 
 		// this.addRibbonIcon('dice', 'Folder Note Plugin', () => {
 		// 	new Notice('Auto generate brief description for folder note!');
@@ -53,7 +51,12 @@ export default class FolderNotePlugin extends Plugin {
 		MarkdownPreviewRenderer.registerPostProcessor(this.ccardProcessor);
 
 		// for rename event
-		this.registerEvent(this.app.vault.on('rename', (newPath, oldPath) => this.handleFileRename(newPath, oldPath)));
+		this.registerEvent(this.app.vault.on('rename', 
+			(newPath, oldPath) => this.handleFileRename(newPath, oldPath)));
+		
+		// hide sth
+		this.hideRootNoteFiles();
+		// this.registerEvent(this.app.workspace.on("layout-ready", this.hideRootNoteFiles));
 
 		// for settings
 		this.addSettingTab(new FolderNoteSettingTab(this.app, this));
@@ -269,7 +272,7 @@ export default class FolderNotePlugin extends Plugin {
 	}
 
 	// hide root note files
-	hideRootNoteFiles() {
+	async hideRootNoteFiles() {
 		if (!this.useFolderName) return;
 		if (!this.settings.folderNoteHide) return;
 		var rootElems = document.getElementsByClassName('mod-root');
@@ -302,6 +305,10 @@ export default class FolderNotePlugin extends Plugin {
 				}
 			}
 		);
+		// refresh?
+		// const rootElemH = rootElem as HTMLElement;
+		// rootElemH.hide();
+		// rootElemH.show();
 	}
 
 	// expand content template
@@ -447,7 +454,7 @@ export default class FolderNotePlugin extends Plugin {
 					var oldNotePaths = this.getFolderNotePath(oldPath);
 					var newNotePaths = this.getFolderNotePath(newPath.path);
 					if (oldNotePaths[1] != newNotePaths[1]) {
-						this.app.vault.adapter.rename(oldNotePaths[0], newNotePaths[0]);
+						await this.app.vault.adapter.rename(oldNotePaths[0], newNotePaths[0]);
 					}
 				}
 			}
@@ -458,7 +465,7 @@ export default class FolderNotePlugin extends Plugin {
 					// console.log('newPath: ', newPath.path);
 					var oldFolderPath = this.getNoteFolderPath(oldPath);
 					var newFolderPath = this.getNoteFolderPath(newPath.path);
-					this.app.vault.adapter.rename(oldFolderPath, newFolderPath);
+					await this.app.vault.adapter.rename(oldFolderPath, newFolderPath);
 				}
 			}
 		}
