@@ -29,7 +29,7 @@ When CTRL+Click a folder, the plugin will create a description note with the pat
 - If you prefer the **Outside-Folder** or **Index-File**  method, please change the settings.
 - The **Index-File** method uses a note filename of  `_about_.md` (it can be configured to be `index` or others).
 
-**NOTICE**
+**NOTICE for updating from older version**
 
  For those who use the plugin with version < 0.4.0, please use the following steps to update:
 
