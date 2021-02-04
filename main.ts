@@ -331,8 +331,10 @@ export default class FolderNotePlugin extends Plugin {
 		// sub folders
 		for (var i = 0; i < subFolderList.length; i++) {
 			var subFolderPath = subFolderList[i];
-			let hasFolderNote = await this.hasFolderNote(subFolderPath);
-			if (hasFolderNote) continue;
+			if (this.noteFileMethod == NoteFileMethod.Outside) {
+				let hasFolderNote = await this.hasFolderNote(subFolderPath);
+				if (hasFolderNote) continue;
+			}
 			let folderCard = await this.makeFolderCard(folderPath, subFolderPath);
 			cardBlock.addCard(folderCard);
 		}
@@ -375,6 +377,9 @@ export default class FolderNotePlugin extends Plugin {
 		if (hasFolderNote) {
 			var notePaths = this.getFolderNotePath(subFolderPath);
 			var subFolderNoteName = notePaths[0].replace(folderPath, '');
+			if (subFolderNoteName.startsWith('/')) {
+				subFolderNoteName = subFolderNoteName.substring(1);
+			}
 			card.setTitleLink(subFolderNoteName);
 		}
 

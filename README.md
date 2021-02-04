@@ -70,15 +70,13 @@ The keyword {{FOLDER_BRIEF_LIVE}} is a block of YAML codes which will be rendere
 
 Remember to update the plugin, if you find some issues.
 
-### 0.5.1
+### 0.5.x
 
-- Fix the hiding issue for Outside-Folder method
-- Add automatically rename for Inside-Folder method
-
-### 0.5.0
-
-- Add options for three different folder note file method
-- Add options for auto rename
+- Fix the folder overview card for folder (0.5.2)
+- Fix the hiding issue for Outside-Folder method (0.5.1)
+- Add automatically rename for Inside-Folder method (0.5.1)
+- Add options for three different folder note file method (0.5.0)
+- Add options for auto rename (0.5.0)
 
 ## Plans for future
 
