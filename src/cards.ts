@@ -3,11 +3,11 @@
 // Card block
 // ------------------------------------------------------------
 
-enum CardStyle {
+export enum CardStyle {
 	Folder, Note, Image,
 }
 
-class CardBlock {
+export class CardBlock {
 	style: string;
 	col: number;
 	cards: CardItem[];
@@ -68,7 +68,7 @@ class CardBlock {
 	}
 }
 
-class CardItem {
+export class CardItem {
 	cardStyle: CardStyle;
 	headText: string;
 	headImage: string;

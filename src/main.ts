@@ -22,6 +22,12 @@ import {
 	FolderNoteSettingTab 
 } from './settings';
 
+import { 
+	CardStyle,
+	CardBlock, 
+	CardItem 
+} from './cards';
+
 
 // ------------------------------------------------------------
 // FolderNotePlugin
