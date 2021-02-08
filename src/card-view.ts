@@ -187,7 +187,7 @@ export class CardItem {
 		if (this.titleLink) {
 			let titleEl = articleEl.appendChild(document.createElement('a'));
 			if (this.titleLink.endsWith('.md')) {
-				titleEl.addClass('internal-link"');
+				titleEl.addClass('internal-link');
 			}
 			titleEl.href = this.titleLink;
 			let h1El = document.createElement('h1');
