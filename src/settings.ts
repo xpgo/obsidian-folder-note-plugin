@@ -14,6 +14,7 @@ export interface FolderNotePluginSettings {
 	folderNoteHide: boolean;
 	folderNoteType: string;
 	folderNoteName: string;
+	folderNoteKey: string;
 	folderNoteAutoRename: boolean;
 	folderNoteStrInit: string;
 }
@@ -22,6 +23,7 @@ export const DEFAULT_SETTINGS: FolderNotePluginSettings = {
 	folderNoteHide: true,
 	folderNoteType: 'inside',
 	folderNoteName: '_about_',
+	folderNoteKey: 'ctrl',
 	folderNoteAutoRename: true,
 	folderNoteStrInit: '# {{FOLDER_NAME}} Overview\n {{FOLDER_BRIEF}} \n'
 }
@@ -42,7 +44,6 @@ export class FolderNoteSettingTab extends PluginSettingTab {
 		let { containerEl } = this;
 
 		containerEl.empty();
-
 		containerEl.createEl('h2', { text: 'Folder Note Plugin: Settings.' });
 
 		new Setting(containerEl)
@@ -88,6 +89,19 @@ export class FolderNoteSettingTab extends PluginSettingTab {
 				text.inputEl.rows = 8;
 				text.inputEl.cols = 50;
 			});
+		
+		new Setting(containerEl)
+			.setName('Key for New Note')
+			.setDesc('Key + Click a folder to create folder note file. ')
+			.addDropdown(dropDown =>
+				dropDown
+				.addOption('ctrl', 'Ctrl + Click')
+				.addOption('alt', 'Alt + Click')
+				.setValue(this.plugin.settings.folderNoteKey || 'ctrl')
+				.onChange((value: string) => {
+					this.plugin.settings.folderNoteKey = value;
+					this.plugin.saveSettings();
+				}));
 		
 		new Setting(containerEl)
 			.setName('Hide Folder Note')
