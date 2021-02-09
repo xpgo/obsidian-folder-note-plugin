@@ -78,7 +78,7 @@ export default class FolderNotePlugin extends Plugin {
 					// generate brief
 					let folderBrief = new FolderBrief(this.app);
 					let folderPath = await this.folderNote.getNoteFolderBriefPath(activeFile.path);
-					let briefCards = await folderBrief.makeBriefCards(folderPath);
+					let briefCards = await folderBrief.makeBriefCards(folderPath, activeFile.path);
 					editor.replaceSelection(briefCards.getYamlCode(), "end");
 				}
 			},

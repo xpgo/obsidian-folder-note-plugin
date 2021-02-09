@@ -12,7 +12,7 @@ export class CardBlock {
 	cards: CardItem[];
 
 	constructor() {
-		this.style = 'cute';
+		this.style = 'card';
 		this.cards = [];
 		this.col = -1;
 	}
@@ -31,7 +31,7 @@ export class CardBlock {
 
 	getDocElement() {
 		const cardDiv = document.createElement('div');
-		if (this.style == 'cute') {
+		if (this.style == 'card') {
 			cardDiv.addClass('cute-card-band');
 			for (var i in this.cards) {
 				cardDiv.appendChild(this.cards[i].getBoxElement())
@@ -53,7 +53,7 @@ export class CardBlock {
 		var yamlStr = '';
 		const nCard = this.getCardNum();
 		if (nCard > 0) {
-			yamlStr = '\n```ccard\nstyle: cute\ncards: [';
+			yamlStr = '\n```ccard\nitems: [';
 			for (var i in this.cards) {
 				yamlStr += '\n  {\n'
 				yamlStr += this.cards[i].getYamlCode('    ');
@@ -63,7 +63,7 @@ export class CardBlock {
 			yamlStr = yamlStr.substring(0, yamlStr.length - 1);
 			yamlStr += '\n]\n';
 			if (this.col > 0) {
-				yamlStr += `options: {\n  col: ${this.col}\n}\n`;
+				yamlStr += `col: ${this.col}\n`;
 			}
 			yamlStr += '```\n';
 		}
@@ -71,14 +71,14 @@ export class CardBlock {
 	}
 
 	fromYamlCards(yaml: any) {
-		if (yaml.type) {
-			this.style = yaml.type;
+		if (yaml.style) {
+			this.style = yaml.style;
 		}
-		if (yaml.cards) {
+		if (yaml.items) {
 			this.clear();
-			const cardsInfo = yaml.cards;
-			for (var i in cardsInfo) {
-				const cardInfo = cardsInfo[i];
+			const allItems = yaml.items;
+			for (var i in allItems) {
+				const cardInfo = allItems[i];
 				if ('title' in cardInfo) {
 					let cardItem = new CardItem(cardInfo['title'], CardStyle.Note);
 					cardItem.fromDict(cardInfo);
@@ -86,8 +86,8 @@ export class CardBlock {
 				}
 			}
 		}
-		if (yaml.options) {
-			if (yaml.options.col) this.col = yaml.options.col;
+		if (yaml.col) {
+			this.col = yaml.col;
 		}
 
 		return (this.getCardNum() > 0);

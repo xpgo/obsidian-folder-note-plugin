@@ -70,6 +70,11 @@ The keyword {{FOLDER_BRIEF_LIVE}} is a block of YAML codes which will be rendere
 
 Remember to update the plugin, if you find some issues.
 
+### 0.6.0
+
+- Add option for the key to create new note (0.6.0)
+- Add commond for creating a folder based on a note file (0.6.0)
+
 ### 0.5.x
 
 - Fix the folder overview card for folder (0.5.2)

@@ -1,6 +1,5 @@
 
 import { App, MarkdownView, TFile, } from "obsidian";
-import { CardStyle, CardBlock, CardItem } from './card-view'
 import { FolderBrief } from './folder-brief';
 
 // ------------------------------------------------------------
@@ -250,7 +249,7 @@ export class FolderNote {
 		// keyword: {{FOLDER_BRIEF}}
 		if (content.contains('{{FOLDER_BRIEF}}')) {
             let folderBrief = new FolderBrief(this.app);
-			let briefCards = await folderBrief.makeBriefCards(this.folderPath);
+			let briefCards = await folderBrief.makeBriefCards(this.folderPath, this.notePath);
 			content = content.replace('{{FOLDER_BRIEF}}', briefCards.getYamlCode());
 		}
 		// keyword: {{FOLDER_BRIEF_LIVE}}

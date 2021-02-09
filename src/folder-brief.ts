@@ -1,6 +1,6 @@
 
 import { App, MarkdownView, TFile, } from "obsidian";
-import { CardStyle, CardBlock, CardItem } from './card-view'
+import { CardStyle, CardBlock, CardItem } from './card-item'
 
 // ------------------------------------------------------------
 // Folder Brief
@@ -16,13 +16,14 @@ export class FolderBrief {
 	// for cards type: folder_brief
 	async yamlFolderBrief(yaml: any) {
 		var folderPath = '';
+		const activeFile = this.app.workspace.getActiveFile();
+		var notePath = activeFile.path;
 		if (yaml.cards.folder) {
 			folderPath = yaml.cards.folder;
 			let folderExist = await this.app.vault.adapter.exists(folderPath);
 			if (!folderExist) folderPath = '';
 		}
 		else {
-			const activeFile = this.app.workspace.getActiveFile();
 			folderPath = activeFile.parent.path;
 		}
 
@@ -30,7 +31,7 @@ export class FolderBrief {
 		if (folderPath.length > 0) {
 			const view = this.app.workspace.getActiveViewOfType(MarkdownView);
 			if (view) {
-				let briefCards = await this.makeBriefCards(folderPath);
+				let briefCards = await this.makeBriefCards(folderPath, notePath);
 				const cardsElem = briefCards.getDocElement();
 				return cardsElem;
 			}
@@ -39,7 +40,7 @@ export class FolderBrief {
 	}
 	
 	// generate folder overview
-	async makeBriefCards(folderPath: string) {
+	async makeBriefCards(folderPath: string, activeNotePath: string) {
 		// set note name
 		let cardBlock = new CardBlock();
 
@@ -59,6 +60,7 @@ export class FolderBrief {
 		for (var i = 0; i < subFileList.length; i++) {
 			var subFilePath = subFileList[i];
 			if (!subFilePath.endsWith('.md')) continue;
+			if (subFilePath == activeNotePath) continue; // omit self includeing
 			let noteCard = await this.makeNoteCard(folderPath, subFilePath);
 			cardBlock.addCard(noteCard);
 		}
