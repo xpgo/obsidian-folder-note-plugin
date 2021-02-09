@@ -22,7 +22,7 @@ An item data describes the information of something you want to present, it coul
 
 For example, the following image shows two card items with different head styles.
 
-![](../image/Item-card-view.png)
+![](https://raw.githubusercontent.com/xpgo/obsidian-folder-note-plugin/master/image/Item-card-view.png)
 
 The item data are defined with YAML codes as:
 
