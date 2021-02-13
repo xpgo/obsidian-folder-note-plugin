@@ -102,6 +102,16 @@ folder: media/video
 ​```
 ```
 
+For the brief contents, it tries to read the first paragraph of a note as the brief. If there is not paragraph text, it will use section headings. The default max length of the brief is 64 characters, if you want to increase it, please use the **briefMax** key, for example:
+
+​```ccard
+type: folder_brief_live
+folder: media/video
+briefMax: 128
+​```
+```
+
+
 ## Key for styles
 
 You can change the display styles of the item data by the following keys.

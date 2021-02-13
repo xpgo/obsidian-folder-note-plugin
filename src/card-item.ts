@@ -141,15 +141,19 @@ export class CardItem {
 		if ('foot' in dict) this.footnote = dict['foot'];
 	}
 
+	yamlEscapeQuotes(org: string) {
+		return org.replace(/'/gi, "''");
+	}
+
 	getYamlCode(prefix: string) {
 		var yamlStr = '';
-		yamlStr += `${prefix}title: '${this.title}'`;
-		if (this.headText) yamlStr += `,\n${prefix}head: '${this.headText}'`;
-		if (this.titleLink) yamlStr += `,\n${prefix}link: '${this.titleLink}'`;
-		if (this.headText) yamlStr += `,\n${prefix}head: '${this.headText}'`;
-		if (this.headImage) yamlStr += `,\n${prefix}image: '${this.headImage}'`;
-		if (this.abstract) yamlStr += `,\n${prefix}brief: '${this.abstract}'`;
-		if (this.footnote) yamlStr += `,\n${prefix}foot: '${this.footnote}'`;
+		yamlStr += `${prefix}title: '${this.yamlEscapeQuotes(this.title)}'`;
+		if (this.headText) yamlStr += `,\n${prefix}head: '${this.yamlEscapeQuotes(this.headText)}'`;
+		if (this.titleLink) yamlStr += `,\n${prefix}link: '${this.yamlEscapeQuotes(this.titleLink)}'`;
+		if (this.headText) yamlStr += `,\n${prefix}head: '${this.yamlEscapeQuotes(this.headText)}'`;
+		if (this.headImage) yamlStr += `,\n${prefix}image: '${this.yamlEscapeQuotes(this.headImage)}'`;
+		if (this.abstract) yamlStr += `,\n${prefix}brief: '${this.yamlEscapeQuotes(this.abstract)}'`;
+		if (this.footnote) yamlStr += `,\n${prefix}foot: '${this.yamlEscapeQuotes(this.footnote)}'`;
 		yamlStr += '\n';
 		return yamlStr;
 	}

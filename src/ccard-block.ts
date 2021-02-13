@@ -79,6 +79,9 @@ export class ccardProcessor {
 			const view = this.app.workspace.getActiveViewOfType(MarkdownView);
 			if (view) {
 				let folderBrief = new FolderBrief(this.app);
+				if (yaml.briefMax) {
+					folderBrief.briefMax = yaml.briefMax;
+				}
 				let briefCards = await folderBrief.makeBriefCards(folderPath, notePath);
 				if (yaml.col) {
 					briefCards.col = yaml.col;

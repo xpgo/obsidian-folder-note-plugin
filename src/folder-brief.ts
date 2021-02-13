@@ -8,9 +8,13 @@ import { CardStyle, CardBlock, CardItem } from './card-item'
 
 export class FolderBrief {
 	app: App;
+	folderPath: string;
+	briefMax: number;
 
 	constructor(app: App) {
-        this.app = app;
+		this.app = app;
+		this.folderPath = '';
+		this.briefMax = 64;
 	}
 
 	// for cards type: folder_brief
@@ -100,20 +104,20 @@ export class FolderBrief {
 		// read content
 		let file = this.app.vault.getAbstractFileByPath(notePath);
 		if (file && file instanceof TFile) {
-			let content = await this.app.vault.cachedRead(file);
+			let contentOrg = await this.app.vault.cachedRead(file);
 			// let content = await this.app.vault.adapter.read(notePath);
 			// console.log(content);
 			var imageUrl = '';
 			// for patten: ![xxx.png]
 			let regexImg = new RegExp('!\\[(.*?)\\]\\((.*?)\\)');
-			var match = regexImg.exec(content);
+			var match = regexImg.exec(contentOrg);
 			if (match != null) {
 				imageUrl = match[2];
 			}
 			else {
 				// for patten: ![[xxx.png]]
 				let regexImg2 = new RegExp('!\\[\\[(.*?)\\]\\]');
-				match = regexImg2.exec(content);
+				match = regexImg2.exec(contentOrg);
 				if (match != null) imageUrl = match[1];
 			}
 			// add image url
@@ -131,6 +135,14 @@ export class FolderBrief {
 			}
 			// content?
 			var contentBrief = '';
+			// skip yaml head
+			var content = contentOrg;
+			if (content.startsWith('---')) {
+				const hPos2 = content.indexOf('---', 3);
+				if (hPos2 >= 0) {
+					content = contentOrg.substring(hPos2+3);
+				}
+			}
 			// first paragraph
 			let regexP1 = new RegExp('\n([^\n|^#|^>|^!|^`|^\[|^-])([^\n]+)\n', 'g'); 
 			if ((match = regexP1.exec(content)) !== null) {
@@ -141,12 +153,16 @@ export class FolderBrief {
 				let regexHead = new RegExp('^#{1,6}(?!#)(.*)[\r\n]', 'mg');
 				while ((match = regexHead.exec(content)) !== null) {
 					contentBrief += match[1] + ', ';
-					if (contentBrief.length > 32) {
+					if (contentBrief.length > this.briefMax) {
 						break;
 					}
 				}
 			}
 			if (contentBrief.length > 0) {
+				if (contentBrief.length > this.briefMax) {
+					contentBrief = contentBrief.substring(0, this.briefMax);
+					contentBrief += '...';
+				}
 				card.setAbstract(contentBrief);
 			}
 
