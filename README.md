@@ -77,6 +77,11 @@ The keyword {{FOLDER_BRIEF_LIVE}} will be replaced  with a `ccard` code block wh
 
 Remember to update the plugin, if you find some issues.
 
+### 0.6.1
+
+- folder_brief_live uses the first paragraph note for its brief 
+- folder_brief_live supports wiki style image 
+
 ### 0.6.0
 
 - Add option for the key to create new note (0.6.0)

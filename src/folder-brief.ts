@@ -103,10 +103,21 @@ export class FolderBrief {
 			let content = await this.app.vault.cachedRead(file);
 			// let content = await this.app.vault.adapter.read(notePath);
 			// console.log(content);
+			var imageUrl = '';
+			// for patten: ![xxx.png]
 			let regexImg = new RegExp('!\\[(.*?)\\]\\((.*?)\\)');
 			var match = regexImg.exec(content);
 			if (match != null) {
-				var imageUrl = match[2];
+				imageUrl = match[2];
+			}
+			else {
+				// for patten: ![[xxx.png]]
+				let regexImg2 = new RegExp('!\\[\\[(.*?)\\]\\]');
+				match = regexImg2.exec(content);
+				if (match != null) imageUrl = match[1];
+			}
+			// add image url
+			if (imageUrl.length > 0) {
 				if (!imageUrl.startsWith('http')) {
 					var headPath = folderPath;
 					while (imageUrl.startsWith('../')) {
@@ -120,11 +131,19 @@ export class FolderBrief {
 			}
 			// content?
 			var contentBrief = '';
-			let regexHead = new RegExp('^#{1,6}(?!#)(.*)[\r\n]', 'mg');
-			while ((match = regexHead.exec(content)) !== null) {
-				contentBrief += match[1] + ', ';
-				if (contentBrief.length > 32) {
-					break;
+			// first paragraph
+			let regexP1 = new RegExp('\n([^\n|^#|^>|^!|^`|^\[|^-])([^\n]+)\n', 'g'); 
+			if ((match = regexP1.exec(content)) !== null) {
+				contentBrief = match[1] + match[2];
+			}
+			// use section headings
+			if (contentBrief.length == 0) {
+				let regexHead = new RegExp('^#{1,6}(?!#)(.*)[\r\n]', 'mg');
+				while ((match = regexHead.exec(content)) !== null) {
+					contentBrief += match[1] + ', ';
+					if (contentBrief.length > 32) {
+						break;
+					}
 				}
 			}
 			if (contentBrief.length > 0) {
