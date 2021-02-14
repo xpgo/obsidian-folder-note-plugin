@@ -79,6 +79,7 @@ Remember to update the plugin, if you find some issues.
 
 ### 0.6.x
 
+- folder_brief_live use plain text of md paragraph (0.6.3)
 - fix the escape of quotes (0.6.2)
 - folder_brief_live uses the first paragraph note for its brief (0.6.1)
 - folder_brief_live supports wiki style image (0.6.1)
