@@ -1,3 +1,6 @@
+
+import { App, } from "obsidian";
+
 // ------------------------------------------------------------
 // Card block
 // ------------------------------------------------------------
@@ -29,12 +32,12 @@ export class CardBlock {
 		return this.cards.length;
 	}
 
-	getDocElement() {
+	getDocElement(app: App) {
 		const cardDiv = document.createElement('div');
 		if (this.style == 'card') {
 			cardDiv.addClass('cute-card-band');
 			for (var i in this.cards) {
-				cardDiv.appendChild(this.cards[i].getBoxElement())
+				cardDiv.appendChild(this.cards[i].getBoxElement(app))
 			}
 			if (this.col > 0) {
 				cardDiv.setAttr('style' , 
@@ -43,11 +46,6 @@ export class CardBlock {
 		}
 		return cardDiv;
 	}
-
-    getHtmlCode() {
-        var el = this.getDocElement();
-        return el.innerHTML;
-    }
 
 	getYamlCode() {
 		var yamlStr = '';
@@ -158,7 +156,7 @@ export class CardItem {
 		return yamlStr;
 	}
 
-	getBoxElement() {
+	getBoxElement(app: App) {
 		var cardEl = document.createElement('div');
 		cardEl.addClass('cute-card-view');
 		// Heading
@@ -166,13 +164,21 @@ export class CardItem {
 		if (this.headImage) {
 			this.cardStyle = CardStyle.Image;
 			if (this.headImage.startsWith("#")) {
+				// color
 				headEl.addClass('thumb-color');
 				headEl.setAttr('style', `background-color: ${this.headImage};`);
 			}
-			else {
+			else if (this.headImage.contains("://")) {
+				// app local image
 				headEl.addClass('thumb');
 				headEl.setAttr('style', `background-image: url(${this.headImage});`);
+			} else {
+				// asset file name?
+				var imageUrl = app.vault.adapter.getResourcePath(this.headImage);
+				headEl.addClass('thumb');
+				headEl.setAttr('style', `background-image: url(${imageUrl});`);
 			}
+
 			if (this.headText) {
 				headEl.textContent = this.headText;
 			}

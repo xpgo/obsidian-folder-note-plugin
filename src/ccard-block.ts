@@ -56,7 +56,7 @@ export class ccardProcessor {
 			let cardBlock = new CardBlock();
 			cardBlock.fromYamlCards(yaml);
 			// if (yaml.style == 'card')
-			const cardsElem = cardBlock.getDocElement();
+			const cardsElem = cardBlock.getDocElement(this.app);
 			return cardsElem;
 		}
 		return null;
@@ -87,7 +87,7 @@ export class ccardProcessor {
 					briefCards.col = yaml.col;
 				}
 				// if (yaml.style == 'card')
-				const ccardElem = briefCards.getDocElement();
+				const ccardElem = briefCards.getDocElement(this.app);
 				return ccardElem;
 			}
 		}

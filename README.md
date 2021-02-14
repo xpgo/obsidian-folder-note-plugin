@@ -79,6 +79,8 @@ Remember to update the plugin, if you find some issues.
 
 ### 0.6.x
 
+- use local image path in ccard (0.6.4)
+- better folder note brief (0.6.4)
 - folder_brief_live use plain text of md paragraph (0.6.3)
 - fix the escape of quotes (0.6.2)
 - folder_brief_live uses the first paragraph note for its brief (0.6.1)

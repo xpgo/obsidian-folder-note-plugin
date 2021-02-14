@@ -36,7 +36,7 @@ export class FolderBrief {
 			const view = this.app.workspace.getActiveViewOfType(MarkdownView);
 			if (view) {
 				let briefCards = await this.makeBriefCards(folderPath, notePath);
-				const cardsElem = briefCards.getDocElement();
+				const cardsElem = briefCards.getDocElement(this.app);
 				return cardsElem;
 			}
 		}
@@ -163,44 +163,18 @@ export class FolderBrief {
 				}
 				imageUrl = headPath + '/' + imageUrl;
 				imageUrl = imageUrl.replace(/\%20/g, ' ')
-				imageUrl = this.app.vault.adapter.getResourcePath(imageUrl);
+				// imageUrl = this.app.vault.adapter.getResourcePath(imageUrl);
 			}
 		}
 		return imageUrl;
 	}
 
 	getContentBrief(contentOrg: string) {
-		var contentBrief = '';
-
-		// skip yaml head
-		var content = contentOrg.trim();
-		if (content.startsWith('---')) {
-			const hPos2 = content.indexOf('---', 3);
-			if (hPos2 >= 0) {
-				content = contentOrg.substring(hPos2+3);
-			}
-		}
-
-		// try to get the first paragraph
-		let regexP1 = new RegExp('\n([^\n|^#|^>|^!|^`|^\[|^-])([^\n]+)\n', 'g'); 
-		var match = null;
-		if ((match = regexP1.exec(content)) !== null) {
-			contentBrief = match[1] + match[2];
-		}
-
-		// use section headings
-		if (contentBrief.length == 0) {
-			let regexHead = new RegExp('^#{1,6}(?!#)(.*)[\r\n]', 'mg');
-			while ((match = regexHead.exec(content)) !== null) {
-				contentBrief += match[1] + ', ';
-				if (contentBrief.length > this.briefMax) {
-					break;
-				}
-			}
-		}
-
 		// remove some special content
-		contentBrief = contentBrief
+		var content = contentOrg.trim();
+		content = content
+		// Remove YAML code
+		.replace(/^---[^\(---)]*---/g, '')
 		// Remove HTML tags
 		.replace(/<[^>]*>/g, '')
 		// wiki style links
@@ -215,6 +189,34 @@ export class FolderBrief {
 		.replace(/([\*_]{1,3})(\S.*?\S{0,1})\1/g, '$2')
 		// Remove inline code
 		.replace(/`(.+?)`/g, '$1')
+		.trim()
+
+		// console.log('contentRaf', content);
+
+		// try to get the first paragraph
+		var contentBrief = '';
+		let regexP1 = new RegExp('\n([^\n|^#|^>])([^\n]+)\n', 'g'); 
+		var match = null;
+		if ((match = regexP1.exec(content)) !== null) {
+			contentBrief = match[1] + match[2];
+		}
+
+		// console.log('contentBrief', contentBrief);
+		contentBrief = contentBrief.trim();
+
+		// use section headings
+		if (contentBrief.length == 0) {
+			let regexHead = new RegExp('^#{1,6}(?!#)(.*)[\r\n]', 'mg');
+			while ((match = regexHead.exec(content)) !== null) {
+				contentBrief += match[1] + ', ';
+				if (contentBrief.length > this.briefMax) {
+					break;
+				}
+			}
+			if (contentBrief.endsWith(', ')) {
+				contentBrief = contentBrief.substring(0, contentBrief.length-2);
+			}
+		}
 
 		// return
 		return contentBrief;
