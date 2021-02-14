@@ -47,6 +47,8 @@ items: [
 ​```
 ```
 
+**NOTICE**: Since the the Item Data use YAML codes, if any string of the attributes contains quotes `'`, you should use double quotes: `''` to escape instead of using `\'`.
+
 ## Item Types
 
 The item data can be defined or generated with different methods which is specified by the key **type** in the code block. This section introduces different types of methods and their options. In the future, there will be more types.
@@ -102,7 +104,7 @@ folder: media/video
 ​```
 ```
 
-For the brief contents, it tries to read the first paragraph of a note as the brief. If there is no paragraph text, it will use section headings. The default max length of the brief is 64 characters, if you want to increase it, please use the **briefMax** key, for example:
+For the brief contents, it tries to read the first paragraph of a note as its brief. If there is no paragraph text, it will use section headings. The default max length of the brief is 64 characters, if you want to increase it, please use the **briefMax** key, for example:
 
 ```
 ​```ccard

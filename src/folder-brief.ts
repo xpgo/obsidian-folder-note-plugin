@@ -107,57 +107,15 @@ export class FolderBrief {
 			let contentOrg = await this.app.vault.cachedRead(file);
 			// let content = await this.app.vault.adapter.read(notePath);
 			// console.log(content);
-			var imageUrl = '';
-			// for patten: ![xxx.png]
-			let regexImg = new RegExp('!\\[(.*?)\\]\\((.*?)\\)');
-			var match = regexImg.exec(contentOrg);
-			if (match != null) {
-				imageUrl = match[2];
-			}
-			else {
-				// for patten: ![[xxx.png]]
-				let regexImg2 = new RegExp('!\\[\\[(.*?)\\]\\]');
-				match = regexImg2.exec(contentOrg);
-				if (match != null) imageUrl = match[1];
-			}
-			// add image url
+
+			// image
+			var imageUrl = this.getContentImage(contentOrg, folderPath);
 			if (imageUrl.length > 0) {
-				if (!imageUrl.startsWith('http')) {
-					var headPath = folderPath;
-					while (imageUrl.startsWith('../')) {
-						imageUrl = imageUrl.substring(3);
-						headPath = headPath.substring(0, headPath.lastIndexOf('/'))
-					}
-					imageUrl = headPath + '/' + imageUrl;
-					imageUrl = this.app.vault.adapter.getResourcePath(imageUrl);
-				}
 				card.setHeadImage(imageUrl);
 			}
+			
 			// content?
-			var contentBrief = '';
-			// skip yaml head
-			var content = contentOrg;
-			if (content.startsWith('---')) {
-				const hPos2 = content.indexOf('---', 3);
-				if (hPos2 >= 0) {
-					content = contentOrg.substring(hPos2+3);
-				}
-			}
-			// first paragraph
-			let regexP1 = new RegExp('\n([^\n|^#|^>|^!|^`|^\[|^-])([^\n]+)\n', 'g'); 
-			if ((match = regexP1.exec(content)) !== null) {
-				contentBrief = match[1] + match[2];
-			}
-			// use section headings
-			if (contentBrief.length == 0) {
-				let regexHead = new RegExp('^#{1,6}(?!#)(.*)[\r\n]', 'mg');
-				while ((match = regexHead.exec(content)) !== null) {
-					contentBrief += match[1] + ', ';
-					if (contentBrief.length > this.briefMax) {
-						break;
-					}
-				}
-			}
+			var contentBrief = this.getContentBrief(contentOrg);
 			if (contentBrief.length > 0) {
 				if (contentBrief.length > this.briefMax) {
 					contentBrief = contentBrief.substring(0, this.briefMax);
@@ -179,5 +137,86 @@ export class FolderBrief {
 
 		// return
 		return card;
+	}
+
+	getContentImage(contentOrg: string, folderPath: string) {
+		var imageUrl = '';
+		// for patten: ![xxx.png]
+		let regexImg = new RegExp('!\\[(.*?)\\]\\((.*?)\\)');
+		var match = regexImg.exec(contentOrg);
+		if (match != null) {
+			imageUrl = match[2];
+		}
+		else {
+			// for patten: ![[xxx.png]]
+			let regexImg2 = new RegExp('!\\[\\[(.*?)\\]\\]');
+			match = regexImg2.exec(contentOrg);
+			if (match != null) imageUrl = match[1];
+		}
+		// add image url
+		if (imageUrl.length > 0) {
+			if (!imageUrl.startsWith('http')) {
+				var headPath = folderPath;
+				while (imageUrl.startsWith('../')) {
+					imageUrl = imageUrl.substring(3);
+					headPath = headPath.substring(0, headPath.lastIndexOf('/'))
+				}
+				imageUrl = headPath + '/' + imageUrl;
+				imageUrl = imageUrl.replace(/\%20/g, ' ')
+				imageUrl = this.app.vault.adapter.getResourcePath(imageUrl);
+			}
+		}
+		return imageUrl;
+	}
+
+	getContentBrief(contentOrg: string) {
+		var contentBrief = '';
+
+		// skip yaml head
+		var content = contentOrg.trim();
+		if (content.startsWith('---')) {
+			const hPos2 = content.indexOf('---', 3);
+			if (hPos2 >= 0) {
+				content = contentOrg.substring(hPos2+3);
+			}
+		}
+
+		// try to get the first paragraph
+		let regexP1 = new RegExp('\n([^\n|^#|^>|^!|^`|^\[|^-])([^\n]+)\n', 'g'); 
+		var match = null;
+		if ((match = regexP1.exec(content)) !== null) {
+			contentBrief = match[1] + match[2];
+		}
+
+		// use section headings
+		if (contentBrief.length == 0) {
+			let regexHead = new RegExp('^#{1,6}(?!#)(.*)[\r\n]', 'mg');
+			while ((match = regexHead.exec(content)) !== null) {
+				contentBrief += match[1] + ', ';
+				if (contentBrief.length > this.briefMax) {
+					break;
+				}
+			}
+		}
+
+		// remove some special content
+		contentBrief = contentBrief
+		// Remove HTML tags
+		.replace(/<[^>]*>/g, '')
+		// wiki style links
+		.replace(/\!\[\[(.*?)\]\]/g, '')
+		.replace(/\[\[(.*?)\]\]/g, '$1')
+		// Remove images
+		.replace(/\!\[(.*?)\][\[\(].*?[\]\)]/g, '$1')
+		// Remove inline links
+		.replace(/\[(.*?)\][\[\(].*?[\]\)]/g, '$1')
+		// Remove emphasis (repeat the line to remove double emphasis)
+		.replace(/([\*_]{1,3})(\S.*?\S{0,1})\1/g, '$2')
+		.replace(/([\*_]{1,3})(\S.*?\S{0,1})\1/g, '$2')
+		// Remove inline code
+		.replace(/`(.+?)`/g, '$1')
+
+		// return
+		return contentBrief;
 	}
 }
