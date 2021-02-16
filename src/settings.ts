@@ -19,7 +19,7 @@ export interface FolderNotePluginSettings {
 	folderNoteStrInit: string;
 }
 
-export const DEFAULT_SETTINGS: FolderNotePluginSettings = {
+export const FOLDER_NOTE_DEFAULT_SETTINGS: FolderNotePluginSettings = {
 	folderNoteHide: true,
 	folderNoteType: 'inside',
 	folderNoteName: '_about_',
