@@ -132,7 +132,15 @@ export class CardItem {
 	}
 
 	fromDict(dict: any) {
-		if ('head' in dict) this.headText = dict['head'];
+		if ('head' in dict) {
+			this.headText = dict['head'];
+			if (this.headText == 'Folder') {
+				this.cardStyle = CardStyle.Folder;
+			}
+			else if (this.headText == 'Note') {
+				this.cardStyle = CardStyle.Note;
+			}
+		}
 		if ('image' in dict) this.headImage = dict['image'];
 		if ('link' in dict) this.titleLink = dict['link'];
 		if ('brief' in dict) this.abstract = dict['brief'];
@@ -146,12 +154,26 @@ export class CardItem {
 	getYamlCode(prefix: string) {
 		var yamlStr = '';
 		yamlStr += `${prefix}title: '${this.yamlEscapeQuotes(this.title)}'`;
-		if (this.headText) yamlStr += `,\n${prefix}head: '${this.yamlEscapeQuotes(this.headText)}'`;
 		if (this.titleLink) yamlStr += `,\n${prefix}link: '${this.yamlEscapeQuotes(this.titleLink)}'`;
-		if (this.headText) yamlStr += `,\n${prefix}head: '${this.yamlEscapeQuotes(this.headText)}'`;
-		if (this.headImage) yamlStr += `,\n${prefix}image: '${this.yamlEscapeQuotes(this.headImage)}'`;
 		if (this.abstract) yamlStr += `,\n${prefix}brief: '${this.yamlEscapeQuotes(this.abstract)}'`;
 		if (this.footnote) yamlStr += `,\n${prefix}foot: '${this.yamlEscapeQuotes(this.footnote)}'`;
+		if (this.headImage) {
+			yamlStr += `,\n${prefix}image: '${this.yamlEscapeQuotes(this.headImage)}'`;
+		} 
+		else if (this.headText) {
+			yamlStr += `,\n${prefix}head: '${this.yamlEscapeQuotes(this.headText)}'`;
+		}
+		else {
+			if (this.cardStyle == CardStyle.Folder) {
+				yamlStr += `,\n${prefix}head: 'Folder'`;
+			}
+			else if (this.cardStyle == CardStyle.Note) {
+				yamlStr += `,\n${prefix}head: 'Note'`;
+			}
+			else {
+				yamlStr += `,\n${prefix}head: 'Card'`;
+			}
+		}
 		yamlStr += '\n';
 		return yamlStr;
 	}
