@@ -195,9 +195,10 @@ export class FolderBrief {
 		.replace(/\[(.*?)\][\[\(].*?[\]\)]/g, '$1')
 		// Remove emphasis (repeat the line to remove double emphasis)
 		.replace(/([\*_]{1,3})(\S.*?\S{0,1})\1/g, '$2')
-		.replace(/([\*_]{1,3})(\S.*?\S{0,1})\1/g, '$2')
 		// Remove blockquotes
 		.replace(/\n(&gt;|\>)(.*)/g, '')
+		// Remove code blocks
+		.replace(/(```[^\s]*\n[\s\S]*?\n```)/g, '')
 		// Remove inline code
 		.replace(/`(.+?)`/g, '$1')
 		.trim()
