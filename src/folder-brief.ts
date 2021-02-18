@@ -172,29 +172,39 @@ export class FolderBrief {
 	getContentBrief(contentOrg: string) {
 		// remove some special content
 		var content = contentOrg.trim();
+
+		// skip yaml head
+		if (content.startsWith('---\r') || content.startsWith('---\n') ) {
+			const hPos2 = content.indexOf('---', 4);
+			if (hPos2 >= 0 && (content[hPos2-1] == '\n' || (content[hPos2-1] == '\r'))) {
+				content = content.substring(hPos2+4).trim();
+			}
+		}
+
 		content = content
 		// Remove YAML code
-		.replace(/^---[^\(---)]*---/g, '')
+		// .replace(/^---[\r\n][^(---)]*[\r\n]---[\r\n]/g, '')
 		// Remove HTML tags
 		.replace(/<[^>]*>/g, '')
 		// wiki style links
 		.replace(/\!\[\[(.*?)\]\]/g, '')
 		.replace(/\[\[(.*?)\]\]/g, '$1')
 		// Remove images
-		.replace(/\!\[(.*?)\][\[\(].*?[\]\)]/g, '$1')
+		.replace(/\!\[(.*?)\][\[\(].*?[\]\)]/g, '')
 		// Remove inline links
 		.replace(/\[(.*?)\][\[\(].*?[\]\)]/g, '$1')
 		// Remove emphasis (repeat the line to remove double emphasis)
 		.replace(/([\*_]{1,3})(\S.*?\S{0,1})\1/g, '$2')
 		.replace(/([\*_]{1,3})(\S.*?\S{0,1})\1/g, '$2')
+		// Remove blockquotes
+		.replace(/\n(&gt;|\>)(.*)/g, '')
 		// Remove inline code
 		.replace(/`(.+?)`/g, '$1')
 		.trim()
 
-		// console.log('contentRaf', content);
-
 		// try to get the first paragraph
 		var contentBrief = '';
+		content = '\n' + content + '\n';
 		let regexP1 = new RegExp('\n([^\n|^#|^>])([^\n]+)\n', 'g'); 
 		var match = null;
 		if ((match = regexP1.exec(content)) !== null) {
