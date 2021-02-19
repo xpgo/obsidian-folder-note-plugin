@@ -243,9 +243,11 @@ export class FolderNote {
 
     // expand content template
     async expandContent(template: string) {
-        // keyword: {{FOLDER_NAME}}
+        // keyword: {{FOLDER_NAME}}, {{FOLDER_PATH}}
         var folderName = this.folderPath.split('/').pop();
-        var content = template.replace('{{FOLDER_NAME}}', folderName);
+        var content = template
+            .replace(/{{FOLDER_NAME}}/g, folderName)
+            .replace(/{{FOLDER_PATH}}/g, this.folderPath)
         // keyword: {{FOLDER_BRIEF}}
         if (content.contains('{{FOLDER_BRIEF}}')) {
             let folderBrief = new FolderBrief(this.app);

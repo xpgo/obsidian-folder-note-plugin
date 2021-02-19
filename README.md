@@ -46,6 +46,7 @@ When CTRL+Click a folder, the plugin will create a description note with the pat
 - **Index File Name**: For the  *Index-File*  method, set the folder note name, like `_overview_` or `index`. (Do not use {{FOLDER_NAME}} any more)
 - **Note Initial Content**: set the initial content for a new folder note.
     - {{FOLDER_NAME}} in the content will be replaced with the folder name.
+    - {{FOLDER_PATH}} in the content will be replaced with the folder path.
     - {{FOLDER_BRIEF}} in the content will be replaced with a card-style overview of current folder.
     - {{FOLDER_BRIEF_LIVE}} in the content will be replaced with a tiny code block which will be rendered to the folder overview in real time.
 - **Key for New Note**: set to use CTRL+Click or ALT+Click for creating new folder note.
@@ -79,6 +80,8 @@ Remember to update the plugin, if you find some issues.
 
 ### 0.7.x
 
+- add Keyword {{FOLDER_PATH}} for inital content (0.7.1)
+- fix multiple usage of some keywords for initial content (0.7.1)
 - add imagePrefix key for ccard (0.7.0)
 - add noteOnly Key for folder_brief_live (0.7.0)
 - fix showing both folder and note for outside mode (0.7.0)
