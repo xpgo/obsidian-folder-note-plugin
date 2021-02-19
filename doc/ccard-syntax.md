@@ -79,7 +79,7 @@ In the preview mode, this code block will be displayed as a card view of folder 
 
 There are some keys to control the content of `folder_brief_live`:
 
-**folder: /folder/path**
+#### folder: /folder/path
 
 The default folder path of `folder_brief_live` is the parent path of the note file. If you want to generate overview for other folder path, you can set the **folder** key in the code block. For example, the following code block will present an overview for the folder `media/music` in your Obsidian vault.
 
@@ -108,7 +108,7 @@ folder: media/video
 ​```
 ```
 
-**briefMax: 64**
+#### briefMax: 64
 
 For the brief contents, it tries to read the first paragraph of a note as its brief. If there is no paragraph text, it will use section headings. The default max length of the brief is 64 characters, if you want to increase it, please use the **briefMax** key, for example:
 
@@ -121,7 +121,7 @@ briefMax: 128
 ```
 
 
-**noteOnly: false**
+#### noteOnly: false
 
 The  `folder_brief_live`  tries to generate folder overview for both sub folders and notes, set the **noteOnly** key to `true` to let it show only notes for the overview, for example:
 
