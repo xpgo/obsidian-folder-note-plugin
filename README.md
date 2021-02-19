@@ -77,6 +77,13 @@ The keyword {{FOLDER_BRIEF_LIVE}} will be replaced  with a `ccard` code block wh
 
 Remember to update the plugin, if you find some issues.
 
+### 0.7.x
+
+- add imagePrefix key for ccard (0.7.0)
+- add noteOnly Key for folder_brief_live (0.7.0)
+- fix showing both folder and note for outside mode (0.7.0)
+- hide settings according to folder method (0.7.0)
+
 ### 0.6.x
 
 - fix inserted card header for folder (0.6.6)
@@ -89,14 +96,6 @@ Remember to update the plugin, if you find some issues.
 - folder_brief_live supports wiki style image (0.6.1)
 - Add option for the key to create new note (0.6.0)
 - Add command for creating a folder based on a note file (0.6.0)
-
-### 0.5.x
-
-- Fix the folder overview card for folder (0.5.2)
-- Fix the hiding issue for Outside-Folder method (0.5.1)
-- Add automatically rename for Inside-Folder method (0.5.1)
-- Add options for three different folder note file method (0.5.0)
-- Add options for auto rename (0.5.0)
 
 ## Plans for future
 

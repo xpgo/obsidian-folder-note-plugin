@@ -14,12 +14,12 @@
     "@rollup/plugin-commonjs": "^15.1.0",
     "@rollup/plugin-node-resolve": "^9.0.0",
     "@rollup/plugin-typescript": "^6.0.0",
-    "@types/node": "^14.14.2",
+    "@types/node": "^14.14.30",
     "@types/yaml": "^1.9.7",
     "obsidian": "https://github.com/obsidianmd/obsidian-api/tarball/master",
-    "rollup": "^2.32.1",
+    "rollup": "^2.39.0",
     "tslib": "^2.0.3",
-    "typescript": "^4.0.3",
+    "typescript": "^4.1.5",
     "yaml": "^1.10.0"
   }
 }

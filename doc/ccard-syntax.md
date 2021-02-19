@@ -77,7 +77,11 @@ type: folder_brief_live
 
 In the preview mode, this code block will be displayed as a card view of folder overview. If contents in the folder are changed, the card items will changed automatically.
 
-The folder path is the parent path of the note file. If you want to generate overview for other folder path, you can set the **folder** key in the code block. For example, the following code block will present an overview for the folder `media/music` in your Obsidian vault.
+There are some keys to control the content of `folder_brief_live`:
+
+**folder: /folder/path**
+
+The default folder path of `folder_brief_live` is the parent path of the note file. If you want to generate overview for other folder path, you can set the **folder** key in the code block. For example, the following code block will present an overview for the folder `media/music` in your Obsidian vault.
 
 ```
 ​```ccard
@@ -104,6 +108,8 @@ folder: media/video
 ​```
 ```
 
+**briefMax: 64**
+
 For the brief contents, it tries to read the first paragraph of a note as its brief. If there is no paragraph text, it will use section headings. The default max length of the brief is 64 characters, if you want to increase it, please use the **briefMax** key, for example:
 
 ```
@@ -115,17 +121,30 @@ briefMax: 128
 ```
 
 
-## Key for styles
+**noteOnly: false**
+
+The  `folder_brief_live`  tries to generate folder overview for both sub folders and notes, set the **noteOnly** key to `true` to let it show only notes for the overview, for example:
+
+```
+​```ccard
+type: folder_brief_live
+folder: media/video
+noteOnly: true
+​```
+```
+
+
+## Key for all types
 
 You can change the display styles of the item data by the following keys.
 
 ### style: card
 
-This style displays item data in a card style view, it is the default style which can be omitted in the code blocks.
+This `style : card` displays item data in a card style view, it is the default style which can be omitted in the code blocks.
 
-In the future there will be more styles, such as list, chart.
+In the future there will be more styles, such as list, chart or mind map.
 
-### col: x
+### col: 3
 
 It controls how many columns in a row for card style view. The default is 3. For example, the following code block display folder overview with 4 cards in a row. 
 
@@ -136,4 +155,28 @@ style: card
 col: 4
 ​```
 ```
+
+### imagePrefix: ''
+
+It will add a prefix string to every image path defined in the data items. It is useful when all the images are from the same folder or url. For example:
+
+```
+​```ccard
+items: [
+    {
+        title: 'test1',
+        image: 'image1.png',
+        brief: 'brief for test1',
+    },
+    {
+        title: 'test2',
+        image: 'assets/image2.png',
+        brief: 'brief for test2',
+    }
+]
+imagePrefix: 'assets/'
+​```
+```
+
+Now, the image path of the first item will be modified as `assets/image1.png`. However, the second item's image path will not be modified since it starts with the same string of imagePrefix.
 
