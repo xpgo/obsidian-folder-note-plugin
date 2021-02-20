@@ -14,31 +14,15 @@ Obsidian Plugin: Add description note to a folder. Generate card-style overview 
 
 ## How it works
 
-The mechanism is simple: attaching a note file to a folder, and the folder note file will be hidden by CSS rules. But where do you put the folder note? There are three methods of creating description note for a folder. (See the discussion at [Folder as markdown note](https://forum.obsidian.md/t/folder-as-markdown-note/2902/2) )
-
-| Methods         | Index-File                                         | Inside-Folder                                                   | Outside-Folder                                                   |
-| -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| **Folder Path**      | parent/myFolder                         | parent/myFolder                                        | parent/myFolder                                        |
-| **Folder Note Path** | parent/myFolder/\_about\_.md | parent/myFolder/myFolder.md                   | parent/myFolder.md                                     |
-| **Configuration** | - **Note File method:** Index File<br />- **Index File Name:** \_about\_ (or other name you like) | **Note File method:** Folder Name Inside | **Note File method:** Folder Name Outside                  |
-| **Pros**             | - The note file belongs to the folder. <br />- The note filename keeps the same if you rename a folder. | - The note file belongs to the folder. <br />- The note file has the same name as folder, the note title looks better. | - The note file has the same name as folder, the note title looks better.<br />- Wiki-style of linking, easy to insert link like [\[myFolder]] |
-| **Cons**             | - The note filename and title may looks weird.<br />- Have to use additional file name for linking. | - Linking outside of the folder will be [\[myFolder/myFolder]].<br />- The note filename will be changed if you change the folder name. | - The note file does not belong to the folder. You have to move the note file manually if a folder is moved. <br />- The note filename will be changed if you change the folder name. |
+The mechanism is simple: attaching a note file to a folder, and the folder note file will be hidden by CSS rules. But where do you put the folder note? There are three methods of creating description note for a folder: **Inside-Folder**, **Outside-Folder** and **Index-File**, please read [Folder Note Methods](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/folder-note-methods.md) for more information about the Pros and Cons of each method.
 
 When CTRL+Click a folder, the plugin will create a description note with the path dependent on the method you choose. When you Click a folder, the plugin will open the attached note for you. You can configure the plugin to hide/show the folder note. It can also be configured to try to automatically keep the folder and note name in syncing for methods **Inside-Folder** and **Outside-Folder** (Experimental). 
 
 - The **default** configuration is the **Inside-Folder** method.
 - If you prefer the **Outside-Folder** or **Index-File**  method, please change the settings.
-- The **Index-File** method uses a note filename of  `_about_.md` (it can be configured to be `index` or others).
+- The **Index-File** method uses a note filename of  `_about_.md` (which can be configured).
 
-**NOTICE for updating from older version**
-
- For those who use the plugin with version < 0.4.0, please use the following steps to update:
-
-1. Go to the Obsidian's Community Plugin page, and update the Folder Note Plugin to the latest version.
-2. Disable and then Enable the Plugin to refresh plugin settings.
-3. Go to the Folder Note Plugin settings page, set the **Note File Method** to a different method, and then set it back to your choice in order to let the settings take effect. 
-4. Reopen Obsidian.
-5. If you have any problem in updating the plugin, please leave an issue on the GitHub repo or a message on the Obsidian's forum page: [Folder Note Plugin: Add description note to folder](https://forum.obsidian.md/t/folder-note-plugin-add-description-note-to-folder/12038). 
+**For updating from version < 0.4.0**, please refer to [Update from old version](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/update-old-version.md).
 
 ## Configuration
 
@@ -52,6 +36,7 @@ When CTRL+Click a folder, the plugin will create a description note with the pat
 - **Key for New Note**: set to use CTRL+Click or ALT+Click for creating new folder note.
 - **Hide Folder Note**: turn off the setting if you want to show the note file in file explorer.
 - **Auto Rename**: For the methods *Inside-Folder* and *Outside-Folder*, the plugin tries to rename the folder note name when a folder name is changed or vice versa. However, this function is experimental, it does not always work. Rename them manually if you have some issue related to the operation.
+- **Delete Folder Note**: For the method *Outside-Folder*, delete folder note file when a folder is deleted. 
 
 ## Command
 
@@ -74,6 +59,10 @@ The keyword {{FOLDER_BRIEF}} will be replaces with a `ccard` code block which de
 
 The keyword {{FOLDER_BRIEF_LIVE}} will be replaced  with a `ccard` code block which will be rendered to the folder overview in real time. It is useful when you put some notes with image in a folder, e.g., things collections, it will generate a card view of all the notes with images dynamically.
 
+**Configure Overview**
+
+If you want to configure the content of the keywords, please refer to [ccard Syntax](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/ccard-syntax.md)
+
 ## Change log
 
 Remember to update the plugin, if you find some issues.
@@ -88,18 +77,7 @@ Remember to update the plugin, if you find some issues.
 - fix showing both folder and note for outside mode (0.7.0)
 - hide settings according to folder method (0.7.0)
 
-### 0.6.x
-
-- fix inserted card header for folder (0.6.6)
-- fix yaml head for note brief (0.6.5)
-- use local image path in ccard (0.6.4)
-- better folder note brief (0.6.4)
-- folder_brief_live use plain text of md paragraph (0.6.3)
-- fix the escape of quotes (0.6.2)
-- folder_brief_live uses the first paragraph note for its brief (0.6.1)
-- folder_brief_live supports wiki style image (0.6.1)
-- Add option for the key to create new note (0.6.0)
-- Add command for creating a folder based on a note file (0.6.0)
+See [more change log](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/change-log.md).
 
 ## Plans for future
 
