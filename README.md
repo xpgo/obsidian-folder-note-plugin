@@ -80,6 +80,7 @@ Remember to update the plugin, if you find some issues.
 
 ### 0.7.x
 
+- use {{FOLDER_BRIEF_LIVE}} for default inital content (0.7.2)
 - add Keyword {{FOLDER_PATH}} for inital content (0.7.1)
 - fix multiple usage of some keywords for initial content (0.7.1)
 - add imagePrefix key for ccard (0.7.0)
