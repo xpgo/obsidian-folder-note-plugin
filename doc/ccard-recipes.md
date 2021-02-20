@@ -54,7 +54,7 @@ If you set the attachment folder path to be within any local folder, use the fol
 ```
 ​```ccard
 type: folder_brief_live
-imagePrefix: '{{FOLDER_PATH}}/attachments/`
+imagePrefix: '{{FOLDER_PATH}}/attachments/'
 ​```
 ```
 

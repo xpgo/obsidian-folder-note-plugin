@@ -53,7 +53,7 @@ items: [
 
 - Since the the Item Data use YAML codes, if any string of the attributes contains quotes `'`, you should use double quotes: `''` to escape instead of using `\'`
 - Use `::` to escape `:`
-- Use the key `imagePrefix` if your images are stored in different attachment folders.
+- Use the key `imagePrefix` if your images are stored in different attachment folders. See [sample recipes](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/ccard-recipes.md) for more information.
 
 
 ## Item Types
@@ -185,4 +185,4 @@ imagePrefix: 'assets/'
 ​```
 ```
 
-Now, the image path of the first item will be modified as `assets/image1.png`. However, the second item's image path will not be modified since it starts with the same string of `imagePrefix`.
+Now, the image path of the first item will be modified as `assets/image1.png`. However, the second item's image path will not be modified since it starts with the same string of `imagePrefix`. See [sample recipes](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/ccard-recipes.md) for more information.
