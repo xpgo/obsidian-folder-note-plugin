@@ -57,7 +57,10 @@ The keyword {{FOLDER_BRIEF_LIVE}} will be replaced  with a `ccard` code block wh
 
 **Configuration**
 
-If you want to configure the content of the keywords, please refer to [ccard Syntax](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/ccard-syntax.md)
+If you want to configure the content and appearence of the `ccard` code block, please refer to [ccard Syntax](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/ccard-syntax.md). You can configure the style, colume number, image prefix, folder path, note only, max brief length and more. For example, the following image show different styles of folder overview. 
+
+![Card_Strip_Style](https://raw.githubusercontent.com/xpgo/obsidian-folder-note-plugin/master/image/style-card-strip.png)
+
 
 ## Change log
 
@@ -65,6 +68,7 @@ Remember to update the plugin, if you find some issues.
 
 ### 0.7.x
 
+- add strip style view of item data (0.7.3)
 - use {{FOLDER_BRIEF_LIVE}} for default inital content (0.7.2)
 - add Keyword {{FOLDER_PATH}} for inital content (0.7.1)
 - fix multiple usage of some keywords for initial content (0.7.1)

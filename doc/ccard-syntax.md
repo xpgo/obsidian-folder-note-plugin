@@ -128,7 +128,7 @@ briefMax: 128
 ```
 
 
-#### noteOnly: false
+#### noteOnly: false|true
 
 The  `folder_brief_live`  tries to generate folder overview for both sub folders and notes, set the **noteOnly** key to `true` to let it show only notes for the overview, for example:
 
@@ -145,9 +145,22 @@ noteOnly: true
 
 You can change the display styles of the item data by the following keys.
 
-### style: card
+### style: card|strip
 
 This `style : card` displays item data in a card style view, it is the default style which can be omitted in the code blocks.
+
+You can show the item data in strip style by:
+
+```
+​```ccard
+type: folder_brief_live
+style: strip
+​```
+```
+
+The following image shows the preview of card and strip style view:
+
+![Card_Strip_Style](https://raw.githubusercontent.com/xpgo/obsidian-folder-note-plugin/master/image/style-card-strip.png)
 
 In the future there will be more styles, such as list, chart or mind map.
 

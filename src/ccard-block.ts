@@ -24,7 +24,7 @@ export class ccardProcessor {
 
             // set default
             if (yaml.type === undefined) yaml.type = 'static';
-            if (yaml.sytle === undefined) yaml.style = 'card';
+            if (yaml.style === undefined) yaml.style = 'card';
 
             // for different types
             if (yaml.type == 'static') {
@@ -50,7 +50,6 @@ export class ccardProcessor {
         if (yaml.items && (yaml.items instanceof Array)) {
             let cardBlock = new CardBlock();
             cardBlock.fromYamlCards(yaml);
-            // if (yaml.style == 'card')
             const cardsElem = cardBlock.getDocElement(this.app);
             return cardsElem;
         }
@@ -74,20 +73,20 @@ export class ccardProcessor {
             const view = this.app.workspace.getActiveViewOfType(MarkdownView);
             if (view) {
                 let folderBrief = new FolderBrief(this.app);
+
+                // brief options
                 if (yaml.briefMax) {
                     folderBrief.briefMax = yaml.briefMax;
                 }
                 if (yaml.noteOnly != undefined) {
                     folderBrief.noteOnly = yaml.noteOnly;
                 }
+
+                // cards options
                 let briefCards = await folderBrief.makeBriefCards(folderPath, notePath);
-                if (yaml.col) {
-                    briefCards.col = yaml.col;
-                }
-                if (yaml.imagePrefix) {
-                    briefCards.imagePrefix = yaml.imagePrefix;
-                }
-                // if (yaml.style == 'card')
+                briefCards.fromYamlOptions(yaml);
+                
+                // generate el
                 const ccardElem = briefCards.getDocElement(this.app);
                 return ccardElem;
             }

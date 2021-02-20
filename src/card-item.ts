@@ -36,10 +36,20 @@ export class CardBlock {
 
     getDocElement(app: App) {
         const cardDiv = document.createElement('div');
-        if (this.style == 'card') {
+        if (this.style == 'strip') {
+            cardDiv.addClass('strip-card-band');
+            for (var i in this.cards) {
+                let cardEl = this.cards[i].getBoxElement(app, this.imagePrefix);
+                cardEl.addClass('strip-card-view');
+                cardDiv.appendChild(cardEl);
+            }
+        }
+        else { // default: this.style == 'card'
             cardDiv.addClass('cute-card-band');
             for (var i in this.cards) {
-                cardDiv.appendChild(this.cards[i].getBoxElement(app, this.imagePrefix))
+                let cardEl = this.cards[i].getBoxElement(app, this.imagePrefix);
+                cardEl.addClass('cute-card-view');
+                cardDiv.appendChild(cardEl);
             }
             if (this.col > 0) {
                 cardDiv.setAttr('style' , 
@@ -71,9 +81,10 @@ export class CardBlock {
     }
 
     fromYamlCards(yaml: any) {
-        if (yaml.style) {
-            this.style = yaml.style;
-        }
+        // parser options
+        this.fromYamlOptions(yaml);
+
+        // parser items
         if (yaml.items) {
             this.clear();
             const allItems = yaml.items;
@@ -86,14 +97,21 @@ export class CardBlock {
                 }
             }
         }
+
+        // return
+        return (this.getCardNum() > 0);
+    }
+
+    fromYamlOptions(yaml: any) {
+        if (yaml.style) {
+            this.style = yaml.style;
+        }
         if (yaml.col) {
             this.col = yaml.col;
         }
         if (yaml.imagePrefix) {
             this.imagePrefix = yaml.imagePrefix;
         }
-
-        return (this.getCardNum() > 0);
     }
 }
 
@@ -185,7 +203,6 @@ export class CardItem {
 
     getBoxElement(app: App, imagePrefix: string) {
         let cardEl = document.createElement('div');
-        cardEl.addClass('cute-card-view');
         // Heading
         let headEl = cardEl.appendChild(document.createElement('div'));
         if (this.headImage) {
