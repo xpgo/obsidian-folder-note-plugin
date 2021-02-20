@@ -11,9 +11,9 @@ The mechanism of folder note is simple: attaching a note file to a folder. But w
 | **Pros**             | - The note file belongs to the folder. <br />- The note filename keeps the same if you rename a folder. | - The note file belongs to the folder. <br />- The note file has the same name as folder, the note title looks better. | - The note file has the same name as folder, the note title looks better.<br />- Wiki-style of linking, easy to insert link like [\[myFolder]] |
 | **Cons**             | - The note filename and title may looks weird.<br />- Have to use additional file name for linking. | - Linking outside of the folder will be [\[myFolder/myFolder]].<br />- The note filename will be changed if you change the folder name. | - The note file does not belong to the folder. You have to move the note file manually if a folder is moved. <br />- The note filename will be changed if you change the folder name. |
 
+When CTRL+Click a folder, the plugin will create a description note with the path dependent on the method you choose. When clicking a folder, the plugin will open the attached note for you. You can configure the plugin to hide/show the folder note. The **default** configuration is the **Inside-Folder** method. If you prefer the **Outside-Folder** or **Index-File**  method, please change the settings. The **Index-File** method uses a note filename of  `_about_.md`, it can be configured to be `index` or others.
 
-When CTRL+Click a folder, the plugin will create a description note with the path dependent on the method you choose. When you Click a folder, the plugin will open the attached note for you. You can configure the plugin to hide/show the folder note. It can also be configured to try to automatically keep the folder and note name in syncing for methods **Inside-Folder** and **Outside-Folder** (Experimental). 
+Although there are some Cons for different methods, the plugin try to add some features to help you overcome them.
 
-- The **default** configuration is the **Inside-Folder** method.
-- If you prefer the **Outside-Folder** or **Index-File**  method, please change the settings.
-- The **Index-File** method uses a note filename of  `_about_.md` (it can be configured to be `index` or others).
+- For methods **Inside-Folder** and **Outside-Folder**, the plugin can be configured to try to automatically keep the folder and note name in syncing (Experimental). 
+- For method  **Outside-Folder** , delete a folder will delete its note for you if you turn on the feature in the settings page.

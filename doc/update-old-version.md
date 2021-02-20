@@ -1,4 +1,4 @@
-# NOTICE for updating from older version
+# Tips for updating from older version
 
 For those who use the plugin with version < 0.4.0, please use the following steps to update:
 
