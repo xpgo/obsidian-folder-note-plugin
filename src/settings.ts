@@ -27,7 +27,7 @@ export const FOLDER_NOTE_DEFAULT_SETTINGS: FolderNotePluginSettings = {
     folderNoteKey: 'ctrl',
     folderNoteAutoRename: true,
     folderDelete2Note: false,
-    folderNoteStrInit: '# {{FOLDER_NAME}} Overview\n {{FOLDER_BRIEF}} \n'
+    folderNoteStrInit: '# {{FOLDER_NAME}} Overview\n {{FOLDER_BRIEF_LIVE}} \n'
 }
 
 // ------------------------------------------------------------
