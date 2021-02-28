@@ -9,8 +9,18 @@ Obsidian Plugin: Add description note to a folder. Generate card-style overview 
 - **Add** description note: CTRL+Click on a folder in the file explorer panel.
 - **Show** description note: Just Click the folder.
 - **Delete** description note: Just delete the opened note file.
-- **Settings** : configure the note file method, file name and template on the settings panel.
+- **Settings** : configure the note file method, file name and inital template on the settings panel.
 - **Command**: Use some commands to control the folder note plugin.
+
+## Features
+
+- Dispaly and manage folder note easily
+- Support 3 different folder note methods
+- Automatically keep folder and folder-note name in syncing
+- Make a folder by active note file
+- Customized initial folder note content
+- Card and strip style view of folder content
+- ccard code block for elegant view of item data
 
 ## How it works
 
@@ -45,7 +55,7 @@ Use `Ctrl+P` to open Obsidian's command panel, and use the following commands of
 
 The plugin can automatically generate a code block of `ccard` in a note file for displaying overview of a folder. The code block can be used and edited in any normal note file. For the syntax of `ccard` code block, please refer to [ccard Syntax](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/ccard-syntax.md).
 
-Alternatively, you can use some keywords in the initial folder note template as set in the settings page to generate the code blocks for you:
+You can use the `ccard` code block in the inital folder note template in the settings page. Alternatively, you can use some keywords in the initial folder note template to generate the code blocks for you:
 
 **Keyword: {{FOLDER_BRIEF}}**
 
