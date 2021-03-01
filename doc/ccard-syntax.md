@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Code block `ccard` uses YAML syntax for displaying groups of item data in different styles. The mechanism is that if you put a `ccard` code block with data definition in your note file, in the preview mode, the code block will be rendered as different style of views of data.
+The code block `ccard` uses YAML syntax for displaying groups of item data in different styles. The mechanism is that if you put a `ccard` code block with data definition in your note file, in the preview mode, the code block will be rendered as different style of views of data.
 
 It is initially designed for displaying overview of folder contents in Obsidian vault. A folder may contain some notes and subfolders which can be presented with thumb view or list view as the system file explorer does. 
 Currently, the [Folder Note Plugin for Obsidian](https://github.com/xpgo/obsidian-folder-note-plugin) uses the `ccard` code block to define item data and show them in a card style view. In the future, a list view will be supported. 
