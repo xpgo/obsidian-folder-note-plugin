@@ -35,7 +35,7 @@ When CTRL+Click a folder, the plugin will create a description note with the pat
 - **Note Initial Content**: set the initial content for a new folder note, you can use some keywords:
     - {{FOLDER_NAME}} will be replaced with the folder name.
     - {{FOLDER_PATH}} will be replaced with the folder path.
-    - {{FOLDER_BRIEF}} will be replaced with a ccard code block for card-style overview of current folder, and the content in the ccard can be edited.
+    - {{FOLDER_BRIEF}} will be replaced with a ccard code block for card-style overview of current folder, and the content in the ccard can be edited, see [ccard Syntax](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/ccard-syntax.md) for more information.
     - {{FOLDER_BRIEF_LIVE}}  will be replaced with a tiny code block which will be rendered to the folder overview in real time.
 - **Key for New Note**: set to use CTRL+Click or ALT+Click for creating new folder note.
 - **Hide Folder Note**: turn off the setting if you want to show the note file in file explorer.
