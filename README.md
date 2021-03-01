@@ -24,11 +24,9 @@ Obsidian Plugin: Add description note to a folder. Generate card-style overview 
 
 ## How it works
 
-The mechanism is simple: attaching a note file to a folder, and the folder note file will be hidden by CSS rules. But where do you put the folder note? There are three methods of creating description note for a folder: **Inside-Folder**, **Outside-Folder** and **Index-File**, please read [Folder Note Methods](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/folder-note-methods.md) for more information about the Pros and Cons of each method. The **default** configuration is the **Inside-Folder** method. If you prefer the **Outside-Folder** or **Index-File**  method, please change the settings.
+The mechanism is simple: attaching a note file to a folder, and the folder note file will be hidden by CSS rules. But where do you put the folder note? There are three methods of creating description note for a folder: **Inside-Folder**, **Outside-Folder** and **Index-File**, please read [Folder Note Methods](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/folder-note-methods.md) for more information about the Pros and Cons of each method. The **default** configuration is the **Inside-Folder** method. If you prefer the others, please change the settings.
 
 When CTRL+Click a folder, the plugin will create a description note with the path dependent on the method you choose. When clicking a folder, the plugin will open the attached note for you. You can configure the plugin to hide/show the folder note. It can also be configured to try to automatically keep the folder and note name in syncing. 
-
-**For updating from version < 0.4.0**, please refer to [Update from old version](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/update-old-version.md).
 
 ## Settings
 
@@ -37,7 +35,7 @@ When CTRL+Click a folder, the plugin will create a description note with the pat
 - **Note Initial Content**: set the initial content for a new folder note, you can use some keywords:
     - {{FOLDER_NAME}} will be replaced with the folder name.
     - {{FOLDER_PATH}} will be replaced with the folder path.
-    - {{FOLDER_BRIEF}} will be replaced with a card-style overview of current folder.
+    - {{FOLDER_BRIEF}} will be replaced with a ccard code block for card-style overview of current folder, and the content in the ccard can be edited.
     - {{FOLDER_BRIEF_LIVE}}  will be replaced with a tiny code block which will be rendered to the folder overview in real time.
 - **Key for New Note**: set to use CTRL+Click or ALT+Click for creating new folder note.
 - **Hide Folder Note**: turn off the setting if you want to show the note file in file explorer.
@@ -74,7 +72,9 @@ If you want to configure the content and appearence of the `ccard` code block, p
 
 ## Change log
 
-Remember to update the plugin, if you find some issues.
+Remember to update the plugin, if you find some issues. 
+**For updating from version < 0.4.0**, please refer to [Update from old version](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/update-old-version.md).
+
 
 ### 0.7.x
 
