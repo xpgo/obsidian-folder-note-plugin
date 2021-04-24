@@ -14,9 +14,9 @@ Obsidian Plugin: Add description note to a folder. Generate card-style overview 
 
 ## Features
 
-- Dispaly and manage folder note easily
+- Display and manage folder note easily
 - Support 3 different folder note methods
-- Automatically keep folder and folder-note name in syncing
+- Automatically keep folder and folder-note name in sync
 - Make a folder by active note file
 - Customized initial folder note content
 - Card and strip style view of folder content
@@ -26,7 +26,7 @@ Obsidian Plugin: Add description note to a folder. Generate card-style overview 
 
 The mechanism is simple: attaching a note file to a folder, and the folder note file will be hidden by CSS rules. But where do you put the folder note? There are three methods of creating description note for a folder: **Inside-Folder**, **Outside-Folder** and **Index-File**, please read [Folder Note Methods](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/folder-note-methods.md) for more information about the Pros and Cons of each method. The **default** configuration is the **Inside-Folder** method. If you prefer the others, please change the settings.
 
-When CTRL+Click a folder, the plugin will create a description note with the path dependent on the method you choose. When clicking a folder, the plugin will open the attached note for you. You can configure the plugin to hide/show the folder note. It can also be configured to try to automatically keep the folder and note name in syncing. 
+When CTRL+Click a folder, the plugin will create a description note with the path depends on the method you choose. When clicking a folder, the plugin will open the attached note for you. You can configure the plugin to hide/show the folder note. It can also be configured to keep the folder and note name in sync automatically. 
 
 ## Settings
 
