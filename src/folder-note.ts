@@ -185,7 +185,7 @@ export class FolderNote {
     }
 
     // open note file
-    async openFolderNote(folderElem: Element, doCreate: boolean): Promise<boolean> {
+    async openFolderNote(folderElem: Element, doCreate: boolean, newLeaf = false): Promise<boolean> {
         // check note file
         let folderNoteExists = await this.app.vault.adapter.exists(this.notePath);
         if (!folderNoteExists && doCreate) {
@@ -197,7 +197,7 @@ export class FolderNote {
         if (folderNoteExists) {
             this.hideFolderNote(folderElem);
             // show the note
-            this.app.workspace.openLinkText(this.notePath, '', false, { active: true });
+            this.app.workspace.openLinkText(this.notePath, '', newLeaf, { active: true });
         } 
         else if (folderElem.hasClass('has-folder-note')) {
             folderElem.removeClass('has-folder-note');

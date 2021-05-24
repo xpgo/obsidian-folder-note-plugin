@@ -30,38 +30,30 @@ export default class FolderNotePlugin extends Plugin {
     settings: FolderNotePluginSettings;
     folderNote: FolderNote;
 
-    setupClick = (el: Element) => {
-        const div = el as divModified;
-        if (div.modified !== undefined) return;
-        else div.modified = true;
-        this.registerDomEvent(div, "click", (evt)=>{
-            evt.stopPropagation();
-            // get the folder path
-            const folderContentEl = div;
-            const folderElem = this.folderNote.setByFolderElement(folderContentEl);
-
-            // open the infor note
-            if (this.folderNote.folderPath.length > 0) {
-                // any key?
-                let newKey = false;
-                if (this.settings.folderNoteKey == 'ctrl') {
-                    newKey = (evt.ctrlKey || evt.metaKey);
-                }
-                else if (this.settings.folderNoteKey == 'alt') {
-                    newKey = evt.altKey;
-                }
-
-                // open it
-                this.folderNote
-                  .openFolderNote(folderElem, newKey)
-                  .then((success) => {
-                    if (!success) div.parentElement.click();
-                  });
-                
-            } else {
-                div.parentElement.click();
+    clickHandler =  (evt: MouseEvent) => {
+        evt.stopPropagation();
+        // get the folder path
+        const folderContentEl = evt.target as HTMLDivElement;
+        const folderElem = this.folderNote.setByFolderElement(folderContentEl);
+        // open the infor note
+        if (this.folderNote.folderPath.length > 0) {
+            // any key?
+            let newKey = false;
+            if (this.settings.folderNoteKey == 'ctrl') {
+                newKey = (evt.ctrlKey || evt.metaKey);
             }
-        })
+            else if (this.settings.folderNoteKey == 'alt') {
+                newKey = evt.altKey;
+            }
+            // open it
+            this.folderNote
+              .openFolderNote(folderElem, newKey, evt.type==="auxclick")
+              .then((success) => {
+                if (!success) folderElem.trigger(evt.type);
+              });
+        } else {
+            folderElem.trigger(evt.type);
+        }
     }
 
     async onload() {
@@ -90,19 +82,31 @@ export default class FolderNotePlugin extends Plugin {
 
         // for file explorer click
         this.app.workspace.onLayoutReady(() => {
+          const setupClick = (el: Element) => {
+            const div = el as divModified;
+            if (div.modified !== undefined) return;
+            else div.modified = true;
+            this.registerDomEvent(div, "click", this.clickHandler);
+          };
           this.app.workspace
             .getLeavesOfType("file-explorer")
             .forEach((leaf) => {
               const container = leaf.view.containerEl;
-              container.querySelectorAll(selector).forEach(this.setupClick);
-              const obs = new MutationObserver((list) => {
-                list.forEach((m)=>m.addedNodes.forEach((added)=>{
+              container.querySelectorAll(selector).forEach(setupClick);
+              const obs = new MutationObserver((list) =>
+                list.forEach((m) =>
+                  m.addedNodes.forEach((added) => {
                     if (!(added instanceof HTMLElement)) return;
-                    added.querySelectorAll(selector).forEach(this.setupClick);
-                }))
-            });
+                    added.querySelectorAll(selector).forEach(setupClick);
+                  })
+                )
+              );
               obs.observe(container, { childList: true, subtree: true });
             });
+        });
+        this.registerDomEvent(document, "auxclick", (evt) => {
+          if (evt.target instanceof HTMLElement && evt.target.matches(selector))
+            this.clickHandler(evt);
         });
 
         this.addCommand({
