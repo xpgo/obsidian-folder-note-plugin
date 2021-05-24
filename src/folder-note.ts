@@ -82,21 +82,10 @@ export class FolderNote {
     }
 
     // set by folder element
-    setByFolderElement(folderItemEl: Element) {
-        var folderPath = '';
-        var folderName = '';
-
-        var className = folderItemEl.className.toString();
-        var folderElem = folderItemEl;
-        if (className.contains('nav-folder-title-content')) {
-            folderName = folderElem.getText();
-            folderElem = folderItemEl.parentElement;
-            folderPath = folderElem.attributes.getNamedItem('data-path').textContent;
-        }
-        else if (className.contains('nav-folder-title')) {
-            folderPath = folderItemEl.attributes.getNamedItem('data-path').textContent;
-            folderName = folderItemEl.lastElementChild.getText();
-        }
+    setByFolderElement(folderContentEl: HTMLDivElement) {
+        const folderName = folderContentEl.getText();
+        const folderElem = folderContentEl.parentElement;
+        let folderPath = folderElem.attributes.getNamedItem('data-path').textContent;
 
         // fix the folder path
         if (folderPath.length > 0) {
@@ -196,7 +185,7 @@ export class FolderNote {
     }
 
     // open note file
-    async openFolderNote(folderElem: Element, doCreate: boolean) {
+    async openFolderNote(folderElem: Element, doCreate: boolean): Promise<boolean> {
         // check note file
         let folderNoteExists = await this.app.vault.adapter.exists(this.notePath);
         if (!folderNoteExists && doCreate) {
@@ -213,6 +202,8 @@ export class FolderNote {
         else if (folderElem.hasClass('has-folder-note')) {
             folderElem.removeClass('has-folder-note');
         }
+        
+        return folderNoteExists;
     }
 
     // create folder note
