@@ -31,9 +31,11 @@ export default class FolderNotePlugin extends Plugin {
     folderNote: FolderNote;
 
     clickHandler =  (evt: MouseEvent) => {
+        const folderContentEl = evt.target as HTMLDivElement;
+        if (folderContentEl.hasClass("is-being-renamed")) return;
+
         evt.stopPropagation();
         // get the folder path
-        const folderContentEl = evt.target as HTMLDivElement;
         const folderElem = this.folderNote.setByFolderElement(folderContentEl);
         // open the infor note
         if (this.folderNote.folderPath.length > 0) {
