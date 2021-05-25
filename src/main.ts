@@ -88,44 +88,48 @@ export default class FolderNotePlugin extends Plugin {
     // for settings
     this.addSettingTab(new FolderNoteSettingTab(this.app, this));
 
-    // for file explorer click
+    const setupNewEl = (el: HTMLElement) => {
+      let folderContentEl;
+      if (el.hasClass('nav-folder')) {
+        folderContentEl = el.querySelector(
+          ':scope' + commonSelector,
+        ) as divModified;
+      } else {
+        folderContentEl = el as divModified;
+      }
+      // hide existing folder note
+      this.folderNote.setupElHide(folderContentEl);
+      // handle file explorer click
+      if (folderContentEl.modified !== undefined) return;
+      else folderContentEl.modified = true;
+      this.registerDomEvent(folderContentEl, 'click', this.clickHandler);
+    };
+
     this.app.workspace.onLayoutReady(() => {
-      const setupNewEl = (el: HTMLElement) => {
-        let folderContentEl;
-        if (el.hasClass('nav-folder')) {
-          folderContentEl = el.querySelector(
-            ':scope' + commonSelector,
-          ) as divModified;
-        } else {
-          folderContentEl = el as divModified;
-        }
-        this.folderNote.setupElHide(folderContentEl);
-        if (folderContentEl.modified !== undefined) return;
-        else folderContentEl.modified = true;
-        this.registerDomEvent(folderContentEl, 'click', this.clickHandler);
-      };
       this.app.workspace.getLeavesOfType('file-explorer').forEach((leaf) => {
         const container = leaf.view.containerEl;
+        // handle existing nav-folder
         container.querySelectorAll(selector).forEach(setupNewEl);
+        // handle newly added nav-folder
         const obs = new MutationObserver((list) => {
-          list.forEach((m) => {
-            if ((m.target as HTMLElement).hasClass('nav-folder-children'))
-              m.addedNodes.forEach((added) => {
-                if (
-                  added instanceof HTMLElement &&
-                  added.hasClass('nav-folder')
-                )
-                  setupNewEl(added);
-                else return;
-              });
-          });
+          for (const mutaion of list) {
+            const target = mutaion.target as HTMLElement;
+            if (!target.hasClass('nav-folder-children')) return;
+            for (const added of mutaion.addedNodes) {
+              if (added instanceof HTMLElement && added.hasClass('nav-folder'))
+                setupNewEl(added);
+              else return;
+            }
+          }
         });
         obs.observe(container, { childList: true, subtree: true });
       });
     });
+
+    // handle middle clicks
     this.registerDomEvent(document, 'auxclick', (evt) => {
       if (
-        evt.button === 1 &&
+        evt.button === 1 && // is middle click
         evt.target instanceof HTMLElement &&
         evt.target.matches(selector)
       )
