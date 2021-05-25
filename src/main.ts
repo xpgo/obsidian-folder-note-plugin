@@ -51,10 +51,10 @@ export default class FolderNotePlugin extends Plugin {
             this.folderNote
               .openFolderNote(folderElem, newKey, evt.type==="auxclick")
               .then((success) => {
-                if (!success) folderElem.trigger(evt.type);
+                if (!success && evt.type==="click") folderElem.click();
               });
         } else {
-            folderElem.trigger(evt.type);
+            if (evt.type==="click") folderElem.click();
         }
     }
 
