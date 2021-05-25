@@ -105,7 +105,11 @@ export default class FolderNotePlugin extends Plugin {
             });
         });
         this.registerDomEvent(document, "auxclick", (evt) => {
-          if (evt.target instanceof HTMLElement && evt.target.matches(selector))
+          if (
+            evt.button === 1 &&
+            evt.target instanceof HTMLElement &&
+            evt.target.matches(selector)
+          )
             this.clickHandler(evt);
         });
 
