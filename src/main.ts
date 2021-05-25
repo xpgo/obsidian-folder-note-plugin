@@ -22,7 +22,8 @@ enum NoteFileMethod {
     Index, Inside, Outside,
 }
 
-const selector = "div.nav-folder-title-content"
+const commonSelector = " > div.nav-folder-title > div.nav-folder-title-content"
+const selector = ".nav-folder" + commonSelector;
 
 type divModified = HTMLDivElement & { modified?: true };
 
@@ -84,8 +85,14 @@ export default class FolderNotePlugin extends Plugin {
 
         // for file explorer click
         this.app.workspace.onLayoutReady(() => {
-        const setupNewEl = (el: Element) => {
-            const folderContentEl = el as divModified;
+        const setupNewEl = (el: HTMLElement) => {
+            let folderContentEl;
+            if (el.hasClass("nav-folder")) {
+                folderContentEl = el.querySelector(":scope"+commonSelector) as divModified;
+            } else {
+                folderContentEl = el as divModified;
+            }
+            this.folderNote.setupElHide(folderContentEl);
             if (folderContentEl.modified !== undefined) return;
             else folderContentEl.modified = true;
             this.registerDomEvent(folderContentEl, "click", this.clickHandler);
@@ -95,14 +102,19 @@ export default class FolderNotePlugin extends Plugin {
             .forEach((leaf) => {
               const container = leaf.view.containerEl;
               container.querySelectorAll(selector).forEach(setupNewEl);
-              const obs = new MutationObserver((list) =>
-                list.forEach((m) =>
-                  m.addedNodes.forEach((added) => {
-                    if (!(added instanceof HTMLElement)) return;
-                added.querySelectorAll(selector).forEach(setupNewEl);
-                  })
-                )
-              );
+              const obs = new MutationObserver((list) => {
+                list.forEach((m) => {
+                  if ((m.target as HTMLElement).hasClass("nav-folder-children"))
+                    m.addedNodes.forEach((added) => {
+                      if (
+                        added instanceof HTMLElement &&
+                        added.hasClass("nav-folder")
+                      )
+                        setupNewEl(added);
+                      else return;
+                    });
+                });
+              });
               obs.observe(container, { childList: true, subtree: true });
             });
         });

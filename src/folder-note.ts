@@ -10,6 +10,24 @@ enum NoteFileMethod {
     Index, Inside, Outside,
 }
 
+function getPathFromEl(folderContentEl: HTMLDivElement): string {
+  if (!folderContentEl.hasClass("nav-folder-title-content"))
+    throw new TypeError("not folderContentEl");
+
+  const folderName = folderContentEl.getText();
+  const folderElem = folderContentEl.parentElement;
+  let folderPath = folderElem.attributes.getNamedItem("data-path").textContent;
+
+  // fix the folder path
+  if (folderPath.length > 0) {
+    var slashLast = folderPath.lastIndexOf("/");
+    var folderPathLast = folderPath.split("/").pop();
+    if (folderPathLast != folderName) {
+      folderPath = folderPath.substring(0, slashLast + 1) + folderName;
+    }
+  }
+  return folderPath.trim();
+}
 
 // get file base name
 function getFileBaseName(filePath: string) {
@@ -92,24 +110,10 @@ export class FolderNote {
 
     // set by folder element
     setByFolderElement(folderContentEl: HTMLDivElement) {
-        const folderName = folderContentEl.getText();
-        const folderElem = folderContentEl.parentElement;
-        let folderPath = folderElem.attributes.getNamedItem('data-path').textContent;
-
-        // fix the folder path
-        if (folderPath.length > 0) {
-            var slashLast = folderPath.lastIndexOf('/');
-            var folderPathLast = folderPath.split('/').pop();
-            if (folderPathLast != folderName) {
-                folderPath = folderPath.substring(0, slashLast + 1) + folderName;
-            }
-        }
-
         // set to mine
-        this.setByFolderPath(folderPath);
-
+        this.setByFolderPath(getPathFromEl(folderContentEl));
         // return the element in useage
-        return folderElem;
+        return folderContentEl.parentElement;
     }
 
     // get folder note path by folder path
@@ -146,6 +150,20 @@ export class FolderNote {
         }
         return folderPath;
     }
+
+    async setupElHide(folderContentEl: HTMLDivElement) {
+      // get the folder path
+      if (!folderContentEl.hasClass("nav-folder-title-content"))
+        throw new TypeError("Not folderContentEl");
+
+      const folderPath = getPathFromEl(folderContentEl);
+      const { noteBaseName, notePath } = this.getFolderNotePath(folderPath);
+      const folderElem = folderContentEl.parentElement;
+      if (folderPath) {
+        const folderNoteExists = await this.app.vault.adapter.exists(notePath);
+        if (folderNoteExists) this.hideFolderNote(folderElem, noteBaseName);
+      }
+    };
 
     // check if it is folder note name
     async isFolderNotePath(notePath: string) {
@@ -266,22 +284,21 @@ export class FolderNote {
             parentElem = parentElem.parentElement;
             fileSelector = ':scope > div.nav-file > div.nav-file-title';
         }
-        if (!parentElem) {
-            console.error(folderElem);
-        } else
+        if (parentElem) {
         parentElem.querySelectorAll(fileSelector)
             .forEach(function (fileElem) {
-                var fileNodeTitle = fileElem.firstElementChild.textContent;
-                // console.log('fileNoteTitle: ', fileNodeTitle);
+              var fileNodeTitle = fileElem.firstElementChild.textContent;
+              // console.log('fileNoteTitle: ', fileNodeTitle);
                 if (hideSetting && (fileNodeTitle == noteBase)) {
                     fileElem.addClass('is-folder-note');
                 }
                 else if (!isOutsideMethod) {
                     fileElem.removeClass('is-folder-note');
-                }
-                // console.log('isOutsideMethod: ', isOutsideMethod);
-            }
+              }
+              // console.log('isOutsideMethod: ', isOutsideMethod);
+        }
         );
+    }
     }
     
     // get the file breif path
