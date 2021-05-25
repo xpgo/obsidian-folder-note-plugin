@@ -84,22 +84,22 @@ export default class FolderNotePlugin extends Plugin {
 
         // for file explorer click
         this.app.workspace.onLayoutReady(() => {
-          const setupClick = (el: Element) => {
-            const div = el as divModified;
-            if (div.modified !== undefined) return;
-            else div.modified = true;
-            this.registerDomEvent(div, "click", this.clickHandler);
+        const setupNewEl = (el: Element) => {
+            const folderContentEl = el as divModified;
+            if (folderContentEl.modified !== undefined) return;
+            else folderContentEl.modified = true;
+            this.registerDomEvent(folderContentEl, "click", this.clickHandler);
           };
           this.app.workspace
             .getLeavesOfType("file-explorer")
             .forEach((leaf) => {
               const container = leaf.view.containerEl;
-              container.querySelectorAll(selector).forEach(setupClick);
+              container.querySelectorAll(selector).forEach(setupNewEl);
               const obs = new MutationObserver((list) =>
                 list.forEach((m) =>
                   m.addedNodes.forEach((added) => {
                     if (!(added instanceof HTMLElement)) return;
-                    added.querySelectorAll(selector).forEach(setupClick);
+                added.querySelectorAll(selector).forEach(setupNewEl);
                   })
                 )
               );
