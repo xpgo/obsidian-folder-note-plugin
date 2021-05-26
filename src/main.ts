@@ -1,6 +1,5 @@
 import { Plugin, MarkdownView } from 'obsidian';
 
-import * as Yaml from 'yaml';
 import { FolderBrief } from './folder-brief';
 import { FolderNote } from './folder-note';
 import { ccardProcessor } from './ccard-block';
@@ -14,12 +13,6 @@ import {
 // ------------------------------------------------------------
 // FolderNotePlugin
 // ------------------------------------------------------------
-
-enum NoteFileMethod {
-  Index,
-  Inside,
-  Outside,
-}
 
 const commonSelector = ' > div.nav-folder-title > div.nav-folder-title-content';
 const selector = '.nav-folder' + commonSelector;

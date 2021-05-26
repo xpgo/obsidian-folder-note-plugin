@@ -1,4 +1,4 @@
-import { App, MarkdownView, TFile } from 'obsidian';
+import { App } from 'obsidian';
 import { FolderBrief } from './folder-brief';
 
 // ------------------------------------------------------------
