@@ -8,6 +8,8 @@ The pictures of the children folders will have a placeholder: "folder-note-child
 
 ### Instructions
 
+You can find a complete tutorial [here](https://docs.kenjibailly.xyz/folder-navigation/).
+
 1. Copy [folder_note_item_list.js](./folder_note_item_list.js) to your templater folder and open it in a text editor.
 2. Edit the line below with the path of your library assets and save the file.
 ```js
