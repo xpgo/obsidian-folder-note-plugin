@@ -14,13 +14,14 @@ Obsidian Plugin: Add description note to a folder. Generate card-style overview 
 
 ## Features
 
-- Dispaly and manage folder note easily
+- Display and manage folder note easily
 - Support 3 different folder note methods
 - Automatically keep folder and folder-note name in syncing
 - Make a folder by active note file
 - Customized initial folder note content
 - Card and strip style view of folder content
 - ccard code block for elegant view of item data
+- (with [Waypoint](https://github.com/IdreesInc/Waypoint) pluggin) folder-notes relationships appear in Graph View
 
 ## How it works
 
@@ -68,6 +69,15 @@ The keyword {{FOLDER_BRIEF_LIVE}} will be replaced  with a `ccard` code block wh
 If you want to configure the content and appearence of the `ccard` code block, please refer to [ccard Syntax](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/ccard-syntax.md). You can configure the style, colume number, image prefix, folder path, note only, max brief length and more. For example, the following image show different styles of folder overview. 
 
 ![Card_Strip_Style](https://raw.githubusercontent.com/xpgo/obsidian-folder-note-plugin/master/image/style-card-strip.png)
+
+
+## Option - Add Folder / Note links in Graph View
+
+By default FolderNote will not generate a link in between notes and the newly generate folder-note in Obsidian Graph View. One workaround is to use the [Waypoint](https://github.com/IdreesInc/Waypoint) pluggin, adding 
+```
+%% Waypoint %%
+```
+in your folder note or directly in the default Initial Content (FolderNote parameters)
 
 
 ## Change log
