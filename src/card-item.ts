@@ -1,5 +1,6 @@
 
-import { App, } from "obsidian";
+import { App, FileSystemAdapter } from "obsidian";
+import { readFileSync } from 'fs';
 
 // ------------------------------------------------------------
 // Card block
@@ -14,12 +15,44 @@ export class CardBlock {
     col: number;
     cards: CardItem[];
     imagePrefix: string;
+    app: App;
 
-    constructor() {
+    constructor(app: App) {
         this.style = 'card';
         this.cards = [];
         this.col = -1;
-        this.imagePrefix = '';
+        this.app = app;
+        this.imagePrefix = this.getImgPrefix();
+    }
+
+    // get the imagePrefix (folder for attachments) from user settings
+    getImgPrefix() {
+        // need the specific case of FileSystemAdapter for getBasePath()
+        let adapter = this.app.vault.adapter as FileSystemAdapter;
+        // get full path to root of vault
+        let vaultRoot = adapter.getBasePath() + '/';
+        // get the location of the obsidian configs directory
+        // (usually '.obsidian', but better to check)
+        let configPath = vaultRoot + this.app.vault.configDir;
+        // get the name of the attachments folder from the json file
+        let json = this.readJson(configPath + '/app.json');
+        let prefix = json.attachmentFolderPath;
+        return prefix;
+    }
+
+    // takes a json path and parses it into an object
+    // e.g., json file contains:
+    //                          {
+    //                            "key": {
+    //                              "field": "thing"
+    //                            }
+    //                          }
+    // let thing = json.key.field.thing;
+    // TODO: this could probably use better error handling
+    readJson(path: string) {
+        const jfile = readFileSync(path, 'utf-8');
+        let json = JSON.parse(jfile);
+        return json;
     }
 
     addCard(card: CardItem) {
