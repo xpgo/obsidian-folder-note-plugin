@@ -48,7 +48,7 @@ export class ccardProcessor {
     // static
     async docElemStatic(yaml: any) {
         if (yaml.items && (yaml.items instanceof Array)) {
-            let cardBlock = new CardBlock();
+            let cardBlock = new CardBlock(this.app);
             cardBlock.fromYamlCards(yaml);
             const cardsElem = cardBlock.getDocElement(this.app);
             return cardsElem;
