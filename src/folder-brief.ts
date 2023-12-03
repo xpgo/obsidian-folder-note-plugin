@@ -92,6 +92,8 @@ export class FolderBrief {
         var folderBrief = 'Contains ';
         folderBrief += subPathList.folders.length.toString() + ' folders, ';
         folderBrief += subPathList.files.length.toString() + ' notes.';
+        var subFolderName = subFolderPath.split('/').pop();
+        card.setTitleLink(subFolderPath + "/" + subFolderName + ".md");
         card.setAbstract(folderBrief);
 
         // footnote, use date in the future
