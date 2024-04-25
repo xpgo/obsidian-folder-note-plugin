@@ -78,13 +78,12 @@ export default class FolderNotePlugin extends Plugin {
             callback: async () => {
                 const view = this.app.workspace.getActiveViewOfType(MarkdownView);
                 if (view) {
-                    const editor = view.sourceMode.cmEditor;
                     const activeFile = this.app.workspace.getActiveFile();
                     // generate brief
-                    let folderBrief = new FolderBrief(this.app);
+                    let folderBrief = new FolderBrief(this.app, await this.folderNote.method);
                     let folderPath = await this.folderNote.getNoteFolderBriefPath(activeFile.path);
                     let briefCards = await folderBrief.makeBriefCards(folderPath, activeFile.path);
-                    editor.replaceSelection(briefCards.getYamlCode(), "end");
+                    view.editor.replaceSelection(briefCards.getYamlCode(), "end");
                 }
             },
             hotkeys: []

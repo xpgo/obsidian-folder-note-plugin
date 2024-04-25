@@ -250,7 +250,7 @@ export class FolderNote {
             .replace(/{{FOLDER_PATH}}/g, this.folderPath)
         // keyword: {{FOLDER_BRIEF}}
         if (content.contains('{{FOLDER_BRIEF}}')) {
-            let folderBrief = new FolderBrief(this.app);
+            let folderBrief = new FolderBrief(this.app, this.method);
             let briefCards = await folderBrief.makeBriefCards(this.folderPath, this.notePath);
             content = content.replace('{{FOLDER_BRIEF}}', briefCards.getYamlCode());
         }

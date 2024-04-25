@@ -72,7 +72,7 @@ export class ccardProcessor {
         if (folderPath.length > 0) {
             const view = this.app.workspace.getActiveViewOfType(MarkdownView);
             if (view) {
-                let folderBrief = new FolderBrief(this.app);
+                let folderBrief = new FolderBrief(this.app, folderNote.method);
 
                 // brief options
                 if (yaml.briefMax) {

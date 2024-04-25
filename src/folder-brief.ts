@@ -6,17 +6,23 @@ import { CardStyle, CardBlock, CardItem } from './card-item'
 // Folder Brief
 // ------------------------------------------------------------
 
+enum NoteFileMethod {
+    Index, Inside, Outside,
+}
+
 export class FolderBrief {
     app: App;
     folderPath: string;
     briefMax: number;
     noteOnly: boolean;
+    method: NoteFileMethod;
 
-    constructor(app: App) {
+    constructor(app: App, method: NoteFileMethod) {
         this.app = app;
         this.folderPath = '';
         this.briefMax = 64;
         this.noteOnly = false;
+        this.method = method;
     }
 
     // for cards type: folder_brief
@@ -156,8 +162,8 @@ export class FolderBrief {
             imageUrl = match[2];
         }
         else {
-            // for patten: ![[xxx.png]]
-            let regexImg2 = new RegExp('!\\[\\[(.*?)\\]\\]');
+            // for patten: ![[xxx.png]] or ![[xxx.png|style/size]] → "xxx.png"
+            let regexImg2 = new RegExp('!\\[\\[(.*?)(\\|[^|]*)?\\]\\]');
             match = regexImg2.exec(contentOrg);
             if (match != null) imageUrl = match[1];
         }
@@ -171,7 +177,8 @@ export class FolderBrief {
                     headPath = headPath.substring(0, headPath.lastIndexOf('/'));
                     relativePath = true;
                 }
-                if (relativePath) {
+                // folder-note "outside" still needs headPath added
+                if (relativePath || this.method == NoteFileMethod.Outside) {
                     imageUrl = headPath + '/' + imageUrl;
                 }
                 imageUrl = imageUrl.replace(/\%20/g, ' ')
