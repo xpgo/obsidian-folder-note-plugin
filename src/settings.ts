@@ -77,8 +77,8 @@ export class FolderNoteSettingTab extends PluginSettingTab {
         }
 
         new Setting(containerEl)
-            .setName('Inital Content')
-            .setDesc('Set the inital content for new folder note. {{FOLDER_NAME}} will be replaced with current folder name.')
+            .setName('Initial Content')
+            .setDesc('Set the initial content for new folder note. {{FOLDER_NAME}} will be replaced with current folder name.')
             .addTextArea(text => {
                 text
                     .setPlaceholder('About the folder.')

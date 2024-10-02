@@ -3,8 +3,8 @@
 
 ## 0.7.x
 
-- use {{FOLDER_BRIEF_LIVE}} for default inital content (0.7.2)
-- add Keyword {{FOLDER_PATH}} for inital content (0.7.1)
+- use {{FOLDER_BRIEF_LIVE}} for default initial content (0.7.2)
+- add Keyword {{FOLDER_PATH}} for initial content (0.7.1)
 - fix multiple usage of some keywords for initial content (0.7.1)
 - add imagePrefix key for ccard (0.7.0)
 - add noteOnly Key for folder_brief_live (0.7.0)
@@ -39,7 +39,7 @@
 
 ## 0.3.x
 
-- add keyword {{FOLDER_BRIEF_LIVE}} for inital content to generate folder overview in real time. (0.3.3)
+- add keyword {{FOLDER_BRIEF_LIVE}} for initial content to generate folder overview in real-time. (0.3.3)
 - Insert folder overview by command: ctrl+p, Insert Folder Overview (0.3.2)
 - Reorganized source code and fixed a mini bug (0.3.2)
 - Fix the command key on Mac (0.3.1)
