@@ -119,6 +119,7 @@ export class CardItem {
     cardStyle: CardStyle;
     headText: string;
     headImage: string;
+    headSvg: string;
     title: string;
     titleLink: string;
     abstract: string;
@@ -128,6 +129,7 @@ export class CardItem {
         this.title = title;
         this.abstract = "No abstract.";
         this.cardStyle = style;
+        this.headSvg = '';
     }
 
     setHeadText(text: string) {
@@ -136,6 +138,10 @@ export class CardItem {
 
     setHeadImage(linkUrl: string) {
         this.headImage = linkUrl;
+    }
+
+    setHeadSvg(svgMarkup: string) {
+        this.headSvg = svgMarkup;
     }
 
     setTitle(title: string) {
@@ -205,7 +211,13 @@ export class CardItem {
         let cardEl = document.createElement('div');
         // Heading
         let headEl = cardEl.appendChild(document.createElement('div'));
-        if (this.headImage) {
+        if (this.headSvg) {
+            this.cardStyle = CardStyle.Image;
+            headEl.addClasses(['thumb', 'thumb-svg']);
+            headEl.setAttr('style', 'display: flex; align-items: center; justify-content: center; overflow: hidden;');
+            headEl.innerHTML = this.headSvg;
+        }
+        else if (this.headImage) {
             this.cardStyle = CardStyle.Image;
             if (this.headImage.startsWith("#")) {
                 // color
@@ -275,4 +287,3 @@ export class CardItem {
         return cardEl;
     }
 }
-

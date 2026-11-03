@@ -1,6 +1,7 @@
 
 import { App, MarkdownView, TFile, } from "obsidian";
-import { CardStyle, CardBlock, CardItem } from './card-item'
+import { CardStyle, CardBlock, CardItem } from './card-item';
+import { isExcalidrawFile, generateExcalidrawSvgMarkup } from './excalidraw-helper';
 
 // ------------------------------------------------------------
 // Folder Brief
@@ -71,7 +72,7 @@ export class FolderBrief {
         // notes
         for (var i = 0; i < subFileList.length; i++) {
             var subFilePath = subFileList[i];
-            if (!subFilePath.endsWith('.md')) continue;
+            if (!subFilePath.endsWith('.md') && !subFilePath.endsWith('.excalidraw')) continue;
             if (subFilePath == activeNotePath) continue; // omit self includeing
             let noteCard = await this.makeNoteCard(folderPath, subFilePath);
             cardBlock.addCard(noteCard);
@@ -105,31 +106,39 @@ export class FolderBrief {
     async makeNoteCard(folderPath: string, notePath: string) {
         // titile
         var noteName = notePath.split('/').pop();
-        var noteTitle = noteName.substring(0, noteName.length - 3);
+        var noteTitle = noteName.replace(/\.(md|excalidraw)$/, '');
         let card = new CardItem(noteTitle, CardStyle.Note);
         card.setTitleLink(notePath);
 
         // read content
         let file = this.app.vault.getAbstractFileByPath(notePath);
         if (file && file instanceof TFile) {
-            let contentOrg = await this.app.vault.cachedRead(file);
-            // let content = await this.app.vault.adapter.read(notePath);
-            // console.log(content);
-
-            // image
-            var imageUrl = this.getContentImage(contentOrg, folderPath);
-            if (imageUrl.length > 0) {
-                card.setHeadImage(imageUrl);
-            }
-            
-            // content?
-            var contentBrief = this.getContentBrief(contentOrg);
-            if (contentBrief.length > 0) {
-                if (contentBrief.length > this.briefMax) {
-                    contentBrief = contentBrief.substring(0, this.briefMax);
-                    contentBrief += '...';
+            if (isExcalidrawFile(file, this.app)) {
+                let svgMarkup = await generateExcalidrawSvgMarkup(this.app, file);
+                if (svgMarkup) {
+                    card.setHeadSvg(svgMarkup);
                 }
-                card.setAbstract(contentBrief);
+                card.setAbstract('Excalidraw drawing');
+            } else {
+                let contentOrg = await this.app.vault.cachedRead(file);
+                // let content = await this.app.vault.adapter.read(notePath);
+                // console.log(content);
+
+                // image
+                var imageUrl = this.getContentImage(contentOrg, folderPath);
+                if (imageUrl.length > 0) {
+                    card.setHeadImage(imageUrl);
+                }
+                
+                // content?
+                var contentBrief = this.getContentBrief(contentOrg);
+                if (contentBrief.length > 0) {
+                    if (contentBrief.length > this.briefMax) {
+                        contentBrief = contentBrief.substring(0, this.briefMax);
+                        contentBrief += '...';
+                    }
+                    card.setAbstract(contentBrief);
+                }
             }
 
             // foot note
