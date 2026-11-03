@@ -12,8 +12,11 @@ export default {
   },
   external: ['obsidian'],
   plugins: [
-    typescript(),
-    nodeResolve({browser: true}),
-    commonjs(),
+    nodeResolve({ browser: true }),
+    typescript({
+      tsconfig: './tsconfig.json',
+      include: ['src/**/*.ts', '**/*.ts']
+    }),
+    commonjs()
   ]
 };
