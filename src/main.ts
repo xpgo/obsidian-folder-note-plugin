@@ -1,9 +1,10 @@
 import {
+    Editor,
     Plugin,
-    MarkdownView
+    MarkdownView,
+    TAbstractFile
 } from 'obsidian';
 
-import * as Yaml from 'yaml';
 import { FolderBrief } from './folder-brief';
 import { FolderNote } from './folder-note';
 import { ccardProcessor } from './ccard-block';
@@ -18,10 +19,6 @@ import {
 // FolderNotePlugin
 // ------------------------------------------------------------
 
-enum NoteFileMethod {
-    Index, Inside, Outside,
-}
-
 export default class FolderNotePlugin extends Plugin {
     settings: FolderNotePluginSettings;
     folderNote: FolderNote;
@@ -34,32 +31,49 @@ export default class FolderNotePlugin extends Plugin {
         
         // for ccard rendering
         this.registerMarkdownCodeBlockProcessor('ccard', async (source, el, ctx) => {
-            // run processer
+            // run processor
             let proc = new ccardProcessor(this.app);
             await proc.run(source, el, ctx, this.folderNote);
         });
 
+        // sync file explorer when files/folders are created
+        this.registerEvent(this.app.vault.on('create', () => {
+            this.folderNote.syncFileExplorer();
+        }));
+
         // for rename event
         this.registerEvent(this.app.vault.on('rename', 
-            (newPath, oldPath) => this.handleFileRename(newPath, oldPath)));
+            (file, oldPath) => this.handleFileRename(file, oldPath)));
 
         // for remove folder
         this.registerEvent(this.app.vault.on('delete', 
             (file) => this.handleFileDelete(file) ));
+
+        // sync file explorer on layout ready and layout changes
+        this.app.workspace.onLayoutReady(() => {
+            this.folderNote.syncFileExplorer();
+            this.folderNote.observeFileExplorer();
+        });
+
+        this.registerEvent(this.app.workspace.on('layout-change', () => {
+            this.folderNote.syncFileExplorer();
+            this.folderNote.observeFileExplorer();
+        }));
 
         // for settings
         this.addSettingTab(new FolderNoteSettingTab(this.app, this));
 
         // for file explorer click
         this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
+            if (!(evt.target instanceof Element)) return;
             // get the folder path
-            const elemTarget = (evt.target as Element);
-            var folderElem = this.folderNote.setByFolderElement(elemTarget);
+            const elemTarget = evt.target;
+            const folderElem = this.folderNote.setByFolderElement(elemTarget);
 
-            // open the infor note
-            if (this.folderNote.folderPath.length > 0) {
+            // open the info note
+            if (folderElem && this.folderNote.folderPath.length > 0) {
                 // any key?
-                var newKey = false;
+                let newKey = false;
                 if (this.settings.folderNoteKey == 'ctrl') {
                     newKey = (evt.ctrlKey || evt.metaKey);
                 }
@@ -75,17 +89,14 @@ export default class FolderNotePlugin extends Plugin {
         this.addCommand({
             id: 'insert-folder-brief',
             name: 'Insert Folder Brief',
-            callback: async () => {
-                const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-                if (view) {
-                    const editor = view.sourceMode.cmEditor;
-                    const activeFile = this.app.workspace.getActiveFile();
-                    // generate brief
-                    let folderBrief = new FolderBrief(this.app);
-                    let folderPath = await this.folderNote.getNoteFolderBriefPath(activeFile.path);
-                    let briefCards = await folderBrief.makeBriefCards(folderPath, activeFile.path);
-                    editor.replaceSelection(briefCards.getYamlCode(), "end");
-                }
+            editorCallback: async (editor: Editor, view: MarkdownView) => {
+                const activeFile = view.file ?? this.app.workspace.getActiveFile();
+                if (!activeFile) return;
+                // generate brief
+                let folderBrief = new FolderBrief(this.app);
+                let folderPath = await this.folderNote.getNoteFolderBriefPath(activeFile.path);
+                let briefCards = await folderBrief.makeBriefCards(folderPath, activeFile.path);
+                editor.replaceSelection(briefCards.getYamlCode());
             },
             hotkeys: []
         });
@@ -95,8 +106,8 @@ export default class FolderNotePlugin extends Plugin {
             name: 'Make Current Note to Folder',
             callback: async () => {
                 const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-                if (view) {
-                    const activeFile = this.app.workspace.getActiveFile();
+                const activeFile = view?.file ?? this.app.workspace.getActiveFile();
+                if (activeFile) {
                     this.folderNote.setByNotePath(activeFile.path);
                     await this.folderNote.newNoteFolder();
                 }
@@ -107,19 +118,29 @@ export default class FolderNotePlugin extends Plugin {
 
     onunload() {
         console.log('Unloading Folder Note plugin');
+        if (this.folderNote) {
+            this.folderNote.cleanupFileExplorer();
+        }
     }
 
     updateFolderNote() {
-        this.folderNote = new FolderNote(
-            this.app, 
-            this.settings.folderNoteType, 
-            this.settings.folderNoteName);
-        this.folderNote.initContent = this.settings.folderNoteStrInit;
-        this.folderNote.hideNoteFile = this.settings.folderNoteHide;
+        if (this.folderNote) {
+            this.folderNote.setMethod(this.settings.folderNoteType, this.settings.folderNoteName);
+            this.folderNote.initContent = this.settings.folderNoteStrInit;
+            this.folderNote.hideNoteFile = this.settings.folderNoteHide;
+        } else {
+            this.folderNote = new FolderNote(
+                this.app, 
+                this.settings.folderNoteType, 
+                this.settings.folderNoteName);
+            this.folderNote.initContent = this.settings.folderNoteStrInit;
+            this.folderNote.hideNoteFile = this.settings.folderNoteHide;
+        }
+        this.folderNote.syncFileExplorer();
     }
 
     async loadSettings() {
-        this.settings = Object.assign(FOLDER_NOTE_DEFAULT_SETTINGS, await this.loadData());
+        this.settings = Object.assign({}, FOLDER_NOTE_DEFAULT_SETTINGS, await this.loadData());
         this.updateFolderNote();
     }
 
@@ -129,14 +150,18 @@ export default class FolderNotePlugin extends Plugin {
     }
 
     // keep notefile name to be the folder name
-    async handleFileRename(newPath: any, oldPath: any) {
-        if (!this.settings.folderNoteAutoRename) return;
-        this.folderNote.syncName(newPath, oldPath);
+    async handleFileRename(file: TAbstractFile, oldPath: string) {
+        if (this.settings.folderNoteAutoRename) {
+            await this.folderNote.syncName(file, oldPath);
+        }
+        this.folderNote.syncFileExplorer();
     }
 
     // delete folder
-    async handleFileDelete(pathToDel: any) {
-        if (!this.settings.folderDelete2Note) return;
-        this.folderNote.deleteFolder(pathToDel.path);
+    async handleFileDelete(file: TAbstractFile) {
+        if (this.settings.folderDelete2Note) {
+            await this.folderNote.deleteFolder(file);
+        }
+        this.folderNote.syncFileExplorer();
     }
 }

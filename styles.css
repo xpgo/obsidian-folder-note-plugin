@@ -1,11 +1,12 @@
 /* hide the folder note file node  */
 div.is-folder-note {
-    display: none;
+    display: none !important;
 }
 
 /* indicate the folder has note  */
-div.has-folder-note {
-    color: var(--text-nav-selected);
+div.has-folder-note,
+div.has-folder-note .nav-folder-title-content {
+    color: var(--text-nav-selected, var(--text-accent));
 }
 
 /*---------------------------------------------
@@ -37,7 +38,7 @@ div.has-folder-note {
 }
 
 .cute-card-view {
-    background: var(--background-accent);
+    background: var(--background-accent, var(--background-secondary));
     text-decoration: none !important;
     color: var(--text-normal);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -151,7 +152,7 @@ div.has-folder-note {
     -webkit-box-shadow: 0 1px 1px 0 rgba(31, 35, 46, 0.15);
     box-shadow: 0 1px 1px 0 rgba(31, 35, 46, 0.15);
     /* add by xpgo */
-    background: var(--background-accent);
+    background: var(--background-accent, var(--background-secondary));
     text-decoration: none !important;
     color: var(--text-normal);
 }
