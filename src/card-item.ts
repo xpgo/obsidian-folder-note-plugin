@@ -1,5 +1,4 @@
-
-import { App, } from "obsidian";
+import { App, TFile } from "obsidian";
 
 // ------------------------------------------------------------
 // Card block
@@ -213,9 +212,9 @@ export class CardItem {
                 headEl.setAttr('style', `background-color: ${this.headImage};`);
             }
             else if (this.headImage.contains("://")) {
-                // app local image
+                // external or app URL image
                 headEl.addClass('thumb');
-                headEl.setAttr('style', `background-image: url(${this.headImage});`);
+                headEl.setAttr('style', `background-image: url("${this.headImage}");`);
             } else {
                 // asset file name?
                 let imageUrl = this.headImage;
@@ -228,10 +227,16 @@ export class CardItem {
                     }
                 }
                 if (!imageUrl.contains('://')) {
-                    imageUrl = app.vault.adapter.getResourcePath(imageUrl);
+                    const imgFile = app.vault.getAbstractFileByPath(imageUrl) ??
+                        app.metadataCache.getFirstLinkpathDest(imageUrl, '');
+                    if (imgFile instanceof TFile) {
+                        imageUrl = app.vault.getResourcePath(imgFile);
+                    } else {
+                        imageUrl = app.vault.adapter.getResourcePath(imageUrl);
+                    }
                 }
                 headEl.addClass('thumb');
-                headEl.setAttr('style', `background-image: url(${imageUrl});`);
+                headEl.setAttr('style', `background-image: url("${imageUrl}");`);
             }
 
             if (this.headText) {
@@ -251,8 +256,9 @@ export class CardItem {
         // Title
         if (this.titleLink) {
             let titleEl = articleEl.appendChild(document.createElement('a'));
-            if (this.titleLink.endsWith('.md')) {
+            if (!this.titleLink.contains('://')) {
                 titleEl.addClass('internal-link');
+                titleEl.setAttr('data-href', this.titleLink);
             }
             titleEl.href = this.titleLink;
             let h1El = document.createElement('h1');
