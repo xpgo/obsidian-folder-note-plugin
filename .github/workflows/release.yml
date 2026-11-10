@@ -20,8 +20,8 @@ jobs:
       - name: Install modules
         run: npm install
 
-      - name: Run build
-        run: npm run build
+      - name: Type check, build and verify output
+        run: npm run check
 
       - name: Read manifest version
         id: version

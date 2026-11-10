@@ -5,7 +5,10 @@
   "main": "main.js",
   "scripts": {
     "dev": "rollup --config rollup.config.js -w",
-    "build": "rollup --config rollup.config.js"
+    "build": "rollup --config rollup.config.js",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck && npm run build && node scripts/check-build.mjs",
+    "test:e2e": "node scripts/e2e-obsidian.mjs"
   },
   "keywords": [],
   "author": "",

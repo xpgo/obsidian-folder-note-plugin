@@ -144,6 +144,11 @@ This plugin uses a new plugin ID (`folder-note-revamped`), so it installs next t
 - `npm i` or `yarn` to install dependencies
 - `npm run dev` to start compilation in watch mode.
 
+## Testing
+
+- `npm run check` type checks, builds, and verifies the output (`scripts/check-build.mjs`): the release files exist, `manifest.json`, `package.json` and `versions.json` agree, and `main.js` loads and instantiates against a native ES6 `Plugin` class (the original load failure). It runs on every push and pull request through GitHub Actions (`.github/workflows/ci.yml`) and before each release.
+- `npm run test:e2e -- <vault name>` runs `scripts/e2e-obsidian.mjs` against a real Obsidian through the [Obsidian CLI](https://help.obsidian.md/cli). It installs the build into that vault, then checks that the plugin loads, its commands are registered, Ctrl+click creates and opens a folder note, the note is hidden, the `ccard` block renders, both commands work, and renaming a folder renames its note. Use a throwaway vault: the script overwrites `.obsidian/plugins/folder-note-revamped/` and creates and deletes a `__fnr-e2e__` folder. This needs the desktop app, so it is not part of CI.
+
 ## Releases
 
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/SamPlaysKeys/obsidian-folder-note-revamped-plugin?style=for-the-badge)
