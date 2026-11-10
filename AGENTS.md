@@ -100,6 +100,10 @@ Good starting points, roughly by value:
 - Toolchain: `obsidian` devDependency is a GitHub master tarball (unpinned); Rollup 2 / TS 4.9; consider esbuild (as in Obsidian's sample plugin) and TS 5.
 - README still has some prose and typos inherited from the original.
 
+## Upstream issues and PRs
+
+`doc/upstream-triage.md` triages every issue and PR from the original repo (xpgo/obsidian-folder-note-plugin): status against current code, priority, suggested work packages and which PR changes are worth porting. Check it before starting a feature or bug fix; many reports are duplicates of each other and share one root cause.
+
 ## When in doubt
 
 - Reproduce in a real Obsidian via the CLI/e2e test rather than reasoning from the API typings; the bundled typings lag behind the app.
