@@ -84,11 +84,13 @@ Remember to update the plugin, if you find some issues.
 **For updating from version < 0.4.0**, please refer to [Update from old version](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/update-old-version.md).
 
 
-### 0.8.x
+### 1.0.x
 
-- rename to Folder Note Revamped with new plugin ID `folder-note-revamped` (0.8.0)
-- fix plugin not loading in current Obsidian by compiling to ES2018 (0.8.0)
-- use `view.editor` instead of removed `view.sourceMode.cmEditor` (0.8.0)
+Version numbering restarts at 1.0.1 for Folder Note Revamped. The jump accounts for the differences from the original plugin: the original's last release was 0.7.3 (its `package.json` said 0.9.7), and this revamp has a new plugin ID, so it is a separate plugin from there on.
+
+- rename to Folder Note Revamped with new plugin ID `folder-note-revamped` (1.0.1)
+- fix plugin not loading in current Obsidian by compiling to ES2018 (1.0.1)
+- use `view.editor` instead of removed `view.sourceMode.cmEditor` (1.0.1)
 
 ### 0.7.x
 
@@ -142,11 +144,11 @@ This plugin uses a new plugin ID (`folder-note-revamped`), so it installs next t
 - `npm i` or `yarn` to install dependencies
 - `npm run dev` to start compilation in watch mode.
 
-## Support
-
-Folder Note Revamped is only possible because of the original plugin. If you find it useful, please support its creator:
-
-[<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="BuyMeACoffee" width="100">](https://www.buymeacoffee.com/xpgo)
+## Releases
 
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/SamPlaysKeys/obsidian-folder-note-revamped-plugin?style=for-the-badge)
 ![GitHub all releases](https://img.shields.io/github/downloads/SamPlaysKeys/obsidian-folder-note-revamped-plugin/total?style=for-the-badge)
+
+## License
+
+MIT, see [LICENSE.md](LICENSE.md). Copyright is shared between the original author (xpgo) and the revamp.
