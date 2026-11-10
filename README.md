@@ -45,7 +45,7 @@ When CTRL+Click a folder, the plugin will create a description note with the pat
     - {{FOLDER_PATH}} will be replaced with the folder path.
     - {{FOLDER_BRIEF}} will be replaced with a ccard code block for card-style overview of current folder, and the content in the ccard can be edited, see [ccard Syntax](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/ccard-syntax.md) for more information.
     - {{FOLDER_BRIEF_LIVE}}  will be replaced with a tiny code block which will be rendered to the folder overview in real time.
-- **Key for New Note**: set to use CTRL+Click or ALT+Click for creating new folder note.
+- **Key for New Note**: set to use CTRL+Click or ALT+Click for creating new folder note. On macOS the options are shown as Cmd+Click and Option+Click.
 - **Hide Folder Note**: turn off the setting if you want to show the note file in file explorer.
 - **Auto Rename**: For the methods *Inside-Folder* and *Outside-Folder*, the plugin tries to rename the folder note name when a folder name is changed or vice versa. However, this function is experimental, it does not always work. Rename them manually if you have some issue related to the operation.
 - **Delete Folder Note**: For the method *Outside-Folder*, delete folder note file when a folder is deleted. 

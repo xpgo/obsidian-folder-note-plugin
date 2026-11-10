@@ -136,6 +136,19 @@ try {
     check('command "Insert Folder Brief" is registered', cmds.includes(`${ID}:insert-folder-brief`));
     check('command "Make Current Note to Folder" is registered', cmds.includes(`${ID}:note-to-folder`));
 
+    // ---- settings tab: the key label matches the host OS ----
+    const keyLabels = ev(`
+        app.setting.open();
+        app.setting.openTabById(${JSON.stringify(ID)});
+        await new Promise(r => setTimeout(r, 500));
+        const item = [...app.setting.activeTab.containerEl.querySelectorAll('.setting-item')]
+            .find(i => i.querySelector('.setting-item-name')?.textContent === 'Key for New Note');
+        const options = item ? [...item.querySelectorAll('select:not(.is-measuring) option')].map(o => o.textContent) : [];
+        app.setting.close();
+        return {options, mac: document.body.classList.contains('mod-macos')};`);
+    const expectedKeys = keyLabels.mac ? ['Cmd + Click', 'Option + Click'] : ['Ctrl + Click', 'Alt + Click'];
+    check('"Key for New Note" options use the host OS key names', JSON.stringify(keyLabels.options) === JSON.stringify(expectedKeys), JSON.stringify(keyLabels.options));
+
     // ---- fixtures ----
     ev(`
         await app.vault.adapter.rmdir(${JSON.stringify(DIR)}, true).catch(() => {});

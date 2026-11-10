@@ -1,5 +1,6 @@
 import {
     App,
+    Platform,
     PluginSettingTab,
     Setting,
 } from 'obsidian';
@@ -100,8 +101,8 @@ export class FolderNoteSettingTab extends PluginSettingTab {
             .setDesc('Key + Click a folder to create folder note file. ')
             .addDropdown(dropDown =>
                 dropDown
-                .addOption('ctrl', 'Ctrl + Click')
-                .addOption('alt', 'Alt + Click')
+                .addOption('ctrl', Platform.isMacOS ? 'Cmd + Click' : 'Ctrl + Click')
+                .addOption('alt', Platform.isMacOS ? 'Option + Click' : 'Alt + Click')
                 .setValue(this.plugin.settings.folderNoteKey || 'ctrl')
                 .onChange((value: string) => {
                     this.plugin.settings.folderNoteKey = value;
