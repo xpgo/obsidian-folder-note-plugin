@@ -27,7 +27,7 @@ export default class FolderNotePlugin extends Plugin {
     folderNote: FolderNote;
 
     async onload() {
-        console.log('Loading Folder Note plugin.');
+        console.log('Loading Folder Note Revamped plugin.');
 
         // load settings
         await this.loadSettings();
@@ -106,7 +106,7 @@ export default class FolderNotePlugin extends Plugin {
     }
 
     onunload() {
-        console.log('Unloading Folder Note plugin');
+        console.log('Unloading Folder Note Revamped plugin');
     }
 
     updateFolderNote() {

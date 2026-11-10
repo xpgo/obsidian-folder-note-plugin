@@ -1,4 +1,4 @@
-# Change log of Folder Note Plugin
+# Change log of Folder Note Revamped (originally Folder Note Plugin by xpgo)
 
 
 ## 0.7.x

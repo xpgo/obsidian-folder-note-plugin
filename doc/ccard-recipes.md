@@ -31,7 +31,7 @@ imagePrefix: 'assets/'
 ​```
 ```
 
-If you want to use the `imagePrefix` in every folder note, you could insert the above code blocks into the initial content of folder note by the Folder Note Plugin settings.
+If you want to use the `imagePrefix` in every folder note, you could insert the above code blocks into the initial content of folder note by the Folder Note Revamped settings.
 
 For statically defined item data:
 
@@ -49,7 +49,7 @@ imagePrefix: 'assets/'
 
 ## Show card image for attachment folder within current folder
 
-If you set the attachment folder path to be within any local folder, use the following codes in initial content definition for Folder Note Plugin (thanks [ibestvina](https://github.com/ibestvina) for suggestion):
+If you set the attachment folder path to be within any local folder, use the following codes in initial content definition for Folder Note Revamped (thanks [ibestvina](https://github.com/ibestvina) for suggestion):
 
 ```
 ​```ccard
@@ -60,7 +60,7 @@ imagePrefix: '{{FOLDER_PATH}}/attachments/'
 
 ## Link to folder note by alias
 
-Since the folder note path is not the real folder path, if you want to link a folder as a normal note, you can use the alias feature of obsidian by using the following codes in initial content definition for Folder Note Plugin (thanks [ibestvina](https://github.com/ibestvina) for suggestion):
+Since the folder note path is not the real folder path, if you want to link a folder as a normal note, you can use the alias feature of obsidian by using the following codes in initial content definition for Folder Note Revamped (thanks [ibestvina](https://github.com/ibestvina) for suggestion):
 
 ```
 ---

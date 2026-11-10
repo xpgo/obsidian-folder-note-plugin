@@ -1,4 +1,6 @@
-# Folder Note Plugin
+# Folder Note Revamped
+
+> **Credit:** Folder Note Revamped is based on the original [Folder Note plugin](https://github.com/xpgo/obsidian-folder-note-plugin) created by [xpgo](https://github.com/xpgo). All the original ideas, features and most of the code are his work. This repo only keeps the plugin working with current versions of Obsidian.
 
 > **Update: why this repo exists.** This is a revamp of [xpgo/obsidian-folder-note-plugin](https://github.com/xpgo/obsidian-folder-note-plugin), which has not been updated since 2021 and no longer loads in current versions of Obsidian (tested on 1.15.x). Obsidian's `Plugin` base class is now a native ES6 class, but the original was compiled to ES5 (`"target": "es5"`), whose inheritance pattern calls `Plugin.apply(this, ...)`. That throws `TypeError: Class constructor ... cannot be invoked without 'new'` inside Obsidian's plugin loader. The plugin shows as enabled but never starts, and nothing appears in the console. Fixes in this repo:
 >
@@ -8,7 +10,7 @@
 
 Obsidian Plugin: Add description note to a folder. Generate card-style overview of folder. Make your vault to be a hierarchy note system.
 
-![Folder_Note_Show](https://raw.githubusercontent.com/xpgo/obsidian-folder-note-plugin/master/image/folder-note1.png)
+![Folder_Note_Revamped_Show](https://raw.githubusercontent.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/main/image/folder-note1.png)
 
 ## Usage
 
@@ -30,7 +32,7 @@ Obsidian Plugin: Add description note to a folder. Generate card-style overview 
 
 ## How it works
 
-The mechanism is simple: attaching a note file to a folder, and the folder note file will be hidden by CSS rules. But where do you put the folder note? There are three methods of creating description note for a folder: **Inside-Folder**, **Outside-Folder** and **Index-File**, please read [Folder Note Methods](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/folder-note-methods.md) for more information about the Pros and Cons of each method. The **default** configuration is the **Inside-Folder** method. If you prefer the others, please change the settings.
+The mechanism is simple: attaching a note file to a folder, and the folder note file will be hidden by CSS rules. But where do you put the folder note? There are three methods of creating description note for a folder: **Inside-Folder**, **Outside-Folder** and **Index-File**, please read [Folder Note Methods](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/folder-note-methods.md) for more information about the Pros and Cons of each method. The **default** configuration is the **Inside-Folder** method. If you prefer the others, please change the settings.
 
 When CTRL+Click a folder, the plugin will create a description note with the path dependent on the method you choose. When clicking a folder, the plugin will open the attached note for you. You can configure the plugin to hide/show the folder note. It can also be configured to try to automatically keep the folder and note name in syncing. 
 
@@ -41,7 +43,7 @@ When CTRL+Click a folder, the plugin will create a description note with the pat
 - **Note Initial Content**: set the initial content for a new folder note, you can use some keywords:
     - {{FOLDER_NAME}} will be replaced with the folder name.
     - {{FOLDER_PATH}} will be replaced with the folder path.
-    - {{FOLDER_BRIEF}} will be replaced with a ccard code block for card-style overview of current folder, and the content in the ccard can be edited, see [ccard Syntax](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/ccard-syntax.md) for more information.
+    - {{FOLDER_BRIEF}} will be replaced with a ccard code block for card-style overview of current folder, and the content in the ccard can be edited, see [ccard Syntax](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/ccard-syntax.md) for more information.
     - {{FOLDER_BRIEF_LIVE}}  will be replaced with a tiny code block which will be rendered to the folder overview in real time.
 - **Key for New Note**: set to use CTRL+Click or ALT+Click for creating new folder note.
 - **Hide Folder Note**: turn off the setting if you want to show the note file in file explorer.
@@ -57,7 +59,7 @@ Use `Ctrl+P` to open Obsidian's command panel, and use the following commands of
 
 ## Overview of folder
 
-The plugin can automatically generate a code block of `ccard` in a note file for displaying overview of a folder. The code block can be used and edited in any normal note file. For the syntax of `ccard` code block, please refer to [ccard Syntax](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/ccard-syntax.md).
+The plugin can automatically generate a code block of `ccard` in a note file for displaying overview of a folder. The code block can be used and edited in any normal note file. For the syntax of `ccard` code block, please refer to [ccard Syntax](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/ccard-syntax.md).
 
 You can use the `ccard` code block in the inital folder note template in the settings page. Alternatively, you can use some keywords in the initial folder note template to generate the code blocks for you:
 
@@ -71,16 +73,22 @@ The keyword {{FOLDER_BRIEF_LIVE}} will be replaced  with a `ccard` code block wh
 
 **Configuration**
 
-If you want to configure the content and appearence of the `ccard` code block, please refer to [ccard Syntax](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/ccard-syntax.md). You can configure the style, colume number, image prefix, folder path, note only, max brief length and more. For example, the following image show different styles of folder overview. 
+If you want to configure the content and appearence of the `ccard` code block, please refer to [ccard Syntax](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/ccard-syntax.md). You can configure the style, colume number, image prefix, folder path, note only, max brief length and more. For example, the following image show different styles of folder overview. 
 
-![Card_Strip_Style](https://raw.githubusercontent.com/xpgo/obsidian-folder-note-plugin/master/image/style-card-strip.png)
+![Card_Strip_Style](https://raw.githubusercontent.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/main/image/style-card-strip.png)
 
 
 ## Change log
 
 Remember to update the plugin, if you find some issues. 
-**For updating from version < 0.4.0**, please refer to [Update from old version](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/update-old-version.md).
+**For updating from version < 0.4.0**, please refer to [Update from old version](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/update-old-version.md).
 
+
+### 0.8.x
+
+- rename to Folder Note Revamped with new plugin ID `folder-note-revamped` (0.8.0)
+- fix plugin not loading in current Obsidian by compiling to ES2018 (0.8.0)
+- use `view.editor` instead of removed `view.sourceMode.cmEditor` (0.8.0)
 
 ### 0.7.x
 
@@ -93,7 +101,7 @@ Remember to update the plugin, if you find some issues.
 - fix showing both folder and note for outside mode (0.7.0)
 - hide settings according to folder method (0.7.0)
 
-See [more change log](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/change-log.md).
+See [more change log](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/change-log.md).
 
 ## Plans for future
 
@@ -109,9 +117,24 @@ See [more change log](https://github.com/xpgo/obsidian-folder-note-plugin/blob/m
 
 ## Install
 
-- On the Obsidian's settings page, browse the community plugins and search 'Folder Note', then install.
-- Or manually installing: go to the GitHub release page, copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/folder-note-plugin/`.
-- The plugin will be updated continuously, update it through Obsidian's settings page or manually.
+### Install with BRAT (recommended)
+
+Folder Note Revamped is not in the Obsidian community plugin list, so the easiest way to install it is with the [BRAT plugin](https://obsidian.md/plugins?id=obsidian42-brat):
+
+1. Install **Obsidian42 - BRAT** from Obsidian's community plugins and enable it.
+2. Follow the [BRAT quick guide](https://tfthacker.com/brat-quick-guide) and choose **Add Beta plugin**.
+3. Paste this repo URL: `https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin`
+4. Pick the latest version, then enable **Folder Note Revamped** in Settings -> Community plugins.
+
+BRAT checks for new releases and can update the plugin for you.
+
+### Manual install
+
+Go to the [releases page](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/releases), and copy `main.js`, `styles.css` and `manifest.json` to `VaultFolder/.obsidian/plugins/folder-note-revamped/`. Then enable the plugin in Settings -> Community plugins.
+
+### Coming from the original Folder Note plugin
+
+This plugin uses a new plugin ID (`folder-note-revamped`), so it installs next to the original instead of replacing it. Disable or uninstall the original `folder-note-plugin` so that the two don't both handle folder clicks. To keep your settings, copy `VaultFolder/.obsidian/plugins/folder-note-plugin/data.json` to `VaultFolder/.obsidian/plugins/folder-note-revamped/data.json`. Your existing folder notes keep working because they are normal notes.
 
 ## Build
 
@@ -121,6 +144,9 @@ See [more change log](https://github.com/xpgo/obsidian-folder-note-plugin/blob/m
 
 ## Support
 
+Folder Note Revamped is only possible because of the original plugin. If you find it useful, please support its creator:
+
 [<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="BuyMeACoffee" width="100">](https://www.buymeacoffee.com/xpgo)
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/xpgo/obsidian-folder-note-plugin?style=for-the-badge)
-![GitHub all releases](https://img.shields.io/github/downloads/xpgo/obsidian-folder-note-plugin/total?style=for-the-badge)
+
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/SamPlaysKeys/obsidian-folder-note-revamped-plugin?style=for-the-badge)
+![GitHub all releases](https://img.shields.io/github/downloads/SamPlaysKeys/obsidian-folder-note-revamped-plugin/total?style=for-the-badge)

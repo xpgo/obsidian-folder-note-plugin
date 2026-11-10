@@ -1,7 +1,7 @@
 {
-  "name": "folder-note-plugin",
-  "version": "0.9.7",
-  "description": "This is a folder note plugin for Obsidian (https://obsidian.md)",
+  "name": "folder-note-revamped",
+  "version": "0.8.0",
+  "description": "Folder Note Revamped: a revamp of xpgo's Folder Note plugin for Obsidian (https://obsidian.md)",
   "main": "main.js",
   "scripts": {
     "dev": "rollup --config rollup.config.js -w",
