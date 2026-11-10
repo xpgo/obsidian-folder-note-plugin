@@ -1,27 +1,55 @@
 // End-to-end check inside a real, running Obsidian, driven by the Obsidian CLI.
 //
-// Usage: VAULT=<vault name> npm run test:e2e        (or: node scripts/e2e-obsidian.mjs <vault name>)
+// Usage: npm run test:e2e                      create a throwaway vault, test in it, then delete it
+//        npm run test:e2e -- <vault name>      test in an existing vault instead (or VAULT=<name>)
 //
 // Requirements: Obsidian is running with the Obsidian CLI enabled (Settings -> General ->
-// Command line interface), and the target vault is open with community plugins turned on
-// (restricted mode off). Use a throwaway vault if you can: the script copies the built
-// main.js/manifest.json/styles.css over `.obsidian/plugins/folder-note-revamped/` and creates and
-// deletes a `__fnr-e2e__` folder in the vault. Run `npm run build` first (`npm run check` does).
+// Command line interface). By default a temporary vault is created in the OS temp folder, opened
+// in its own Obsidian window, and closed, unregistered and deleted at the end; your own vaults
+// are not touched. With an existing vault, the built main.js/manifest.json/styles.css are copied
+// over `.obsidian/plugins/folder-note-revamped/` and a `__fnr-e2e__` folder is created and
+// deleted, so prefer a throwaway vault. Run `npm run build` first (`npm run check` does).
 import { execFileSync } from 'node:child_process';
-import { copyFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { randomBytes } from 'node:crypto';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, realpathSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const vault = process.argv[2] || process.env.VAULT;
-if (!vault) {
-    console.error('Usage: VAULT=<vault name> npm run test:e2e');
-    process.exit(2);
-}
+const existingVault = process.argv[2] || process.env.VAULT;
 const manifest = JSON.parse(readFileSync(join(root, 'manifest.json'), 'utf8'));
 const ID = manifest.id;
 const OLD_ID = 'folder-note-plugin';
 const DIR = '__fnr-e2e__';
+
+// Run JS in whichever Obsidian window the CLI picks (used to open/remove the temporary vault).
+function evAnywhere(code) {
+    const out = execFileSync('obsidian', ['eval', `code=${code}`], { encoding: 'utf8' }).trim();
+    const line = out.split('\n').find((l) => l.startsWith('=> '));
+    if (!line) throw new Error(`Unexpected CLI output: ${out}`);
+    return line.slice(3);
+}
+
+let vault = existingVault;
+let tempVaultPath = null;
+if (!vault) {
+    tempVaultPath = join(realpathSync(tmpdir()), `fnr-e2e-${randomBytes(4).toString('hex')}`);
+    vault = tempVaultPath.split('/').pop();
+    // Same call Obsidian's own vault picker makes. `true` creates the vault (the folder must not exist yet).
+    const opened = evAnywhere(`JSON.stringify(require('electron').ipcRenderer.sendSync('vault-open', ${JSON.stringify(tempVaultPath)}, true))`);
+    if (opened !== 'true') {
+        rmSync(tempVaultPath, { recursive: true, force: true });
+        console.error(`Could not create a temporary vault: ${opened}. Is Obsidian running with the CLI enabled?`);
+        process.exit(2);
+    }
+    console.log(`Created temporary vault ${vault}`);
+    process.on('uncaughtException', (e) => {
+        console.error(e.message);
+        cleanup();
+        process.exit(1);
+    });
+}
 
 // Run async JS inside Obsidian. `body` is the body of an async function that returns JSON-able data.
 function ev(body) {
@@ -40,6 +68,18 @@ const check = (name, ok, detail = '') => {
     if (!ok) failures++;
 };
 
+// the new vault window takes a moment to appear
+for (let i = 0; ; i++) {
+    try {
+        ev('return true');
+        break;
+    } catch (e) {
+        if (i >= 40) throw new Error(`Vault "${vault}" did not open: ${e.message}`);
+        execFileSync('sleep', ['0.5']);
+    }
+}
+ev('if (!app.plugins.isEnabled()) await app.plugins.setEnable(true); return true');
+
 const info = ev(`return {name: app.vault.getName(), base: app.vault.adapter.basePath,
     oldEnabled: app.plugins.enabledPlugins.has(${JSON.stringify(OLD_ID)})}`);
 console.log(`Vault: ${info.name} (${info.base})`);
@@ -57,6 +97,17 @@ for (const f of ['main.js', 'manifest.json', 'styles.css']) {
 }
 
 function cleanup() {
+    if (tempVaultPath) {
+        try {
+            ev('setTimeout(() => window.close(), 100); return true');
+            execFileSync('sleep', ['2']);
+            evAnywhere(`JSON.stringify(require('electron').ipcRenderer.sendSync('vault-remove', ${JSON.stringify(tempVaultPath)}))`);
+        } catch (e) {
+            console.error(`Could not close the temporary vault window: ${e.message}`);
+        }
+        rmSync(tempVaultPath, { recursive: true, force: true });
+        return;
+    }
     try {
         ev(`const f = app.vault.getAbstractFileByPath(${JSON.stringify(DIR)});
             if (f) await app.vault.delete(f, true);
