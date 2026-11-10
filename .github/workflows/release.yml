@@ -2,6 +2,7 @@ name: Release
 on:
   push:
     tags: ["*"]
+  workflow_dispatch:
 env:
   PLUGIN_NAME: folder-note-revamped
 permissions:
@@ -22,11 +23,15 @@ jobs:
       - name: Run build
         run: npm run build
 
+      - name: Read manifest version
+        id: version
+        run: echo "version=$(node -p "require('./manifest.json').version")" >> "$GITHUB_OUTPUT"
+
       - name: Check tag matches manifest version
+        if: github.ref_type == 'tag'
         run: |
-          VERSION=$(node -p "require('./manifest.json').version")
-          if [ "$VERSION" != "${GITHUB_REF_NAME}" ]; then
-            echo "Tag ${GITHUB_REF_NAME} does not match manifest.json version $VERSION"
+          if [ "${{ steps.version.outputs.version }}" != "${GITHUB_REF_NAME}" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match manifest.json version ${{ steps.version.outputs.version }}"
             exit 1
           fi
 
@@ -39,7 +44,8 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          name: ${{ github.ref_name }}
+          tag_name: ${{ steps.version.outputs.version }}
+          name: ${{ steps.version.outputs.version }}
           draft: false
           prerelease: false
           files: |
