@@ -1,5 +1,11 @@
 # Folder Note Plugin
 
+> **Update: why this repo exists.** This is a revamp of [xpgo/obsidian-folder-note-plugin](https://github.com/xpgo/obsidian-folder-note-plugin), which has not been updated since 2021 and no longer loads in current versions of Obsidian (tested on 1.15.x). Obsidian's `Plugin` base class is now a native ES6 class, but the original was compiled to ES5 (`"target": "es5"`), whose inheritance pattern calls `Plugin.apply(this, ...)`. That throws `TypeError: Class constructor ... cannot be invoked without 'new'` inside Obsidian's plugin loader. The plugin shows as enabled but never starts, and nothing appears in the console. Fixes in this repo:
+>
+> - Compile to ES2018 so the plugin works with Obsidian's native classes.
+> - Fix the Rollup config, because `@rollup/plugin-typescript` skipped `src/main.ts` and a clean build failed.
+> - Use `view.editor` instead of the removed `view.sourceMode.cmEditor` API.
+
 Obsidian Plugin: Add description note to a folder. Generate card-style overview of folder. Make your vault to be a hierarchy note system.
 
 ![Folder_Note_Show](https://raw.githubusercontent.com/xpgo/obsidian-folder-note-plugin/master/image/folder-note1.png)

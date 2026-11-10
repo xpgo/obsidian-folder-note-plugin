@@ -78,7 +78,7 @@ export default class FolderNotePlugin extends Plugin {
             callback: async () => {
                 const view = this.app.workspace.getActiveViewOfType(MarkdownView);
                 if (view) {
-                    const editor = view.sourceMode.cmEditor;
+                    const editor = view.editor;
                     const activeFile = this.app.workspace.getActiveFile();
                     // generate brief
                     let folderBrief = new FolderBrief(this.app);
