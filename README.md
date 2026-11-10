@@ -17,12 +17,12 @@ Obsidian Plugin: Add description note to a folder. Generate card-style overview 
 - **Add** description note: CTRL+Click on a folder in the file explorer panel.
 - **Show** description note: Just Click the folder.
 - **Delete** description note: Just delete the opened note file.
-- **Settings** : configure the note file method, file name and inital template on the settings panel.
+- **Settings** : configure the note file method, file name and initial template on the settings panel.
 - **Command**: Use some commands to control the folder note plugin.
 
 ## Features
 
-- Dispaly and manage folder note easily
+- Display and manage folder note easily
 - Support 3 different folder note methods
 - Automatically keep folder and folder-note name in syncing
 - Make a folder by active note file
@@ -61,19 +61,19 @@ Use `Ctrl+P` to open Obsidian's command panel, and use the following commands of
 
 The plugin can automatically generate a code block of `ccard` in a note file for displaying overview of a folder. The code block can be used and edited in any normal note file. For the syntax of `ccard` code block, please refer to [ccard Syntax](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/ccard-syntax.md).
 
-You can use the `ccard` code block in the inital folder note template in the settings page. Alternatively, you can use some keywords in the initial folder note template to generate the code blocks for you:
+You can use the `ccard` code block in the initial folder note template in the settings page. Alternatively, you can use some keywords in the initial folder note template to generate the code blocks for you:
 
 **Keyword: {{FOLDER_BRIEF}}**
 
-The keyword {{FOLDER_BRIEF}} will be replaces with a `ccard` code block which describes an brief overview of the folder. You can edit the codes in the code block to display whatever content you like. If you want to update the overview of a folder, it can be inserted to a note by command: Ctrl+P, Insert Folder Overview.
+The keyword {{FOLDER_BRIEF}} will be replaced with a `ccard` code block which describes a brief overview of the folder. You can edit the codes in the code block to display whatever content you like. If you want to update the overview of a folder, it can be inserted to a note by command: Ctrl+P, Insert Folder Overview.
 
 **Keyword: {{FOLDER_BRIEF_LIVE}}**
 
-The keyword {{FOLDER_BRIEF_LIVE}} will be replaced  with a `ccard` code block which will be rendered to the folder overview in real time. It is useful when you put some notes with image in a folder, e.g., things collections, it will generate a card view of all the notes with images dynamically.
+The keyword {{FOLDER_BRIEF_LIVE}} will be replaced  with a `ccard` code block which will be rendered to the folder overview in real time. It is useful when you put some notes with images in a folder, e.g., things collections, it will generate a card view of all the notes with images dynamically.
 
 **Configuration**
 
-If you want to configure the content and appearence of the `ccard` code block, please refer to [ccard Syntax](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/ccard-syntax.md). You can configure the style, colume number, image prefix, folder path, note only, max brief length and more. For example, the following image show different styles of folder overview. 
+If you want to configure the content and appearance of the `ccard` code block, please refer to [ccard Syntax](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/ccard-syntax.md). You can configure the style, column number, image prefix, folder path, note only, max brief length and more. For example, the following image shows different styles of folder overview. 
 
 ![Card_Strip_Style](https://raw.githubusercontent.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/main/image/style-card-strip.png)
 
@@ -91,12 +91,13 @@ Version numbering restarts at 1.0.1 for Folder Note Revamped. The jump accounts 
 - rename to Folder Note Revamped with new plugin ID `folder-note-revamped` (1.0.1)
 - fix plugin not loading in current Obsidian by compiling to ES2018 (1.0.1)
 - use `view.editor` instead of removed `view.sourceMode.cmEditor` (1.0.1)
+- fix typos in the README, docs and settings page; thanks to [GitAritron](https://github.com/GitAritron) for reporting them in the original repo (unreleased)
 
 ### 0.7.x
 
 - add strip style view of item data (0.7.3)
-- use {{FOLDER_BRIEF_LIVE}} for default inital content (0.7.2)
-- add Keyword {{FOLDER_PATH}} for inital content (0.7.1)
+- use {{FOLDER_BRIEF_LIVE}} for default initial content (0.7.2)
+- add Keyword {{FOLDER_PATH}} for initial content (0.7.1)
 - fix multiple usage of some keywords for initial content (0.7.1)
 - add imagePrefix key for ccard (0.7.0)
 - add noteOnly Key for folder_brief_live (0.7.0)
@@ -107,7 +108,7 @@ See [more change log](https://github.com/SamPlaysKeys/obsidian-folder-note-revam
 
 ## Plans for future
 
-- Add more template option for generating the initial content.
+- Add more template options for generating the initial content.
 - Automatically generate overview contents for the folder note file based on contents in the folder, like the software [Trilium](https://github.com/zadam/trilium) does. (Partially done.)
 - More robust renaming operation.
 - More style of overview.
