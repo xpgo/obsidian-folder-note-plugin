@@ -9,3 +9,9 @@ package-lock.json
 # build
 main.js
 *.js.map
+
+# MacOS Development
+.DS_Store
+
+# General
+.local/
