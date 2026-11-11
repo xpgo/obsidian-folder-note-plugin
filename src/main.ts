@@ -80,11 +80,13 @@ export default class FolderNotePlugin extends Plugin {
                 if (view) {
                     const editor = view.editor;
                     const activeFile = this.app.workspace.getActiveFile();
-                    // generate brief
-                    let folderBrief = new FolderBrief(this.app);
-                    let folderPath = await this.folderNote.getNoteFolderBriefPath(activeFile.path);
-                    let briefCards = await folderBrief.makeBriefCards(folderPath, activeFile.path);
-                    editor.replaceSelection(briefCards.getYamlCode(), "end");
+                    if (activeFile) {
+                        // generate brief
+                        let folderBrief = new FolderBrief(this.app);
+                        let folderPath = await this.folderNote.getNoteFolderBriefPath(activeFile.path);
+                        let briefCards = await folderBrief.makeBriefCards(folderPath, activeFile.path);
+                        editor.replaceSelection(briefCards.getYamlCode(), "end");
+                    }
                 }
             },
             hotkeys: []
@@ -97,8 +99,10 @@ export default class FolderNotePlugin extends Plugin {
                 const view = this.app.workspace.getActiveViewOfType(MarkdownView);
                 if (view) {
                     const activeFile = this.app.workspace.getActiveFile();
-                    this.folderNote.setByNotePath(activeFile.path);
-                    await this.folderNote.newNoteFolder();
+                    if (activeFile) {
+                        this.folderNote.setByNotePath(activeFile.path);
+                        await this.folderNote.newNoteFolder();
+                    }
                 }
             },
             hotkeys: []

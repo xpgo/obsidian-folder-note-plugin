@@ -249,6 +249,27 @@ try {
                 oldNote: !!app.vault.getAbstractFileByPath(${JSON.stringify(DIR + '/Renamed/Created.md')})};`);
     check('renaming a folder renames its folder note too', renamed.note && !renamed.oldNote, JSON.stringify(renamed));
 
+    // ---- commands with no active file must not throw ----
+    const noFile = ev(`
+        const leaf = app.workspace.getLeaf(false);
+        await leaf.setViewState({type: 'markdown', state: {file: ${JSON.stringify(DIR + '/Renamed/Alpha.md')}, mode: 'source'}, active: true});
+        await new Promise(r => setTimeout(r, 500));
+        const orig = app.workspace.getActiveFile;
+        const rejections = [];
+        const onRej = (e) => rejections.push(String(e.reason));
+        window.addEventListener('unhandledrejection', onRej);
+        app.workspace.getActiveFile = () => null;
+        try {
+            app.commands.executeCommandById(${JSON.stringify(ID + ':insert-folder-brief')});
+            app.commands.executeCommandById(${JSON.stringify(ID + ':note-to-folder')});
+            await new Promise(r => setTimeout(r, 1000));
+        } finally {
+            app.workspace.getActiveFile = orig;
+            window.removeEventListener('unhandledrejection', onRej);
+        }
+        return {rejections};`);
+    check('commands do not throw when there is no active file', noFile.rejections.length === 0, noFile.rejections.join('\n'));
+
     // ---- no errors reported while all of this ran ----
     const errs = execFileSync('obsidian', [`vault=${vault}`, 'dev:errors'], { encoding: 'utf8' });
     const mine = errs.split('\n').filter((l) => /folder-note|ccard|FolderNote/i.test(l));
