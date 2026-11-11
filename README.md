@@ -93,8 +93,9 @@ Version numbering restarts at 1.0.1 for Folder Note Revamped. The jump accounts 
 - rename to Folder Note Revamped with new plugin ID `folder-note-revamped` (1.0.1)
 - fix plugin not loading in current Obsidian by compiling to ES2018 (1.0.1)
 - use `view.editor` instead of removed `view.sourceMode.cmEditor` (1.0.1)
-- fix typos in the README, docs and settings page; thanks to [GitAritron](https://github.com/GitAritron) for reporting them in the original repo (unreleased)
-- the "Insert Folder Brief" and "Make Current Note to Folder" commands no longer throw when no file is active; thanks to [RyzenFromFire](https://github.com/RyzenFromFire) for the fix in the original repo (unreleased)
+- fix typos in the README, docs and settings page; thanks to [GitAritron](https://github.com/GitAritron) for reporting them in the original repo (1.0.2)
+- the "Insert Folder Brief" and "Make Current Note to Folder" commands no longer throw when no file is active; thanks to [RyzenFromFire](https://github.com/RyzenFromFire) for the fix in the original repo (1.0.2)
+- show Cmd/Option instead of Ctrl/Alt in the "Key for New Note" setting on macOS (1.0.2)
 
 ### 0.7.x
 
