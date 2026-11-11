@@ -72,7 +72,7 @@ If a plugin shows as enabled but `app.plugins.plugins['folder-note-revamped']` i
 ## Releasing
 
 1. Bump the version in `manifest.json`, `package.json` and `versions.json` (same value, `versions.json` maps it to `minAppVersion`).
-2. Update the changelog: the `### 1.0.x` list in `README.md` and the same list in `doc/change-log.md`. Tag each entry with its version, and thank contributors (see [Attribution](#attribution)).
+2. Update the changelog in `doc/change-log.md` (the `## 1.0.x` list; it is the only changelog, the README just links to it). Tag each entry with its version, and thank contributors (see [Attribution](#attribution)).
 3. `npm run check`, commit, push to `main`.
 4. `git tag <version> && git push origin <version>` (tag is exactly the version, no `v`).
 5. The release workflow publishes a non-draft release with `main.js`, `manifest.json`, `styles.css` and a zip. BRAT only installs from non-draft releases that have these assets.
@@ -82,7 +82,7 @@ Versioning restarted at `1.0.1` for this fork (the original's last release was `
 ## Attribution
 
 - **Original plugin:** xpgo is credited in the README (one-line intro under the logo, the "Why this revamp exists" section, and the License section), `LICENSE.md` (copyright line), `manifest.json` (`author` and description), `package.json` (description) and the intro of `doc/ccard-syntax.md` and `doc/change-log.md`. Do not remove these.
-- **Ported upstream PRs and issue reports:** when a change comes from a PR or issue in xpgo/obsidian-folder-note-plugin, (1) add a `Co-authored-by: Name <id+login@users.noreply.github.com>` trailer to the commit (get the id with `gh api users/<login> --jq .id`), (2) add a thank-you with a profile link to that version's entry in the README `### 1.0.x` changelog, and (3) note it in `doc/upstream-triage.md` when it affects triage status. The commit message should also say which upstream PR or issue it is based on.
+- **Ported upstream PRs and issue reports:** when a change comes from a PR or issue in xpgo/obsidian-folder-note-plugin, (1) add a `Co-authored-by: Name <id+login@users.noreply.github.com>` trailer to the commit (get the id with `gh api users/<login> --jq .id`), (2) add a thank-you with a profile link to that version's entry in `doc/change-log.md`, and (3) note it in `doc/upstream-triage.md` when it affects triage status. The commit message should also say which upstream PR or issue it is based on.
 - **Issue references:** link upstream issues with `https://redirect.github.com/xpgo/obsidian-folder-note-plugin/issues/N`, so no cross-reference note appears on the upstream repo.
 - **Do not post on the upstream repo** (comments, PRs, issues) without the user's explicit approval.
 

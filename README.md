@@ -128,35 +128,9 @@ This is a revamp of [xpgo/obsidian-folder-note-plugin](https://github.com/xpgo/o
 
 ## Change log
 
-Remember to update the plugin, if you find some issues. 
+See the [change log](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/change-log.md) for every release of Folder Note Revamped and of the original plugin. Version numbering restarts at 1.0.1 for this revamp.
+
 **For updating from version < 0.4.0**, please refer to [Update from old version](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/update-old-version.md).
-
-
-### 1.0.x
-
-Version numbering restarts at 1.0.1 for Folder Note Revamped. The jump accounts for the differences from the original plugin: the original's last release was 0.7.3 (its `package.json` said 0.9.7), and this revamp has a new plugin ID, so it is a separate plugin from there on.
-
-- rename to Folder Note Revamped with new plugin ID `folder-note-revamped` (1.0.1)
-- fix plugin not loading in current Obsidian by compiling to ES2018 (1.0.1)
-- use `view.editor` instead of removed `view.sourceMode.cmEditor` (1.0.1)
-- fix typos in the README, docs and settings page; thanks to [GitAritron](https://github.com/GitAritron) for reporting them in the original repo (1.0.2)
-- the "Insert Folder Brief" and "Make Current Note to Folder" commands no longer throw when no file is active; thanks to [RyzenFromFire](https://github.com/RyzenFromFire) for the fix in the original repo (1.0.2)
-- show Cmd/Option instead of Ctrl/Alt in the "Key for New Note" setting on macOS (1.0.2)
-- files that share the folder's name but are not the folder note (for example `<folder>.pdf` or `<folder>.base`) are no longer hidden in the file explorer; the folder note is now matched by its full path instead of its title ([#9](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/issues/9), 1.0.3)
-- the `folder_brief_live` ccard block now lists the folder of the note that contains it instead of the active note, so it works in split panes, hover previews, embeds and canvas, and no longer throws when no file is active; based on [headhunter45](https://github.com/headhunter45)'s PR in the original repo ([#2](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/issues/2), 1.0.4)
-
-### 0.7.x
-
-- add strip style view of item data (0.7.3)
-- use {{FOLDER_BRIEF_LIVE}} for default initial content (0.7.2)
-- add Keyword {{FOLDER_PATH}} for initial content (0.7.1)
-- fix multiple usage of some keywords for initial content (0.7.1)
-- add imagePrefix key for ccard (0.7.0)
-- add noteOnly Key for folder_brief_live (0.7.0)
-- fix showing both folder and note for outside mode (0.7.0)
-- hide settings according to folder method (0.7.0)
-
-See [more change log](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/change-log.md).
 
 ## Development
 

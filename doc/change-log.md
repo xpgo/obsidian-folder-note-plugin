@@ -1,9 +1,10 @@
 # Change log of Folder Note Revamped (originally Folder Note Plugin by xpgo)
 
+**For updating from version < 0.4.0**, please refer to [Update from old version](update-old-version.md).
 
 ## 1.0.x
 
-Version numbering restarts at 1.0.1 for Folder Note Revamped (see the [README](../README.md#change-log)).
+Version numbering restarts at 1.0.1 for Folder Note Revamped. The jump accounts for the differences from the original plugin: the original's last release was 0.7.3 (its `package.json` said 0.9.7), and this revamp has a new plugin ID, so it is a separate plugin from there on.
 
 - rename to Folder Note Revamped with new plugin ID `folder-note-revamped` (1.0.1)
 - fix plugin not loading in current Obsidian by compiling to ES2018 (1.0.1)
@@ -16,6 +17,7 @@ Version numbering restarts at 1.0.1 for Folder Note Revamped (see the [README](.
 
 ## 0.7.x
 
+- add strip style view of item data (0.7.3)
 - use {{FOLDER_BRIEF_LIVE}} for default initial content (0.7.2)
 - add Keyword {{FOLDER_PATH}} for initial content (0.7.1)
 - fix multiple usage of some keywords for initial content (0.7.1)
