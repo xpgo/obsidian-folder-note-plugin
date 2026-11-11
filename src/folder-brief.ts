@@ -19,30 +19,6 @@ export class FolderBrief {
         this.noteOnly = false;
     }
 
-    // for cards type: folder_brief
-    async yamlFolderBrief(yaml: any) {
-        var folderPath = '';
-        const activeFile = this.app.workspace.getActiveFile();
-        if (!activeFile) return null;
-        var notePath = activeFile.path;
-        if (yaml.cards && yaml.cards.folder) {
-            folderPath = yaml.cards.folder;
-            let folderExist = await this.app.vault.adapter.exists(folderPath);
-            if (!folderExist) folderPath = '';
-        }
-        else if (activeFile.parent) {
-            folderPath = activeFile.parent.path;
-        }
-
-        // generate
-        if (folderPath.length > 0) {
-            let briefCards = await this.makeBriefCards(folderPath, notePath);
-            const cardsElem = briefCards.getDocElement(this.app);
-            return cardsElem;
-        }
-        return null;
-    }
-    
     // generate folder overview
     async makeBriefCards(folderPath: string, activeNotePath: string) {
         // set note name
