@@ -266,6 +266,29 @@ try {
         ctxRender.withActive.includes('InA') && !ctxRender.withActive.includes('InB'), ctxRender.withActive);
     check('ccard still renders when there is no active file', ctxRender.noActive.includes('InA'), ctxRender.noActive);
 
+    // ---- ccard lists the vault tree (not hidden folders) ----
+    const tree = ev(`
+        const d = ${JSON.stringify(DIR)};
+        await app.vault.adapter.mkdir(d + '/CtxA/.dotfolder');
+        await app.vault.adapter.write(d + '/CtxA/.dotfolder/Secret.md', '# Secret');
+        await app.vault.create(d + '/RootHost.md', '\`\`\`ccard\\ntype: folder_brief_live\\nfolder: /\\n\`\`\`');
+        const read = async (path) => {
+            const leaf = app.workspace.getLeaf('tab');
+            await leaf.setViewState({type: 'markdown', state: {file: path, mode: 'preview'}, active: true});
+            await new Promise(r => setTimeout(r, 300));
+            leaf.view.previewMode.rerender(true);
+            await new Promise(r => setTimeout(r, 1500));
+            const text = leaf.view.containerEl.querySelector('.markdown-preview-view').innerText;
+            leaf.detach();
+            return text;
+        };
+        const root = await read(d + '/RootHost.md');
+        const sub = await read(d + '/CtxA/Host.md');
+        return {root, sub, hasObsidian: !!app.vault.getAbstractFileByPath('.obsidian')};`);
+    check('ccard of the vault root lists the vault folders', tree.root.includes(DIR), tree.root);
+    check('ccard of the vault root does not list hidden folders like .obsidian', !tree.root.includes('.obsidian'), tree.root);
+    check('ccard does not list notes in hidden folders', tree.sub.includes('InA') && !tree.sub.includes('Secret') && !tree.sub.includes('dotfolder'), tree.sub);
+
     // ---- commands ----
     const brief = ev(`
         const file = app.vault.getAbstractFileByPath(${JSON.stringify(DIR + '/Created/Alpha.md')});

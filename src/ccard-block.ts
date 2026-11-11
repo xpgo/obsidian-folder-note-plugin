@@ -1,5 +1,5 @@
 
-import { App, MarkdownPostProcessorContext} from "obsidian";
+import { App, MarkdownPostProcessorContext, TFolder} from "obsidian";
 import { FolderBrief } from './folder-brief';
 import { FolderNote } from './folder-note';
 import { CardBlock } from './card-item';
@@ -62,7 +62,8 @@ export class ccardProcessor {
         // the note that contains the block, not the active note (hover previews, embeds, canvas)
         var notePath = ctx.sourcePath;
         if (yaml.folder) {
-            let folderExist = await this.app.vault.adapter.exists(yaml.folder);
+            let folderExist = yaml.folder == '/' ||
+                this.app.vault.getAbstractFileByPath(yaml.folder) instanceof TFolder;
             if (folderExist) folderPath = yaml.folder;
         }
         else if (notePath) {

@@ -1,5 +1,5 @@
 
-import { App, TFile, } from "obsidian";
+import { App, TFile, TFolder, } from "obsidian";
 import { CardStyle, CardBlock, CardItem } from './card-item'
 
 // ------------------------------------------------------------
@@ -48,19 +48,20 @@ export class FolderBrief {
         // set note name
         let cardBlock = new CardBlock();
 
-        // children statistic
-        let pathList = await this.app.vault.adapter.list(folderPath);
-        const subFolderList = pathList.folders;
-        const subFileList = pathList.files;
+        // children from the vault tree: hidden folders such as .obsidian are not part of it
+        const children = this.getChildren(folderPath);
+        const subFolderList = children.folders;
+        const subFileList = children.files;
+        const folderPrefix = folderPath == '/' ? '' : folderPath;
 
         // sub folders
         if (!this.noteOnly) {
             for (var i = 0; i < subFolderList.length; i++) {
-                var subFolderPath = subFolderList[i];
+                var subFolderPath = subFolderList[i].path;
                 // have outside folder note?
-                let noteExists = await this.app.vault.adapter.exists(subFolderPath + '.md');
+                let noteExists = this.app.vault.getAbstractFileByPath(subFolderPath + '.md') instanceof TFile;
                 if (!noteExists) {
-                    let folderCard = await this.makeFolderCard(folderPath, subFolderPath);
+                    let folderCard = await this.makeFolderCard(folderPrefix, subFolderPath);
                     cardBlock.addCard(folderCard);
                 }
             }
@@ -68,15 +69,31 @@ export class FolderBrief {
 
         // notes
         for (var i = 0; i < subFileList.length; i++) {
-            var subFilePath = subFileList[i];
-            if (!subFilePath.endsWith('.md')) continue;
+            var subFilePath = subFileList[i].path;
+            if (subFileList[i].extension != 'md') continue;
             if (subFilePath == activeNotePath) continue; // omit self includeing
-            let noteCard = await this.makeNoteCard(folderPath, subFilePath);
+            let noteCard = await this.makeNoteCard(folderPrefix, subFilePath);
             cardBlock.addCard(noteCard);
         }
 
         // return
         return cardBlock;
+    }
+
+    // sorted sub folders and files of a folder, "/" is the vault root
+    getChildren(folderPath: string) {
+        const folder = (folderPath == '/' || folderPath == '') ?
+            this.app.vault.getRoot() : this.app.vault.getAbstractFileByPath(folderPath);
+        const folders: TFolder[] = [];
+        const files: TFile[] = [];
+        if (folder instanceof TFolder) {
+            for (const child of folder.children) {
+                if (child instanceof TFolder) folders.push(child);
+                else if (child instanceof TFile) files.push(child);
+            }
+        }
+        const byName = (a: { name: string }, b: { name: string }) => a.name.localeCompare(b.name);
+        return { folders: folders.sort(byName), files: files.sort(byName) };
     }
 
     // make folder brief card
@@ -86,14 +103,14 @@ export class FolderBrief {
         let card = new CardItem(subFolderName, CardStyle.Folder);
 
         // description
-        let subPathList = await this.app.vault.adapter.list(subFolderPath);
+        let subChildren = this.getChildren(subFolderPath);
         var folderBrief = 'Contains ';
-        folderBrief += subPathList.folders.length.toString() + ' folders, ';
-        folderBrief += subPathList.files.length.toString() + ' notes.';
+        folderBrief += subChildren.folders.length.toString() + ' folders, ';
+        folderBrief += subChildren.files.filter(f => f.extension == 'md').length.toString() + ' notes.';
         card.setAbstract(folderBrief);
 
         // footnote, use date in the future
-        card.setFootnote(subFolderPath.replace(folderPath + '/', ''));
+        card.setFootnote(subFolderPath.replace(folderPath ? folderPath + '/' : '', ''));
         
         // return
         return card;
