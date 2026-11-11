@@ -39,7 +39,7 @@ Likely to skip: xpgo#11, #16, #23, #35, #40, #56, #57, #68, #70, #76 (canvas ind
 | 24 | New Feature and fixes | aidenlx | CLOSED | **reimplement** (ideas only) | #18, #67, #58, #97, #78 | Mostly whole-file prettier reformatting of every file. The author abandoned it for their own plugin, `alx-folder-note`. The useful ideas are middle-click or new-leaf opening and hiding existing notes via a MutationObserver. |
 | 20 | Update README.md | divineforge | CLOSED | **skip** (superseded by 104) | #115 | README wording fixes. Some edits are ungrammatical ("the path depends on…"). 104 covers the same typos better. |
 
-**Status (as of 1.0.2):** #104 (typos) and the `activeFile` null guards from #117 are ported and credited. The rest is still open; see the umbrella issues in this repo.
+**Status (as of 1.0.3):** #104 (typos) and the `activeFile` null guards from #117 (the "Insert Folder Brief" and "Make Current Note to Folder" commands in `src/main.ts`, commit `33c62e5`, covered by an e2e check) are ported and credited. The guards in `ccard-block.ts` and `folder-brief.ts` are not part of #117; they come with the `ctx.sourcePath` work from #119 (issue #2 in this repo). 1.0.3 also fixes a bug found outside the triage: non-`.md` files named like the folder were hidden (issue #9 in this repo, which stays open for the `.base` folder note feature). The rest is still open; see the umbrella issues in this repo.
 
 `git apply --check` of the PR patches against the tree at triage time:
 - **Clean:** 87, 79 and 46. None of these touch files we changed.
