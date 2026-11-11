@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Folder Note Revamped logo</title>
+<style>
+  :root {
+    --purple-1: #a78bfa;
+    --purple-2: #7c3aed;
+    --purple-3: #4c1d95;
+    --pink: #f472b6;
+    --cyan: #22d3ee;
+    --ink: #0f0a1f;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(900px 600px at 15% 10%, rgba(124, 58, 237, .35), transparent 60%),
+      radial-gradient(800px 600px at 90% 90%, rgba(244, 114, 182, .25), transparent 60%),
+      var(--ink);
+    font-family: ui-sans-serif, -apple-system, "SF Pro Display", "Segoe UI", Inter, Roboto, sans-serif;
+    color: #fff;
+    overflow: hidden;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    padding: 48px 64px;
+    border-radius: 36px;
+    background: linear-gradient(160deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.12);
+    box-shadow: 0 30px 80px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.15);
+    backdrop-filter: blur(10px);
+  }
+  .mark { width: 220px; height: 220px; flex: none; filter: drop-shadow(0 18px 30px rgba(124,58,237,.55)); }
+  .note   { transform-origin: 110px 120px; animation: float 4.5s ease-in-out infinite; }
+  .orbit  { transform-origin: 110px 110px; animation: spin 14s linear infinite; }
+  .spark  { transform-box: fill-box; transform-origin: center; animation: twinkle 2.6s ease-in-out infinite; }
+  .spark.b { animation-delay: .9s; }
+  .spark.c { animation-delay: 1.7s; }
+  @keyframes float   { 0%,100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-9px) rotate(-3deg); } }
+  @keyframes spin    { to { transform: rotate(360deg); } }
+  @keyframes twinkle { 0%,100% { transform: scale(.4); opacity: .3; } 50% { transform: scale(1.15); opacity: 1; } }
+
+  .wordmark { line-height: .95; user-select: none; }
+  .wordmark .folder-note {
+    display: block;
+    font-size: 64px;
+    font-weight: 800;
+    letter-spacing: -2px;
+    color: #fff;
+  }
+  .wordmark .revamped {
+    display: block;
+    margin-top: 6px;
+    font-size: 84px;
+    font-weight: 900;
+    letter-spacing: -3px;
+    background: linear-gradient(100deg, var(--cyan), var(--purple-1) 40%, var(--pink) 85%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shimmer 6s ease-in-out infinite alternate;
+  }
+  @keyframes shimmer { to { background-position: 100% 0; } }
+  .tag {
+    margin-top: 18px;
+    font-size: 15px;
+    letter-spacing: .32em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.6);
+  }
+  .tag b { color: var(--purple-1); font-weight: 600; }
+
+  @media (max-width: 900px) {
+    .logo { flex-direction: column; padding: 36px; gap: 24px; text-align: center; }
+    .wordmark .folder-note { font-size: 44px; }
+    .wordmark .revamped { font-size: 58px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+  <div class="logo" role="img" aria-label="Folder Note Revamped">
+    <svg class="mark" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="folderBack" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#8b5cf6"/>
+          <stop offset="1" stop-color="#4c1d95"/>
+        </linearGradient>
+        <linearGradient id="folderFront" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#c4b5fd"/>
+          <stop offset=".35" stop-color="#8b5cf6"/>
+          <stop offset="1" stop-color="#5b21b6"/>
+        </linearGradient>
+        <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#ffffff"/>
+          <stop offset="1" stop-color="#e0e7ff"/>
+        </linearGradient>
+        <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#22d3ee"/>
+          <stop offset=".5" stop-color="#a78bfa"/>
+          <stop offset="1" stop-color="#f472b6"/>
+        </linearGradient>
+      </defs>
+
+      <!-- revamp ring: two chasing arrows -->
+      <g class="orbit" fill="none" stroke="url(#ring)" stroke-width="7" stroke-linecap="round">
+        <path d="M 110 12 A 98 98 0 0 1 200 78"/>
+        <path d="M 110 208 A 98 98 0 0 1 20 142"/>
+      </g>
+      <g fill="url(#ring)" class="orbit">
+        <path d="M 207 64 L 211 92 L 184 84 Z"/>
+        <path d="M 13 156 L 9 128 L 36 136 Z"/>
+      </g>
+
+      <!-- back of folder -->
+      <path d="M 44 70 a 10 10 0 0 1 10 -10 h 36 q 6 0 10 5 l 6 7 h 60 a 10 10 0 0 1 10 10 v 74 a 10 10 0 0 1 -10 10 H 54 a 10 10 0 0 1 -10 -10 Z"
+            fill="url(#folderBack)"/>
+
+      <!-- note sticking out -->
+      <g class="note">
+        <rect x="64" y="52" width="92" height="82" rx="8" fill="url(#paper)"/>
+        <path d="M 138 52 h 10 a 8 8 0 0 1 8 8 v 10 h -10 a 8 8 0 0 1 -8 -8 Z" fill="#c7d2fe"/>
+        <rect x="74" y="72" width="52" height="6" rx="3" fill="#7c3aed"/>
+        <rect x="74" y="87" width="68" height="5" rx="2.5" fill="#a5b4fc"/>
+        <rect x="74" y="99" width="60" height="5" rx="2.5" fill="#a5b4fc"/>
+        <rect x="74" y="111" width="40" height="5" rx="2.5" fill="#a5b4fc"/>
+      </g>
+
+      <!-- front of folder -->
+      <path d="M 44 96 a 10 10 0 0 1 10 -10 h 112 a 10 10 0 0 1 10 10 l -6 60 a 10 10 0 0 1 -10 9 H 54 a 10 10 0 0 1 -10 -10 Z"
+            fill="url(#folderFront)"/>
+      <path d="M 54 86 h 112 a 10 10 0 0 1 10 10 l -.6 6 H 44 v -6 a 10 10 0 0 1 10 -10 Z" fill="#fff" opacity=".28"/>
+
+      <!-- sparkles -->
+      <path class="spark" d="M 172 40 l 4 12 l 12 4 l -12 4 l -4 12 l -4 -12 l -12 -4 l 12 -4 Z" fill="#fff"/>
+      <path class="spark b" d="M 40 44 l 2.5 7 l 7 2.5 l -7 2.5 l -2.5 7 l -2.5 -7 l -7 -2.5 l 7 -2.5 Z" fill="#67e8f9"/>
+      <path class="spark c" d="M 186 160 l 2 6 l 6 2 l -6 2 l -2 6 l -2 -6 l -6 -2 l 6 -2 Z" fill="#f9a8d4"/>
+    </svg>
+
+    <div class="wordmark">
+      <span class="folder-note">Folder Note</span>
+      <span class="revamped">Revamped</span>
+      <div class="tag">An <b>Obsidian</b> plugin</div>
+    </div>
+  </div>
+</body>
+</html>
