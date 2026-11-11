@@ -1,6 +1,6 @@
 {
   "name": "folder-note-revamped",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Folder Note Revamped: a revamp of xpgo's Folder Note plugin for Obsidian (https://obsidian.md)",
   "main": "main.js",
   "scripts": {

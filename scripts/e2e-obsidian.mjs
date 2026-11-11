@@ -156,6 +156,9 @@ try {
         await app.vault.createFolder(${JSON.stringify(DIR + '/Created')});
         await app.vault.create(${JSON.stringify(DIR + '/Created/Alpha.md')}, '# Alpha\\nFirst note in the folder.');
         await app.vault.create(${JSON.stringify(DIR + '/Created/Beta.md')}, '# Beta\\nSecond note in the folder.');
+        // same base name as the folder, but not .md: must never be hidden as the folder note
+        await app.vault.createBinary(${JSON.stringify(DIR + '/Created/Created.pdf')}, new TextEncoder().encode('%PDF-1.4\\n').buffer);
+        await app.vault.create(${JSON.stringify(DIR + '/Created/Created.base')}, 'views:\\n  - type: table\\n    name: Table\\n');
         await app.vault.create(${JSON.stringify(DIR + '/Loose.md')}, '# Loose\\nA note that should become a folder.');
         // make sure the file explorer exists and the fixture folder is visible
         let leaf = app.workspace.getLeavesOfType('file-explorer')[0];
@@ -197,10 +200,21 @@ try {
         const view2 = app.workspace.getLeavesOfType('file-explorer')[0].view;
         const folderEl = view2.fileItems[${JSON.stringify(DIR + '/Created')}].selfEl;
         const noteEl = document.querySelector('.is-folder-note');
+        const state = (p) => {
+            const el = view2.fileItems[p] && view2.fileItems[p].selfEl;
+            return el ? {rendered: !!el.offsetParent, hasClass: el.classList.contains('is-folder-note'),
+                         display: getComputedStyle(el).display} : null;
+        };
         return {hasClass: folderEl.classList.contains('has-folder-note'),
-                noteHidden: !!noteEl && getComputedStyle(noteEl).display === 'none'};`);
+                noteHidden: !!noteEl && getComputedStyle(noteEl).display === 'none',
+                notePath: noteEl && noteEl.getAttribute('data-path'),
+                pdf: state(${JSON.stringify(DIR + '/Created/Created.pdf')}),
+                base: state(${JSON.stringify(DIR + '/Created/Created.base')})};`);
     check('folder gets the has-folder-note class', deco.hasClass);
     check('folder note is hidden in the file explorer', deco.noteHidden);
+    check('only <folder>.md is hidden as the folder note', deco.notePath === `${DIR}/Created/Created.md`, String(deco.notePath));
+    check('<folder>.pdf stays visible next to the folder note', !!deco.pdf && deco.pdf.rendered && !deco.pdf.hasClass && deco.pdf.display !== 'none', JSON.stringify(deco.pdf));
+    check('<folder>.base stays visible next to the folder note', !!deco.base && deco.base.rendered && !deco.base.hasClass && deco.base.display !== 'none', JSON.stringify(deco.base));
 
     // ---- ccard rendering (reading view) ----
     const rendered = ev(`

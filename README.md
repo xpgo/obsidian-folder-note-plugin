@@ -142,6 +142,7 @@ Version numbering restarts at 1.0.1 for Folder Note Revamped. The jump accounts 
 - fix typos in the README, docs and settings page; thanks to [GitAritron](https://github.com/GitAritron) for reporting them in the original repo (1.0.2)
 - the "Insert Folder Brief" and "Make Current Note to Folder" commands no longer throw when no file is active; thanks to [RyzenFromFire](https://github.com/RyzenFromFire) for the fix in the original repo (1.0.2)
 - show Cmd/Option instead of Ctrl/Alt in the "Key for New Note" setting on macOS (1.0.2)
+- files that share the folder's name but are not the folder note (for example `<folder>.pdf` or `<folder>.base`) are no longer hidden in the file explorer; the folder note is now matched by its full path instead of its title ([#9](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/issues/9), 1.0.3)
 
 ### 0.7.x
 

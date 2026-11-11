@@ -274,12 +274,13 @@ export class FolderNote {
             parentElem = parentElem.parentElement;
             fileSelector = ':scope > div.nav-file > div.nav-file-title';
         }
-        var noteBase = this.noteBase;
+        // match the full path, not the title: titles have no extension, so
+        // Projects.base or Projects.pdf would match Projects.md
+        var notePath = this.notePath;
         parentElem.querySelectorAll(fileSelector)
             .forEach(function (fileElem) {
-                var fileNodeTitle = fileElem.firstElementChild.textContent;
-                // console.log('fileNoteTitle: ', fileNodeTitle);
-                if (hideSetting && (fileNodeTitle == noteBase)) {
+                var filePath = fileElem.getAttribute('data-path');
+                if (hideSetting && (filePath == notePath)) {
                     fileElem.addClass('is-folder-note');
                 }
                 else if (!isOutsideMethod) {
