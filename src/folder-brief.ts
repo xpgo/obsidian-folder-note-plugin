@@ -1,5 +1,5 @@
 
-import { App, MarkdownView, TFile, } from "obsidian";
+import { App, TFile, } from "obsidian";
 import { CardStyle, CardBlock, CardItem } from './card-item'
 
 // ------------------------------------------------------------
@@ -23,24 +23,22 @@ export class FolderBrief {
     async yamlFolderBrief(yaml: any) {
         var folderPath = '';
         const activeFile = this.app.workspace.getActiveFile();
+        if (!activeFile) return null;
         var notePath = activeFile.path;
-        if (yaml.cards.folder) {
+        if (yaml.cards && yaml.cards.folder) {
             folderPath = yaml.cards.folder;
             let folderExist = await this.app.vault.adapter.exists(folderPath);
             if (!folderExist) folderPath = '';
         }
-        else {
+        else if (activeFile.parent) {
             folderPath = activeFile.parent.path;
         }
 
         // generate
         if (folderPath.length > 0) {
-            const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-            if (view) {
-                let briefCards = await this.makeBriefCards(folderPath, notePath);
-                const cardsElem = briefCards.getDocElement(this.app);
-                return cardsElem;
-            }
+            let briefCards = await this.makeBriefCards(folderPath, notePath);
+            const cardsElem = briefCards.getDocElement(this.app);
+            return cardsElem;
         }
         return null;
     }

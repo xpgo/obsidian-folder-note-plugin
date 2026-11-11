@@ -229,6 +229,43 @@ try {
     check('ccard block renders cards for the notes in the folder', rendered.count >= 2, `cards: ${rendered.count}`);
     check('rendered cards show the note titles', rendered.text.includes('Alpha') && rendered.text.includes('Beta'), rendered.text);
 
+    // ---- ccard uses the note that contains the block, not the active note ----
+    // Render a note with a live brief in one pane while a note from another folder is active in
+    // a second pane (the same applies to hover previews, embeds and canvas).
+    const ctxRender = ev(`
+        const d = ${JSON.stringify(DIR)};
+        await app.vault.createFolder(d + '/CtxA');
+        await app.vault.createFolder(d + '/CtxB');
+        await app.vault.create(d + '/CtxA/Host.md', '\`\`\`ccard\\ntype: folder_brief_live\\n\`\`\`');
+        await app.vault.create(d + '/CtxA/InA.md', '# InA\\nLives next to the host note.');
+        await app.vault.create(d + '/CtxB/Other.md', '# Other\\nThe active note.');
+        await app.vault.create(d + '/CtxB/InB.md', '# InB\\nLives next to the active note.');
+        const hostFile = app.vault.getAbstractFileByPath(d + '/CtxA/Host.md');
+        const hostLeaf = app.workspace.getLeaf('tab');
+        await hostLeaf.setViewState({type: 'markdown', state: {file: hostFile.path, mode: 'preview'}, active: true});
+        const otherLeaf = app.workspace.getLeaf('split');
+        await otherLeaf.openFile(app.vault.getAbstractFileByPath(d + '/CtxB/Other.md'));
+        app.workspace.setActiveLeaf(otherLeaf, {focus: true});
+        await new Promise(r => setTimeout(r, 500));
+        const activePath = app.workspace.getActiveFile().path;
+        const read = async () => {
+            hostLeaf.view.previewMode.rerender(true);
+            await new Promise(r => setTimeout(r, 1500));
+            return hostLeaf.view.containerEl.querySelector('.markdown-preview-view').innerText;
+        };
+        const withActive = await read();
+        const orig = app.workspace.getActiveFile;
+        app.workspace.getActiveFile = () => null;
+        let noActive;
+        try { noActive = await read(); } finally { app.workspace.getActiveFile = orig; }
+        hostLeaf.detach();
+        otherLeaf.detach();
+        return {activePath, withActive, noActive};`);
+    check('another note in another folder is active during the render', ctxRender.activePath === `${DIR}/CtxB/Other.md`, String(ctxRender.activePath));
+    check('ccard lists the folder of the note that contains it, not of the active note',
+        ctxRender.withActive.includes('InA') && !ctxRender.withActive.includes('InB'), ctxRender.withActive);
+    check('ccard still renders when there is no active file', ctxRender.noActive.includes('InA'), ctxRender.noActive);
+
     // ---- commands ----
     const brief = ev(`
         const file = app.vault.getAbstractFileByPath(${JSON.stringify(DIR + '/Created/Alpha.md')});

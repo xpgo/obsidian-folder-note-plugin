@@ -1,7 +1,7 @@
 {
 	"id": "folder-note-revamped",
 	"name": "Folder Note Revamped",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"minAppVersion": "0.9.12",
 	"description": "Click a folder node to show a note describing the folder. A revamp of the original Folder Note plugin by xpgo.",
 	"author": "SamPlaysKeys (original plugin by xpgo)",

@@ -12,6 +12,7 @@ Version numbering restarts at 1.0.1 for Folder Note Revamped (see the [README](.
 - the "Insert Folder Brief" and "Make Current Note to Folder" commands no longer throw when no file is active; thanks to [RyzenFromFire](https://github.com/RyzenFromFire) for the fix in the original repo (1.0.2)
 - show Cmd/Option instead of Ctrl/Alt in the "Key for New Note" setting on macOS (1.0.2)
 - files that share the folder's name but are not the folder note (for example `<folder>.pdf` or `<folder>.base`) are no longer hidden in the file explorer; the folder note is now matched by its full path instead of its title ([#9](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/issues/9), 1.0.3)
+- the `folder_brief_live` ccard block now lists the folder of the note that contains it instead of the active note, so it works in split panes, hover previews, embeds and canvas, and no longer throws when no file is active; based on [headhunter45](https://github.com/headhunter45)'s PR in the original repo ([#2](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/issues/2), 1.0.4)
 
 ## 0.7.x
 
