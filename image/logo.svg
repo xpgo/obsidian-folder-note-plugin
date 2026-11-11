@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 300" width="900" height="300" role="img" aria-labelledby="t">
+  <title id="t">Folder Note Revamped</title>
+  <defs>
+    <radialGradient id="glowA" cx="12%" cy="0%" r="70%">
+      <stop offset="0" stop-color="#7c3aed" stop-opacity=".45"/>
+      <stop offset="1" stop-color="#7c3aed" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowB" cx="100%" cy="100%" r="70%">
+      <stop offset="0" stop-color="#f472b6" stop-opacity=".30"/>
+      <stop offset="1" stop-color="#f472b6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="folderBack" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8b5cf6"/>
+      <stop offset="1" stop-color="#4c1d95"/>
+    </linearGradient>
+    <linearGradient id="folderFront" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c4b5fd"/>
+      <stop offset=".35" stop-color="#8b5cf6"/>
+      <stop offset="1" stop-color="#5b21b6"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e0e7ff"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#22d3ee"/>
+      <stop offset=".5" stop-color="#a78bfa"/>
+      <stop offset="1" stop-color="#f472b6"/>
+    </linearGradient>
+    <linearGradient id="word" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#22d3ee"/>
+      <stop offset=".45" stop-color="#a78bfa"/>
+      <stop offset="1" stop-color="#f472b6"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%">
+      <feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#7c3aed" flood-opacity=".55"/>
+    </filter>
+    <style>
+      .note  { transform-box: view-box; transform-origin: 110px 120px; animation: float 4.5s ease-in-out infinite; }
+      .orbit { transform-box: view-box; transform-origin: 110px 110px; animation: spin 14s linear infinite; }
+      .spark { transform-box: fill-box; transform-origin: center; animation: twinkle 2.6s ease-in-out infinite; }
+      .b { animation-delay: .9s; }
+      .c { animation-delay: 1.7s; }
+      @keyframes float   { 0%,100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-9px) rotate(-3deg); } }
+      @keyframes spin    { to { transform: rotate(360deg); } }
+      @keyframes twinkle { 0%,100% { transform: scale(.4); opacity: .3; } 50% { transform: scale(1.15); opacity: 1; } }
+      @media (prefers-reduced-motion: reduce) { .note, .orbit, .spark { animation: none; } }
+    </style>
+  </defs>
+
+  <rect width="900" height="300" rx="28" fill="#0f0a1f"/>
+  <rect width="900" height="300" rx="28" fill="url(#glowA)"/>
+  <rect width="900" height="300" rx="28" fill="url(#glowB)"/>
+  <rect x=".5" y=".5" width="899" height="299" rx="27.5" fill="none" stroke="#ffffff" stroke-opacity=".12"/>
+
+  <g transform="translate(50 40) scale(1.0)" filter="url(#shadow)">
+    <g class="orbit" fill="none" stroke="url(#ring)" stroke-width="7" stroke-linecap="round">
+      <path d="M 110 12 A 98 98 0 0 1 200 78"/>
+      <path d="M 110 208 A 98 98 0 0 1 20 142"/>
+    </g>
+    <g class="orbit" fill="url(#ring)">
+      <path d="M 207 64 L 211 92 L 184 84 Z"/>
+      <path d="M 13 156 L 9 128 L 36 136 Z"/>
+    </g>
+
+    <path d="M 44 70 a 10 10 0 0 1 10 -10 h 36 q 6 0 10 5 l 6 7 h 60 a 10 10 0 0 1 10 10 v 74 a 10 10 0 0 1 -10 10 H 54 a 10 10 0 0 1 -10 -10 Z" fill="url(#folderBack)"/>
+
+    <g class="note">
+      <rect x="64" y="52" width="92" height="82" rx="8" fill="url(#paper)"/>
+      <path d="M 138 52 h 10 a 8 8 0 0 1 8 8 v 10 h -10 a 8 8 0 0 1 -8 -8 Z" fill="#c7d2fe"/>
+      <rect x="74" y="72" width="52" height="6" rx="3" fill="#7c3aed"/>
+      <rect x="74" y="87" width="68" height="5" rx="2.5" fill="#a5b4fc"/>
+      <rect x="74" y="99" width="60" height="5" rx="2.5" fill="#a5b4fc"/>
+      <rect x="74" y="111" width="40" height="5" rx="2.5" fill="#a5b4fc"/>
+    </g>
+
+    <path d="M 44 96 a 10 10 0 0 1 10 -10 h 112 a 10 10 0 0 1 10 10 l -6 60 a 10 10 0 0 1 -10 9 H 54 a 10 10 0 0 1 -10 -10 Z" fill="url(#folderFront)"/>
+    <path d="M 54 86 h 112 a 10 10 0 0 1 10 10 l -.6 6 H 44 v -6 a 10 10 0 0 1 10 -10 Z" fill="#fff" opacity=".28"/>
+
+    <path class="spark" d="M 172 40 l 4 12 l 12 4 l -12 4 l -4 12 l -4 -12 l -12 -4 l 12 -4 Z" fill="#fff"/>
+    <path class="spark b" d="M 40 44 l 2.5 7 l 7 2.5 l -7 2.5 l -2.5 7 l -2.5 -7 l -7 -2.5 l 7 -2.5 Z" fill="#67e8f9"/>
+    <path class="spark c" d="M 186 160 l 2 6 l 6 2 l -6 2 l -2 6 l -2 -6 l -6 -2 l 6 -2 Z" fill="#f9a8d4"/>
+  </g>
+
+  <g font-family="'SF Pro Display', -apple-system, 'Segoe UI', Inter, Helvetica, Arial, sans-serif">
+    <text x="310" y="132" font-size="58" font-weight="800" letter-spacing="-2" fill="#ffffff">Folder Note</text>
+    <text x="308" y="204" font-size="78" font-weight="900" letter-spacing="-3" fill="url(#word)">Revamped</text>
+    <text x="312" y="244" font-size="14" font-weight="600" letter-spacing="4.5" fill="#ffffff" fill-opacity=".6">AN <tspan fill="#a78bfa">OBSIDIAN</tspan> PLUGIN</text>
+  </g>
+</svg>

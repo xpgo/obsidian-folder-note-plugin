@@ -1,26 +1,20 @@
-# Folder Note Revamped
+<p align="center">
+  <img src="image/logo.svg" alt="Folder Note Revamped" width="640">
+</p>
 
-> **Update: why this repo exists.** This is a revamp of [xpgo/obsidian-folder-note-plugin](https://github.com/xpgo/obsidian-folder-note-plugin), which has not been updated since 2021 and no longer loads in current versions of Obsidian (tested on 1.15.x). Obsidian's `Plugin` base class is now a native ES6 class, but the original was compiled to ES5 (`"target": "es5"`), whose inheritance pattern calls `Plugin.apply(this, ...)`. That throws `TypeError: Class constructor ... cannot be invoked without 'new'` inside Obsidian's plugin loader. The plugin shows as enabled but never starts, and nothing appears in the console. Fixes in this repo:
->
-> - Compile to ES2018 so the plugin works with Obsidian's native classes.
-> - Fix the Rollup config, because `@rollup/plugin-typescript` skipped `src/main.ts` and a clean build failed.
-> - Use `view.editor` instead of the removed `view.sourceMode.cmEditor` API.
-
----
-
-## Overview
+<p align="center">
+  <a href="https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/releases"><img alt="Latest release" src="https://img.shields.io/github/v/release/SamPlaysKeys/obsidian-folder-note-revamped-plugin?style=for-the-badge"></a>
+  <a href="https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/releases"><img alt="Downloads" src="https://img.shields.io/github/downloads/SamPlaysKeys/obsidian-folder-note-revamped-plugin/total?style=for-the-badge"></a>
+  <a href="LICENSE.md"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue?style=for-the-badge"></a>
+</p>
 
 **Obsidian Plugin**: Add description note to a folder. Generate card-style overview of folder. Make your vault to be a hierarchy note system.
 
+A revamp of [xpgo's Folder Note plugin](https://github.com/xpgo/obsidian-folder-note-plugin), kept working with current Obsidian. See [why this revamp exists](#why-this-revamp-exists).
+
 ![Folder_Note_Revamped_Show](https://raw.githubusercontent.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/main/image/folder-note1.png)
 
-## Usage
-
-- **Add** description note: CTRL+Click on a folder in the file explorer panel.
-- **Show** description note: Just Click the folder.
-- **Delete** description note: Just delete the opened note file.
-- **Settings** : configure the note file method, file name and initial template on the settings panel.
-- **Command**: Use some commands to control the folder note plugin.
+**Jump to:** [Install](#install) · [Usage](#usage) · [Settings](#settings) · [Commands](#commands) · [ccard overview](#folder-overview-cards-ccard) · [Why this revamp](#why-this-revamp-exists) · [Change log](#change-log)
 
 ## Features
 
@@ -31,6 +25,35 @@
 - Customized initial folder note content
 - Card and strip style view of folder content
 - ccard code block for elegant view of item data
+
+## Install
+
+### With BRAT (recommended)
+
+Folder Note Revamped is not in the Obsidian community plugin list, so the easiest way to install it is with the [BRAT plugin](https://obsidian.md/plugins?id=obsidian42-brat):
+
+1. Install **Obsidian42 - BRAT** from Obsidian's community plugins and enable it.
+2. Follow the [BRAT quick guide](https://tfthacker.com/brat-quick-guide) and choose **Add Beta plugin**.
+3. Paste this repo URL: `https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin`
+4. Pick the latest version, then enable **Folder Note Revamped** in Settings -> Community plugins.
+
+BRAT checks for new releases and can update the plugin for you.
+
+### Manually
+
+Go to the [releases page](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/releases), and copy `main.js`, `styles.css` and `manifest.json` to `VaultFolder/.obsidian/plugins/folder-note-revamped/`. Then enable the plugin in Settings -> Community plugins.
+
+### Coming from the original plugin
+
+This plugin uses a new plugin ID (`folder-note-revamped`), so it installs next to the original instead of replacing it. Disable or uninstall the original `folder-note-plugin` so that the two don't both handle folder clicks. To keep your settings, copy `VaultFolder/.obsidian/plugins/folder-note-plugin/data.json` to `VaultFolder/.obsidian/plugins/folder-note-revamped/data.json`. Your existing folder notes keep working because they are normal notes.
+
+## Usage
+
+- **Add** description note: CTRL+Click on a folder in the file explorer panel.
+- **Show** description note: Just Click the folder.
+- **Delete** description note: Just delete the opened note file.
+- **Settings** : configure the note file method, file name and initial template on the settings panel.
+- **Command**: Use some commands to control the folder note plugin.
 
 ## How it works
 
@@ -52,14 +75,14 @@ When CTRL+Click a folder, the plugin will create a description note with the pat
 - **Auto Rename**: For the methods *Inside-Folder* and *Outside-Folder*, the plugin tries to rename the folder note name when a folder name is changed or vice versa. However, this function is experimental, it does not always work. Rename them manually if you have some issue related to the operation.
 - **Delete Folder Note**: For the method *Outside-Folder*, delete folder note file when a folder is deleted. 
 
-## Command
+## Commands
 
 Use `Ctrl+P` to open Obsidian's command panel, and use the following commands of the plugin:
 
-- **Insert Folder Overview**: Insert a folder overview code blocks in the current note file.
+- **Insert Folder Brief**: Insert a folder overview code blocks in the current note file.
 - **Make Current Note to Folder**: Create a folder based on the current note and attach the note to the new folder as folder note. 
 
-## Overview of folder
+## Folder overview cards (ccard)
 
 The plugin can automatically generate a code block of `ccard` in a note file for displaying overview of a folder. The code block can be used and edited in any normal note file. For the syntax of `ccard` code block, please refer to [ccard Syntax](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/ccard-syntax.md).
 
@@ -67,7 +90,7 @@ You can use the `ccard` code block in the initial folder note template in the se
 
 **Keyword: {{FOLDER_BRIEF}}**
 
-The keyword {{FOLDER_BRIEF}} will be replaced with a `ccard` code block which describes a brief overview of the folder. You can edit the codes in the code block to display whatever content you like. If you want to update the overview of a folder, it can be inserted to a note by command: Ctrl+P, Insert Folder Overview.
+The keyword {{FOLDER_BRIEF}} will be replaced with a `ccard` code block which describes a brief overview of the folder. You can edit the codes in the code block to display whatever content you like. If you want to update the overview of a folder, it can be inserted to a note by command: Ctrl+P, Insert Folder Brief.
 
 **Keyword: {{FOLDER_BRIEF_LIVE}}**
 
@@ -79,6 +102,29 @@ If you want to configure the content and appearance of the `ccard` code block, p
 
 ![Card_Strip_Style](https://raw.githubusercontent.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/main/image/style-card-strip.png)
 
+## Known issues and plans
+
+**Known issues**
+
+- The folder note file may appear when created. Click it again to hide.
+- Leave a message on the GitHub repo if you find any issues or want to improve the plugin.
+
+**Plans**
+
+- Add more template options for generating the initial content.
+- Automatically generate overview contents for the folder note file based on contents in the folder, like the software [Trilium](https://github.com/zadam/trilium) does. (Partially done.)
+- More robust renaming operation.
+- More style of overview.
+
+## Why this revamp exists
+
+This is a revamp of [xpgo/obsidian-folder-note-plugin](https://github.com/xpgo/obsidian-folder-note-plugin), which has not been updated since 2021 and no longer loads in current versions of Obsidian (tested on 1.15.x). Obsidian's `Plugin` base class is now a native ES6 class, but the original was compiled to ES5 (`"target": "es5"`), whose inheritance pattern calls `Plugin.apply(this, ...)`. That throws `TypeError: Class constructor ... cannot be invoked without 'new'` inside Obsidian's plugin loader. The plugin shows as enabled but never starts, and nothing appears in the console. Fixes in this repo:
+
+- Compile to ES2018 so the plugin works with Obsidian's native classes.
+- Fix the Rollup config, because `@rollup/plugin-typescript` skipped `src/main.ts` and a clean build failed.
+- Use `view.editor` instead of the removed `view.sourceMode.cmEditor` API.
+
+---
 
 ## Change log
 
@@ -110,54 +156,18 @@ Version numbering restarts at 1.0.1 for Folder Note Revamped. The jump accounts 
 
 See [more change log](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/change-log.md).
 
-## Plans for future
+## Development
 
-- Add more template options for generating the initial content.
-- Automatically generate overview contents for the folder note file based on contents in the folder, like the software [Trilium](https://github.com/zadam/trilium) does. (Partially done.)
-- More robust renaming operation.
-- More style of overview.
-
-## Known issues
-
-- The folder note file may appear when created. Click it again to hide.
-- Leave a message on the GitHub repo if you find any issues or want to improve the plugin.
-
-## Install
-
-### Install with BRAT (recommended)
-
-Folder Note Revamped is not in the Obsidian community plugin list, so the easiest way to install it is with the [BRAT plugin](https://obsidian.md/plugins?id=obsidian42-brat):
-
-1. Install **Obsidian42 - BRAT** from Obsidian's community plugins and enable it.
-2. Follow the [BRAT quick guide](https://tfthacker.com/brat-quick-guide) and choose **Add Beta plugin**.
-3. Paste this repo URL: `https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin`
-4. Pick the latest version, then enable **Folder Note Revamped** in Settings -> Community plugins.
-
-BRAT checks for new releases and can update the plugin for you.
-
-### Manual install
-
-Go to the [releases page](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/releases), and copy `main.js`, `styles.css` and `manifest.json` to `VaultFolder/.obsidian/plugins/folder-note-revamped/`. Then enable the plugin in Settings -> Community plugins.
-
-### Coming from the original Folder Note plugin
-
-This plugin uses a new plugin ID (`folder-note-revamped`), so it installs next to the original instead of replacing it. Disable or uninstall the original `folder-note-plugin` so that the two don't both handle folder clicks. To keep your settings, copy `VaultFolder/.obsidian/plugins/folder-note-plugin/data.json` to `VaultFolder/.obsidian/plugins/folder-note-revamped/data.json`. Your existing folder notes keep working because they are normal notes.
-
-## Build
+### Build
 
 - Clone this repo.
 - `npm i` or `yarn` to install dependencies
 - `npm run dev` to start compilation in watch mode.
 
-## Testing
+### Testing
 
 - `npm run check` type checks, builds, and verifies the output (`scripts/check-build.mjs`): the release files exist, `manifest.json`, `package.json` and `versions.json` agree, and `main.js` loads and instantiates against a native ES6 `Plugin` class (the original load failure). It runs on every push and pull request through GitHub Actions (`.github/workflows/ci.yml`) and before each release.
 - `npm run test:e2e` runs `scripts/e2e-obsidian.mjs` against a real Obsidian through the [Obsidian CLI](https://help.obsidian.md/cli). By default it creates a temporary vault in your OS temp folder, opens it in its own Obsidian window, and closes, unregisters and deletes it at the end, so your own vaults are not touched. Obsidian must be running with the CLI enabled. To use an existing vault instead, run `npm run test:e2e -- <vault name>` (this overwrites `.obsidian/plugins/folder-note-revamped/` there and creates and deletes a `__fnr-e2e__` folder). The test checks that the plugin loads, its commands are registered, Ctrl+click creates and opens a folder note, the note is hidden, the `ccard` block renders, both commands work, and renaming a folder renames its note. It needs the desktop app, so it is not part of CI.
-
-## Releases
-
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/SamPlaysKeys/obsidian-folder-note-revamped-plugin?style=for-the-badge)
-![GitHub all releases](https://img.shields.io/github/downloads/SamPlaysKeys/obsidian-folder-note-revamped-plugin/total?style=for-the-badge)
 
 ## License
 
