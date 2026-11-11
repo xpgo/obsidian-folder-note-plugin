@@ -41,6 +41,9 @@ jobs:
           cp main.js manifest.json styles.css ${{ env.PLUGIN_NAME }}
           zip -r ${{ env.PLUGIN_NAME }}.zip ${{ env.PLUGIN_NAME }}
 
+      - name: Build release notes from the change log
+        run: node scripts/release-notes.mjs "${{ steps.version.outputs.version }}" > release-notes.md
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
@@ -48,6 +51,7 @@ jobs:
           name: ${{ steps.version.outputs.version }}
           draft: false
           prerelease: false
+          body_path: release-notes.md
           files: |
             main.js
             manifest.json

@@ -4,6 +4,7 @@ import { readFileSync, existsSync, statSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { changeLogEntries } from './release-notes.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const readJson = (f) => JSON.parse(readFileSync(resolve(root, f), 'utf8'));
@@ -35,6 +36,11 @@ check(
     'versions.json maps the manifest version to minAppVersion',
     versions[manifest.version] === manifest.minAppVersion,
     `versions.json[${manifest.version}] = ${versions[manifest.version]}`
+);
+check(
+    'doc/change-log.md has an entry tagged with the manifest version (used as the release notes)',
+    changeLogEntries(manifest.version).length > 0,
+    `no line ending in "(${manifest.version})"`
 );
 if (process.env.GITHUB_REF_TYPE === 'tag') {
     check('git tag matches manifest version', process.env.GITHUB_REF_NAME === manifest.version, `${process.env.GITHUB_REF_NAME} vs ${manifest.version}`);

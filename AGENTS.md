@@ -24,6 +24,7 @@ This file is also the single source of truth for `.github/copilot-instructions.m
 | `manifest.json`, `versions.json` | Obsidian plugin manifest and version map. |
 | `rollup.config.js`, `tsconfig.json` | Build config (output is `main.js` in the repo root). |
 | `scripts/check-build.mjs` | Build sanity checks (run by CI). |
+| `scripts/release-notes.mjs` | Builds the GitHub release notes from the `doc/change-log.md` entries tagged with a version (used by the release workflow and `check-build.mjs`). |
 | `scripts/e2e-obsidian.mjs` | End-to-end test against a real running Obsidian (local only). |
 | `.github/workflows/ci.yml` | CI: `npm run check` on push to `main` and PRs. |
 | `.github/workflows/release.yml` | Release: on tag push (or manual run), builds and publishes a GitHub release. |
@@ -72,10 +73,10 @@ If a plugin shows as enabled but `app.plugins.plugins['folder-note-revamped']` i
 ## Releasing
 
 1. Bump the version in `manifest.json`, `package.json` and `versions.json` (same value, `versions.json` maps it to `minAppVersion`).
-2. Update the changelog in `doc/change-log.md` (the `## 1.0.x` list; it is the only changelog, the README just links to it). Tag each entry with its version, and thank contributors (see [Attribution](#attribution)).
+2. Update the changelog in `doc/change-log.md` (the `## 1.0.x` list; it is the only changelog, the README just links to it). Tag each entry with its version by ending the line with `(1.0.x)` or `, 1.0.x)` after a link: those lines become the release notes (`scripts/release-notes.mjs`), and `npm run check` fails if the manifest version has none. Thank contributors (see [Attribution](#attribution)).
 3. `npm run check`, commit, push to `main`.
 4. `git tag <version> && git push origin <version>` (tag is exactly the version, no `v`).
-5. The release workflow publishes a non-draft release with `main.js`, `manifest.json`, `styles.css` and a zip. BRAT only installs from non-draft releases that have these assets.
+5. The release workflow publishes a non-draft release with `main.js`, `manifest.json`, `styles.css` and a zip, and the change log entries for that version as the notes. If tags are pushed out of order, make sure the newest version is marked Latest (`gh release edit <version> --latest`), because BRAT installs the latest release. BRAT only installs from non-draft releases that have these assets.
 
 Versioning restarted at `1.0.1` for this fork (the original's last release was `0.7.3`).
 

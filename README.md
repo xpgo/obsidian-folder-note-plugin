@@ -142,8 +142,30 @@ See the [change log](https://github.com/SamPlaysKeys/obsidian-folder-note-revamp
 
 ### Testing
 
-- `npm run check` type checks, builds, and verifies the output (`scripts/check-build.mjs`): the release files exist, `manifest.json`, `package.json` and `versions.json` agree, and `main.js` loads and instantiates against a native ES6 `Plugin` class (the original load failure). It runs on every push and pull request through GitHub Actions (`.github/workflows/ci.yml`) and before each release.
+- `npm run check` type checks, builds, and verifies the output (`scripts/check-build.mjs`): the release files exist, `manifest.json`, `package.json` and `versions.json` agree, the change log has an entry for the current version, and `main.js` loads and instantiates against a native ES6 `Plugin` class (the original load failure). It runs on every push and pull request through GitHub Actions (`.github/workflows/ci.yml`) and before each release.
 - `npm run test:e2e` runs `scripts/e2e-obsidian.mjs` against a real Obsidian through the [Obsidian CLI](https://help.obsidian.md/cli). By default it creates a temporary vault in your OS temp folder, opens it in its own Obsidian window, and closes, unregisters and deletes it at the end, so your own vaults are not touched. Obsidian must be running with the CLI enabled. To use an existing vault instead, run `npm run test:e2e -- <vault name>` (this overwrites `.obsidian/plugins/folder-note-revamped/` there and creates and deletes a `__fnr-e2e__` folder). The test checks that the plugin loads, its commands are registered, Ctrl+click creates and opens a folder note, the note is hidden, the `ccard` block renders, both commands work (and do nothing instead of throwing when no file is active), and renaming a folder renames its note. It needs the desktop app, so it is not part of CI.
+
+## Contributing
+
+Bug reports, ideas and pull requests are welcome. Please [open an issue](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/issues) first for larger changes, so we can agree on the approach. Issues that originate from the original plugin are triaged in [doc/upstream-triage.md](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/upstream-triage.md); check it before starting, since many reports share one root cause.
+
+1. Fork and clone the repo, then run `npm install`.
+2. Make your change in `src/`. Keep the diff focused and match the surrounding style. Keep the plugin working on desktop and mobile (no Node or Electron APIs in `src/`), and do not lower the compile target (`es2018`).
+3. Run `npm run check` (type check, build and build verification). It is what CI runs. If you changed behavior and have Obsidian installed, also run `npm run build && npm run test:e2e` and add a check to `scripts/e2e-obsidian.mjs` for your change.
+4. Add a line to the top of the `## 1.0.x` list in [doc/change-log.md](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/change-log.md). End it with the version it ships in, for example `(1.0.6)`, or `, 1.0.6)` after an issue link. That line becomes the GitHub release notes, so write it for users. Credit whoever reported or fixed the issue with a link to their profile.
+5. Open a pull request against `main` with a short imperative title and a reference to the issue (`Refs #N`). A pull request does not need to bump the version; the maintainer does that when releasing.
+
+If your change is based on a PR or issue from the original plugin, say which one in the commit message, add a `Co-authored-by: Name <id+login@users.noreply.github.com>` trailer for its author, and link the issue as `https://redirect.github.com/xpgo/obsidian-folder-note-plugin/issues/N`. Please do not comment on the original repo on our behalf.
+
+Details for AI coding agents and maintainers are in [AGENTS.md](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/AGENTS.md).
+
+### Releasing (maintainer)
+
+1. Bump the version in `manifest.json`, `package.json` and `versions.json` (same value; `versions.json` maps it to `minAppVersion`).
+2. Make sure `doc/change-log.md` has entries tagged with that version. `npm run check` fails if there are none.
+3. `npm run check`, commit and push to `main`.
+4. `git tag <version> && git push origin <version>`. The tag is exactly the version, with no `v` prefix (BRAT requires that).
+5. The release workflow publishes a release with `main.js`, `manifest.json`, `styles.css` and a zip, and uses the change log entries for that version as the release notes. If several tags are pushed close together, check afterwards that the newest version is the one marked Latest (`gh release list`); fix it with `gh release edit <version> --latest`.
 
 ## License
 
