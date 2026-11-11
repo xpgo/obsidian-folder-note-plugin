@@ -39,6 +39,8 @@ Likely to skip: xpgo#11, #16, #23, #35, #40, #56, #57, #68, #70, #76 (canvas ind
 | 24 | New Feature and fixes | aidenlx | CLOSED | **reimplement** (ideas only) | #18, #67, #58, #97, #78 | Mostly whole-file prettier reformatting of every file. The author abandoned it for their own plugin, `alx-folder-note`. The useful ideas are middle-click or new-leaf opening and hiding existing notes via a MutationObserver. |
 | 20 | Update README.md | divineforge | CLOSED | **skip** (superseded by 104) | #115 | README wording fixes. Some edits are ungrammatical ("the path depends on…"). 104 covers the same typos better. |
 
+**Status (as of 1.0.2):** #104 (typos) and the `activeFile` null guards from #117 are ported and credited. The rest is still open; see the umbrella issues in this repo.
+
 `git apply --check` of the PR patches against the tree at triage time:
 - **Clean:** 87, 79 and 46. None of these touch files we changed.
 - **Fail only on `rollup.config.js`, `tsconfig.json` and `src/main.ts`:** 119 and 117. We already changed those. The other hunks apply clean.

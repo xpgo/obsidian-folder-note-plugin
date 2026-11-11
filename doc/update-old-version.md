@@ -1,6 +1,6 @@
 # Tips for updating from older version
 
-For those who use the plugin with version < 0.4.0, please use the following steps to update:
+This applies to the original Folder Note plugin by xpgo. For those who used it with version < 0.4.0, please use the following steps to update (then move to Folder Note Revamped, see the [README](../README.md#install)):
 
 1. Go to the Obsidian's Community Plugin page, and update the Folder Note plugin to the latest version.
 2. Disable and then Enable the Plugin to refresh plugin settings.
