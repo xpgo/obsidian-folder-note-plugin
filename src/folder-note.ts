@@ -1,5 +1,5 @@
 
-import { App } from "obsidian";
+import { App, TAbstractFile } from "obsidian";
 import { FolderBrief } from './folder-brief';
 
 // ------------------------------------------------------------
@@ -305,7 +305,7 @@ export class FolderNote {
     }
 
     // delete a folder 
-    async deleteFolder(pathToDel: any) {
+    async deleteFolder(pathToDel: string) {
         if (this.method == NoteFileMethod.Outside && !pathToDel.endsWith('.md')) {
             // delete a folder
             const myNotePath = pathToDel + '.md';
@@ -317,7 +317,7 @@ export class FolderNote {
     }
 
     // sync folder / note name
-    async syncName(newPath: any, oldPath: any) {
+    async syncName(newPath: TAbstractFile, oldPath: string) {
         if (this.method == NoteFileMethod.Outside) {
             await this.syncNameOutside(newPath, oldPath);
         }
@@ -327,7 +327,7 @@ export class FolderNote {
     }
 
     // sync folder / note name for outside
-    async syncNameOutside(newPath: any, oldPath: any) {
+    async syncNameOutside(newPath: TAbstractFile, oldPath: string) {
         if (!oldPath.endsWith('.md')) {
             // changing folder name
             // console.log('changing folder!!!')
@@ -356,7 +356,7 @@ export class FolderNote {
     }
 
     //  sync folder / note name for inside case
-    async syncNameInside(newPath: any, oldPath: any) {
+    async syncNameInside(newPath: TAbstractFile, oldPath: string) {
         if (!oldPath.endsWith('.md')) {
             // changing folder name
             const oldNotePaths = this.getFolderNotePath(oldPath);
@@ -380,7 +380,7 @@ export class FolderNote {
                 let noteDir = newPath.path;
                 noteDir = noteDir.substring(0, noteDir.lastIndexOf('/'));
                 noteDir = noteDir.substring(0, noteDir.lastIndexOf('/'));
-                let noteBase = newPath.path.split('/').pop();
+                let noteBase = newPath.path.split('/').pop() ?? '';
                 noteBase = noteBase.substring(0, noteBase.length-3);
                 let newFolderPath = '';
                 if (noteDir.length > 0) {
