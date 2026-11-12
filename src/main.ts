@@ -1,6 +1,7 @@
 import {
     Plugin,
-    MarkdownView
+    MarkdownView,
+    TAbstractFile
 } from 'obsidian';
 
 import { FolderBrief } from './folder-brief';
@@ -112,7 +113,7 @@ export default class FolderNotePlugin extends Plugin {
     }
 
     async loadSettings() {
-        this.settings = Object.assign({}, FOLDER_NOTE_DEFAULT_SETTINGS, await this.loadData());
+        this.settings = Object.assign({}, FOLDER_NOTE_DEFAULT_SETTINGS, (await this.loadData()) as Partial<FolderNotePluginSettings> | null);
         this.updateFolderNote();
     }
 
@@ -122,13 +123,13 @@ export default class FolderNotePlugin extends Plugin {
     }
 
     // keep notefile name to be the folder name
-    async handleFileRename(newPath: any, oldPath: any) {
+    async handleFileRename(newPath: TAbstractFile, oldPath: string) {
         if (!this.settings.folderNoteAutoRename) return;
         await this.folderNote.syncName(newPath, oldPath);
     }
 
     // delete folder
-    async handleFileDelete(pathToDel: any) {
+    async handleFileDelete(pathToDel: TAbstractFile) {
         if (!this.settings.folderDelete2Note) return;
         await this.folderNote.deleteFolder(pathToDel.path);
     }
