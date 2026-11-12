@@ -2,7 +2,7 @@
 import { App, MarkdownPostProcessorContext, TFolder} from "obsidian";
 import { FolderBrief } from './folder-brief';
 import { FolderNote } from './folder-note';
-import { CardBlock } from './card-item';
+import { CardBlock, CardBlockYaml } from './card-item';
 import * as Yaml from 'yaml';
 
 // ------------------------------------------------------------
@@ -19,7 +19,7 @@ export class ccardProcessor {
     async run(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext, folderNote: FolderNote) {
         // Change cards code to html element
         try {
-            const yaml = Yaml.parse(source);
+            const yaml = Yaml.parse(source) as CardBlockYaml | null;
             if (!yaml) return;
 
             // set default
@@ -46,7 +46,7 @@ export class ccardProcessor {
     }
 
     // static
-    async docElemStatic(yaml: any) {
+    async docElemStatic(yaml: CardBlockYaml) {
         if (yaml.items && (yaml.items instanceof Array)) {
             const cardBlock = new CardBlock();
             cardBlock.fromYamlCards(yaml);
@@ -57,7 +57,7 @@ export class ccardProcessor {
     }
 
     // folder_brief_live
-    async docElemFolderBriefLive(yaml: any, folderNote: FolderNote, ctx: MarkdownPostProcessorContext) {
+    async docElemFolderBriefLive(yaml: CardBlockYaml, folderNote: FolderNote, ctx: MarkdownPostProcessorContext) {
         let folderPath = '';
         // the note that contains the block, not the active note (hover previews, embeds, canvas)
         const notePath = ctx.sourcePath;
