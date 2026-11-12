@@ -76,7 +76,7 @@ If a plugin shows as enabled but `app.plugins.plugins['folder-note-revamped']` i
 2. Update the changelog in `doc/change-log.md` (the `## 1.0.x` list; it is the only changelog, the README just links to it). Tag each entry with its version by ending the line with `(1.0.x)` or `, 1.0.x)` after a link: those lines become the release notes (`scripts/release-notes.mjs`), and `npm run check` fails if the manifest version has none. Thank contributors (see [Attribution](#attribution)).
 3. `npm run check`, commit, push to `main`.
 4. `git tag <version> && git push origin <version>` (tag is exactly the version, no `v`).
-5. The release workflow publishes a non-draft release with `main.js`, `manifest.json`, `styles.css` and a zip, and the change log entries for that version as the notes. If tags are pushed out of order, make sure the newest version is marked Latest (`gh release edit <version> --latest`), because BRAT installs the latest release. BRAT only installs from non-draft releases that have these assets.
+5. The release workflow publishes a non-draft release with `main.js`, `manifest.json`, `styles.css`, and the change log entries for that version as the notes. If tags are pushed out of order, make sure the newest version is marked Latest (`gh release edit <version> --latest`), because BRAT installs the latest release. BRAT only installs from non-draft releases that have these assets.
 
 Versioning restarted at `1.0.1` for this fork (the original's last release was `0.7.3`).
 

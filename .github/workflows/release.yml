@@ -3,8 +3,6 @@ on:
   push:
     tags: ["*"]
   workflow_dispatch:
-env:
-  PLUGIN_NAME: folder-note-revamped
 permissions:
   contents: write
 jobs:
@@ -35,12 +33,6 @@ jobs:
             exit 1
           fi
 
-      - name: Package
-        run: |
-          mkdir ${{ env.PLUGIN_NAME }}
-          cp main.js manifest.json styles.css ${{ env.PLUGIN_NAME }}
-          zip -r ${{ env.PLUGIN_NAME }}.zip ${{ env.PLUGIN_NAME }}
-
       - name: Build release notes from the change log
         run: node scripts/release-notes.mjs "${{ steps.version.outputs.version }}" > release-notes.md
 
@@ -56,4 +48,3 @@ jobs:
             main.js
             manifest.json
             styles.css
-            ${{ env.PLUGIN_NAME }}.zip

@@ -168,7 +168,7 @@ Details for AI coding agents and maintainers are in [AGENTS.md](https://github.c
 2. Make sure `doc/change-log.md` has entries tagged with that version. `npm run check` fails if there are none.
 3. `npm run check`, commit and push to `main`.
 4. `git tag <version> && git push origin <version>`. The tag is exactly the version, with no `v` prefix (BRAT requires that).
-5. The release workflow publishes a release with `main.js`, `manifest.json`, `styles.css` and a zip, and uses the change log entries for that version as the release notes. If several tags are pushed close together, check afterwards that the newest version is the one marked Latest (`gh release list`); fix it with `gh release edit <version> --latest`.
+5. The release workflow publishes a release with `main.js`, `manifest.json`, `styles.css`, and uses the change log entries for that version as the release notes. If several tags are pushed close together, check afterwards that the newest version is the one marked Latest (`gh release list`); fix it with `gh release edit <version> --latest`.
 
 ## License
 
