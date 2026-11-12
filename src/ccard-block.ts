@@ -48,7 +48,7 @@ export class ccardProcessor {
     // static
     async docElemStatic(yaml: any) {
         if (yaml.items && (yaml.items instanceof Array)) {
-            let cardBlock = new CardBlock();
+            const cardBlock = new CardBlock();
             cardBlock.fromYamlCards(yaml);
             const cardsElem = cardBlock.getDocElement(this.app);
             return cardsElem;
@@ -58,11 +58,11 @@ export class ccardProcessor {
 
     // folder_brief_live
     async docElemFolderBriefLive(yaml: any, folderNote: FolderNote, ctx: MarkdownPostProcessorContext) {
-        var folderPath = '';
+        let folderPath = '';
         // the note that contains the block, not the active note (hover previews, embeds, canvas)
-        var notePath = ctx.sourcePath;
+        const notePath = ctx.sourcePath;
         if (yaml.folder) {
-            let folderExist = yaml.folder == '/' ||
+            const folderExist = yaml.folder == '/' ||
                 this.app.vault.getAbstractFileByPath(yaml.folder) instanceof TFolder;
             if (folderExist) folderPath = yaml.folder;
         }
@@ -71,7 +71,7 @@ export class ccardProcessor {
         }
         
         if (folderPath.length > 0) {
-            let folderBrief = new FolderBrief(this.app);
+            const folderBrief = new FolderBrief(this.app);
 
             // brief options
             if (yaml.briefMax) {
@@ -82,7 +82,7 @@ export class ccardProcessor {
             }
 
             // cards options
-            let briefCards = await folderBrief.makeBriefCards(folderPath, notePath);
+            const briefCards = await folderBrief.makeBriefCards(folderPath, notePath);
             briefCards.fromYamlOptions(yaml);
             
             // generate el
