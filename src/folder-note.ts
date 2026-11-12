@@ -399,7 +399,7 @@ export class FolderNote {
         // only do once a time
         if (!this.filesToRenameSet && this.filesToRename.length > 0) {
             this.filesToRenameSet = true;
-            setTimeout(() => {
+            window.setTimeout(() => {
                 // console.log('rename is running after 1 s.');
                 if (this.filesToRename.length) {
                     const oldFolderPath = this.filesToRename[0];

@@ -46,7 +46,7 @@ export default class FolderNotePlugin extends Plugin {
         this.addSettingTab(new FolderNoteSettingTab(this.app, this));
 
         // for file explorer click
-        this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
+        this.registerDomEvent(activeDocument, 'click', (evt: MouseEvent) => {
             // get the folder path
             const elemTarget = (evt.target as Element);
             const folderElem = this.folderNote.setByFolderElement(elemTarget);
