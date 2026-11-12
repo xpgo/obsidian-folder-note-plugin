@@ -41,7 +41,7 @@ export class ccardProcessor {
             }
         }
         catch (error) {
-            console.log('Code Block: ccard', error)
+            console.error('Code Block: ccard', error)
         }
     }
 
