@@ -35,7 +35,7 @@ export class CardBlock {
     }
 
     getDocElement(app: App) {
-        const cardDiv = document.createElement('div');
+        const cardDiv = createDiv();
         if (this.style == 'strip') {
             cardDiv.addClass('strip-card-band');
             for (const i in this.cards) {
@@ -202,9 +202,9 @@ export class CardItem {
     }
 
     getBoxElement(app: App, imagePrefix: string) {
-        const cardEl = document.createElement('div');
+        const cardEl = createDiv();
         // Heading
-        const headEl = cardEl.appendChild(document.createElement('div'));
+        const headEl = cardEl.appendChild(createDiv());
         if (this.headImage) {
             this.cardStyle = CardStyle.Image;
             if (this.headImage.startsWith("#")) {
@@ -247,28 +247,28 @@ export class CardItem {
             headEl.textContent = 'Note';
         }
         // article
-        const articleEl = cardEl.appendChild(document.createElement('article'));
+        const articleEl = cardEl.appendChild(createEl('article'));
         // Title
         if (this.titleLink) {
-            const titleEl = articleEl.appendChild(document.createElement('a'));
+            const titleEl = articleEl.appendChild(createEl('a'));
             if (this.titleLink.endsWith('.md')) {
                 titleEl.addClass('internal-link');
             }
             titleEl.href = this.titleLink;
-            const h1El = document.createElement('h1');
+            const h1El = createEl('h1');
             h1El.textContent = this.title;
             titleEl.appendChild(h1El);
         }
         else {
-            const titleEl = articleEl.appendChild(document.createElement('h1'));
+            const titleEl = articleEl.appendChild(createEl('h1'));
             titleEl.textContent = this.title;
         }
         // abstract
-        const briefEl = articleEl.appendChild(document.createElement('p'));
+        const briefEl = articleEl.appendChild(createEl('p'));
         briefEl.textContent = this.abstract;
         // footnote
         if (this.footnote) {
-            const footEl = articleEl.appendChild(document.createElement('span'));
+            const footEl = articleEl.appendChild(createSpan());
             footEl.textContent = this.footnote;
         }
         // close
