@@ -38,16 +38,16 @@ export class CardBlock {
         const cardDiv = document.createElement('div');
         if (this.style == 'strip') {
             cardDiv.addClass('strip-card-band');
-            for (var i in this.cards) {
-                let cardEl = this.cards[i].getBoxElement(app, this.imagePrefix);
+            for (const i in this.cards) {
+                const cardEl = this.cards[i].getBoxElement(app, this.imagePrefix);
                 cardEl.addClass('strip-card-view');
                 cardDiv.appendChild(cardEl);
             }
         }
         else { // default: this.style == 'card'
             cardDiv.addClass('cute-card-band');
-            for (var i in this.cards) {
-                let cardEl = this.cards[i].getBoxElement(app, this.imagePrefix);
+            for (const i in this.cards) {
+                const cardEl = this.cards[i].getBoxElement(app, this.imagePrefix);
                 cardEl.addClass('cute-card-view');
                 cardDiv.appendChild(cardEl);
             }
@@ -64,7 +64,7 @@ export class CardBlock {
         const nCard = this.getCardNum();
         if (nCard > 0) {
             yamlStr = '\n```ccard\nitems: [';
-            for (var i in this.cards) {
+            for (const i in this.cards) {
                 yamlStr += '\n  {\n'
                 yamlStr += this.cards[i].getYamlCode('    ');
                 yamlStr += '  },'
@@ -88,10 +88,10 @@ export class CardBlock {
         if (yaml.items) {
             this.clear();
             const allItems = yaml.items;
-            for (var i in allItems) {
+            for (const i in allItems) {
                 const cardInfo = allItems[i];
                 if ('title' in cardInfo) {
-                    let cardItem = new CardItem(cardInfo['title'], CardStyle.Note);
+                    const cardItem = new CardItem(cardInfo['title'], CardStyle.Note);
                     cardItem.fromDict(cardInfo);
                     this.addCard(cardItem);
                 }
@@ -175,7 +175,7 @@ export class CardItem {
     }
 
     getYamlCode(prefix: string) {
-        var yamlStr = '';
+        let yamlStr = '';
         yamlStr += `${prefix}title: '${this.yamlEscapeQuotes(this.title)}'`;
         if (this.titleLink) yamlStr += `,\n${prefix}link: '${this.yamlEscapeQuotes(this.titleLink)}'`;
         if (this.abstract) yamlStr += `,\n${prefix}brief: '${this.yamlEscapeQuotes(this.abstract)}'`;
@@ -202,9 +202,9 @@ export class CardItem {
     }
 
     getBoxElement(app: App, imagePrefix: string) {
-        let cardEl = document.createElement('div');
+        const cardEl = document.createElement('div');
         // Heading
-        let headEl = cardEl.appendChild(document.createElement('div'));
+        const headEl = cardEl.appendChild(document.createElement('div'));
         if (this.headImage) {
             this.cardStyle = CardStyle.Image;
             if (this.headImage.startsWith("#")) {
@@ -221,8 +221,8 @@ export class CardItem {
                 let imageUrl = this.headImage;
                 if (imagePrefix.length > 0) {
                     // skip explicitly path
-                    let urlPathList = imageUrl.split('/').join(' ').trimStart();
-                    let fixPathList = imagePrefix.split('/').join(' ').trimStart();
+                    const urlPathList = imageUrl.split('/').join(' ').trimStart();
+                    const fixPathList = imagePrefix.split('/').join(' ').trimStart();
                     if (!urlPathList.startsWith(fixPathList)) {
                         imageUrl = imagePrefix + this.headImage;
                     }
@@ -247,28 +247,28 @@ export class CardItem {
             headEl.textContent = 'Note';
         }
         // article
-        let articleEl = cardEl.appendChild(document.createElement('article'));
+        const articleEl = cardEl.appendChild(document.createElement('article'));
         // Title
         if (this.titleLink) {
-            let titleEl = articleEl.appendChild(document.createElement('a'));
+            const titleEl = articleEl.appendChild(document.createElement('a'));
             if (this.titleLink.endsWith('.md')) {
                 titleEl.addClass('internal-link');
             }
             titleEl.href = this.titleLink;
-            let h1El = document.createElement('h1');
+            const h1El = document.createElement('h1');
             h1El.textContent = this.title;
             titleEl.appendChild(h1El);
         }
         else {
-            let titleEl = articleEl.appendChild(document.createElement('h1'));
+            const titleEl = articleEl.appendChild(document.createElement('h1'));
             titleEl.textContent = this.title;
         }
         // abstract
-        let briefEl = articleEl.appendChild(document.createElement('p'));
+        const briefEl = articleEl.appendChild(document.createElement('p'));
         briefEl.textContent = this.abstract;
         // footnote
         if (this.footnote) {
-            let footEl = articleEl.appendChild(document.createElement('span'));
+            const footEl = articleEl.appendChild(document.createElement('span'));
             footEl.textContent = this.footnote;
         }
         // close
