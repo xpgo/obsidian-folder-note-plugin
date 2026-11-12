@@ -21,6 +21,8 @@ Version numbering restarts at 1.0.1 for Folder Note Revamped. The jump accounts 
 - raise the minimum Obsidian version from 0.9.12 to 0.14.8, the newest `@since` version of the Obsidian APIs the plugin uses (`registerDomEvent`); the old value was inherited and too low, and the Obsidian plugin review flagged that the plugin uses newer APIs than the listed minimum (1.0.6)
 - raise the minimum Obsidian version from 0.14.8 to 0.16.0; 1.0.6 listed 0.14.8 but `openLinkText` needs 0.16.0 (1.0.7)
 - remove the title from the settings page (1.0.7)
+- clean up the code for the Obsidian plugin review: `let`/`const` instead of `var`, typed ccard and rename/delete code, awaited promises, Obsidian's element helpers, popout window support for the explorer click handler and timers, and the default settings are no longer overwritten (1.0.7)
+- stop attaching a zip file to releases; only `main.js`, `manifest.json` and `styles.css` are published (1.0.7)
 
 ## 0.7.x
 
