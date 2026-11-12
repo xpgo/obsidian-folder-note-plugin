@@ -8,23 +8,23 @@
   <a href="LICENSE.md"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue?style=for-the-badge"></a>
 </p>
 
-**Obsidian Plugin**: Add description note to a folder. Generate card-style overview of folder. Make your vault to be a hierarchy note system.
+Create folder-specific notes for descriptions, linking, or anything else. Generate card-style overviews of folder content for rich content management. Turn your vault into a hierarchy note system.
 
 A revamp of [xpgo's Folder Note plugin](https://github.com/xpgo/obsidian-folder-note-plugin), kept working with current Obsidian. See [why this revamp exists](#why-this-revamp-exists).
 
 ![Folder_Note_Revamped_Show](https://raw.githubusercontent.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/main/image/folder-note1.png)
 
-**Jump to:** [Install](#install) · [Usage](#usage) · [Settings](#settings) · [Commands](#commands) · [ccard overview](#folder-overview-cards-ccard) · [Why this revamp](#why-this-revamp-exists) · [Change log](#change-log)
+**Jump to:** [Install](#install) · [Usage](#usage) · [Settings](#settings) · [Commands](#commands) · [ccard overview](#folder-overview-cards-ccard) · [Waypoint](#works-well-with-waypoint) · [Why this revamp](#why-this-revamp-exists) · [Change log](#change-log)
 
 ## Features
 
-- Display and manage folder note easily
-- Support 3 different folder note methods
-- Automatically keep folder and folder-note name in syncing
-- Make a folder by active note file
-- Customized initial folder note content
-- Card and strip style view of folder content
-- ccard code block for elegant view of item data
+- Create, open and manage a note for any folder
+- Three folder note methods: inside the folder, outside it, or an index file
+- Folder and note names stay in sync when you rename either one
+- Turn the current note into a folder with one command
+- Customizable starting content for new folder notes
+- Card and strip overviews of a folder's contents
+- A `ccard` code block that shows notes and folders as cards in any note
 
 ## Install
 
@@ -49,72 +49,75 @@ This plugin uses a new plugin ID (`folder-note-revamped`), so it installs next t
 
 ## Usage
 
-- **Add** description note: CTRL+Click on a folder in the file explorer panel.
-- **Show** description note: Just Click the folder.
-- **Delete** description note: Just delete the opened note file.
-- **Settings** : configure the note file method, file name and initial template on the settings panel.
-- **Command**: Use some commands to control the folder note plugin.
+- **Create** a folder note: Ctrl+Click a folder in the file explorer (Cmd+Click on macOS).
+- **Open** it: click the folder.
+- **Delete** it: delete the note like any other file.
+- **Configure** the folder note method, file name and starting content in the plugin settings.
+- **Commands**: the plugin adds a few commands to the command palette (see [Commands](#commands)).
 
 ## How it works
 
-The mechanism is simple: attaching a note file to a folder, and the folder note file will be hidden by CSS rules. But where do you put the folder note? There are three methods of creating description note for a folder: **Inside-Folder**, **Outside-Folder** and **Index-File**, please read [Folder Note Methods](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/folder-note-methods.md) for more information about the Pros and Cons of each method. The **default** configuration is the **Inside-Folder** method. If you prefer the others, please change the settings.
+The plugin attaches a note to a folder and hides that note in the file explorer with CSS. Where the note lives depends on the method you choose:
 
-When CTRL+Click a folder, the plugin will create a description note with the path dependent on the method you choose. When clicking a folder, the plugin will open the attached note for you. You can configure the plugin to hide/show the folder note. It can also be configured to try to automatically keep the folder and note name in syncing. 
+- **Inside-Folder** (default): `myFolder/myFolder.md`
+- **Outside-Folder**: `myFolder.md`, next to the folder
+- **Index-File**: `myFolder/_about_.md`, or another file name you set
+
+[Folder Note Methods](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/folder-note-methods.md) lists the pros and cons of each.
+
+When you Ctrl+Click a folder, the plugin creates the note at the path for your method. When you click a folder, it opens the attached note. You can show or hide folder notes in the explorer, and the plugin can try to keep the folder and note names in sync.
 
 ## Settings
 
-- **Note File method**: select the folder note file method as mentioned above.
-- **Index File Name**: For the  *Index-File*  method, set the folder note name, like `_overview_` or `index`.
-- **Note Initial Content**: set the initial content for a new folder note, you can use some keywords:
-    - {{FOLDER_NAME}} will be replaced with the folder name.
-    - {{FOLDER_PATH}} will be replaced with the folder path.
-    - {{FOLDER_BRIEF}} will be replaced with a ccard code block for card-style overview of current folder, and the content in the ccard can be edited, see [ccard Syntax](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/ccard-syntax.md) for more information.
-    - {{FOLDER_BRIEF_LIVE}}  will be replaced with a tiny code block which will be rendered to the folder overview in real time.
-- **Key for New Note**: set to use CTRL+Click or ALT+Click for creating new folder note. On macOS the options are shown as Cmd+Click and Option+Click.
-- **Hide Folder Note**: turn off the setting if you want to show the note file in file explorer.
-- **Auto Rename**: For the methods *Inside-Folder* and *Outside-Folder*, the plugin tries to rename the folder note name when a folder name is changed or vice versa. However, this function is experimental, it does not always work. Rename them manually if you have some issue related to the operation.
-- **Delete Folder Note**: For the method *Outside-Folder*, delete folder note file when a folder is deleted. 
+- **Note File method**: where the folder note lives (see above).
+- **Index File Name**: for the *Index-File* method, the note's name, such as `_about_` or `index`.
+- **Note Initial Content**: the starting content for a new folder note. These keywords are replaced when the note is created:
+    - `{{FOLDER_NAME}}`: the folder name.
+    - `{{FOLDER_PATH}}`: the folder path.
+    - `{{FOLDER_BRIEF}}`: a `ccard` code block with a card overview of the folder. You can edit the block afterwards; see [ccard Syntax](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/ccard-syntax.md).
+    - `{{FOLDER_BRIEF_LIVE}}`: a short code block that renders the folder overview live.
+- **Key for New Note**: use Ctrl+Click or Alt+Click to create a folder note. On macOS these show as Cmd+Click and Option+Click.
+- **Hide Folder Note**: turn this off to show folder notes in the file explorer.
+- **Auto Rename**: for *Inside-Folder* and *Outside-Folder*, renames the note when the folder is renamed, and the other way around. This is experimental and does not always work; rename manually if something goes wrong.
+- **Delete Folder Note**: for *Outside-Folder*, deletes the folder note when its folder is deleted.
 
 ## Commands
 
-Use `Ctrl+P` to open Obsidian's command panel, and use the following commands of the plugin:
+Open the command palette with Ctrl+P (Cmd+P on macOS) and search for:
 
-- **Insert Folder Brief**: Insert a folder overview code blocks in the current note file.
-- **Make Current Note to Folder**: Create a folder based on the current note and attach the note to the new folder as folder note. 
+- **Insert Folder Brief**: insert a folder overview code block into the current note.
+- **Make Current Note to Folder**: create a folder from the current note and attach the note to it as the folder note.
 
 ## Folder overview cards (ccard)
 
-The plugin can automatically generate a code block of `ccard` in a note file for displaying overview of a folder. The code block can be used and edited in any normal note file. For the syntax of `ccard` code block, please refer to [ccard Syntax](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/ccard-syntax.md).
+A `ccard` code block shows an overview of a folder as cards. You can write one by hand in any note, put one in the initial folder note template, or let the plugin generate it with a keyword:
 
-You can use the `ccard` code block in the initial folder note template in the settings page. Alternatively, you can use some keywords in the initial folder note template to generate the code blocks for you:
+- `{{FOLDER_BRIEF}}` inserts a `ccard` block you can edit to show whatever you like. To refresh an overview later, run **Insert Folder Brief** from the command palette.
+- `{{FOLDER_BRIEF_LIVE}}` inserts a `ccard` block that renders the folder overview live. It suits folders of notes with images, such as a collection, where it builds a card view of every note automatically.
 
-**Keyword: {{FOLDER_BRIEF}}**
-
-The keyword {{FOLDER_BRIEF}} will be replaced with a `ccard` code block which describes a brief overview of the folder. You can edit the codes in the code block to display whatever content you like. If you want to update the overview of a folder, it can be inserted to a note by command: Ctrl+P, Insert Folder Brief.
-
-**Keyword: {{FOLDER_BRIEF_LIVE}}**
-
-The keyword {{FOLDER_BRIEF_LIVE}} will be replaced  with a `ccard` code block which will be rendered to the folder overview in real time. It is useful when you put some notes with images in a folder, e.g., things collections, it will generate a card view of all the notes with images dynamically.
-
-**Configuration**
-
-If you want to configure the content and appearance of the `ccard` code block, please refer to [ccard Syntax](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/ccard-syntax.md). You can configure the style, column number, image prefix, folder path, note only, max brief length and more. For example, the following image shows different styles of folder overview. 
+You can set the style, column count, image prefix, folder path, notes only, maximum brief length and more. See [ccard Syntax](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/ccard-syntax.md) for all options and [ccard recipes](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/blob/main/doc/ccard-recipes.md) for examples. The image below shows the different styles.
 
 ![Card_Strip_Style](https://raw.githubusercontent.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/main/image/style-card-strip.png)
+
+## Works well with Waypoint
+
+[Waypoint](https://github.com/IdreesInc/Waypoint) generates an automatic table of contents of links inside a folder note. Because those are real links, the folder shows up in Obsidian's graph view, which a `ccard` block can't do (it lives in a code block, so the graph doesn't see it). The two plugins complement each other: Folder Note Revamped creates and manages the folder note, and Waypoint fills it with links that stay up to date.
+
+Waypoint treats a note with the same name as its parent folder as the folder note. That matches the default **Inside-Folder** method (`myFolder/myFolder.md`). To use it, add Waypoint's trigger text (`%% Waypoint %%` by default) to a folder note; see Waypoint's README for details. You can keep a `ccard` block in the same note for the visual overview.
 
 ## Known issues and plans
 
 **Known issues**
 
-- The folder note file may appear when created. Click it again to hide.
-- Leave a message on the GitHub repo if you find any issues or want to improve the plugin.
+- A newly created folder note may stay visible in the file explorer. Click the folder again to hide it.
+- Found a bug or have an idea? [Open an issue](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/issues).
 
 **Plans**
 
-- Add more template options for generating the initial content.
-- Automatically generate overview contents for the folder note file based on contents in the folder, like the software [Trilium](https://github.com/zadam/trilium) does. (Partially done.)
-- More robust renaming operation.
-- More style of overview.
+- More template options for the initial content.
+- Automatic overviews of a folder's contents, like [Trilium](https://github.com/zadam/trilium) does (partly done).
+- More robust renaming.
+- More overview styles.
 
 ## Why this revamp exists
 
