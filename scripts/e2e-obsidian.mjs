@@ -22,6 +22,7 @@ const manifest = JSON.parse(readFileSync(join(root, 'manifest.json'), 'utf8'));
 const ID = manifest.id;
 const OLD_ID = 'folder-note-plugin';
 const DIR = '__fnr-e2e__';
+const STARTUP_DELAY_SECONDS = 2;
 
 // Run JS in whichever Obsidian window the CLI picks (used to open/remove the temporary vault).
 function evAnywhere(code) {
@@ -34,6 +35,8 @@ function evAnywhere(code) {
 let vault = existingVault;
 let tempVaultPath = null;
 if (!vault) {
+    // Give Obsidian a moment to be ready: right after it starts, the CLI answers "Command eval not found".
+    execFileSync('sleep', [String(STARTUP_DELAY_SECONDS)]);
     tempVaultPath = join(realpathSync(tmpdir()), `fnr-e2e-${randomBytes(4).toString('hex')}`);
     vault = tempVaultPath.split('/').pop();
     // Same call Obsidian's own vault picker makes. `true` creates the vault (the folder must not exist yet).
