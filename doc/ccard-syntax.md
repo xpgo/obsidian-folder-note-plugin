@@ -16,7 +16,7 @@ The item data of `ccard` can be defined one by one, or automatically generated b
 An item data describes the information of something you want to present, it could be a note file, a folder or a link. An item data includes the following attributes:
 
 - **title**: the title of the item. (Mandatory)
-- **link**: the link URL for the title, it can be a website URL or a obsidian note file path. (Optional)
+- **link**: the link URL for the title, it can be a website URL or a obsidian note file path. A link that ends in `.md` opens the note inside Obsidian; any other value is used as a normal link, so folders on your computer (for example `C:\Users\me\Documents`) cannot be opened from a card. (Optional)
 - **head**: text appear on the item head. (Optional)
 - **image**: background image for the head. set as '#FF0000', if you want to set the background as pure color. (Optional)
 - **brief**: brief introduction for the item. (Optional)
@@ -175,6 +175,15 @@ style: card
 col: 4
 ​```
 ```
+
+### Image size and shape
+
+Card images are scaled to fit the card, so there is no fixed pixel size to aim for. The image is centered and cropped (`background-size: cover`), never stretched:
+
+- **Card style**: the image area is as tall as 60% of the card width (about 5:3, wide and short), and the card width follows the window width. An image with a similar shape shows the most of the picture; a tall image has its top and bottom cut off.
+- **Strip style**: the image takes the left 20% of the strip and is at least 9rem high, and the image is cropped to fit that area.
+
+Large images are only scaled down, but they still have to load, so a small image (a few hundred pixels wide) is enough.
 
 ### imagePrefix: ''
 
