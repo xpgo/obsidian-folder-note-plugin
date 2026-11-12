@@ -87,7 +87,7 @@ export class FolderNoteSettingTab extends PluginSettingTab {
                         try {
                             this.plugin.settings.folderNoteStrInit = value;
                             await this.plugin.saveSettings();
-                        } catch (e) {
+                        } catch {
                             return false;
                         }
                     })
