@@ -30,7 +30,7 @@ export default class FolderNotePlugin extends Plugin {
         // for ccard rendering
         this.registerMarkdownCodeBlockProcessor('ccard', async (source, el, ctx) => {
             // run processer
-            let proc = new ccardProcessor(this.app);
+            const proc = new ccardProcessor(this.app);
             await proc.run(source, el, ctx, this.folderNote);
         });
 
@@ -49,12 +49,12 @@ export default class FolderNotePlugin extends Plugin {
         this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
             // get the folder path
             const elemTarget = (evt.target as Element);
-            var folderElem = this.folderNote.setByFolderElement(elemTarget);
+            const folderElem = this.folderNote.setByFolderElement(elemTarget);
 
             // open the infor note
             if (this.folderNote.folderPath.length > 0) {
                 // any key?
-                var newKey = false;
+                let newKey = false;
                 if (this.settings.folderNoteKey == 'ctrl') {
                     newKey = (evt.ctrlKey || evt.metaKey);
                 }
@@ -77,9 +77,9 @@ export default class FolderNotePlugin extends Plugin {
                     const activeFile = this.app.workspace.getActiveFile();
                     if (activeFile) {
                         // generate brief
-                        let folderBrief = new FolderBrief(this.app);
-                        let folderPath = await this.folderNote.getNoteFolderBriefPath(activeFile.path);
-                        let briefCards = await folderBrief.makeBriefCards(folderPath, activeFile.path);
+                        const folderBrief = new FolderBrief(this.app);
+                        const folderPath = await this.folderNote.getNoteFolderBriefPath(activeFile.path);
+                        const briefCards = await folderBrief.makeBriefCards(folderPath, activeFile.path);
                         editor.replaceSelection(briefCards.getYamlCode(), "end");
                     }
                 }
