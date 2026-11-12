@@ -106,7 +106,7 @@ Good starting points, roughly by value:
 - Null dereferences (`getActiveFile()`, `lastElementChild`, etc.) need guards.
 - `styles.css` uses CSS variables that no longer exist (`--background-accent`, `--text-nav-selected`); replace with current theme variables.
 - `PluginSettingTab.display()` is deprecated since Obsidian 1.13.0 (still works).
-- `minAppVersion` is `0.14.8`, set from the `@since` tags of the Obsidian APIs the code uses (`registerDomEvent` is the newest, 0.14.8). It has not been tested on an Obsidian that old; recheck the tags whenever you add an API call.
+- `minAppVersion` is `0.16.0`, set from the `@since` tags of the Obsidian APIs the code uses (`openLinkText` is the newest, 0.16.0). It has not been tested on an Obsidian that old; recheck the tags whenever you add an API call.
 - Toolchain: `obsidian` devDependency is a GitHub master tarball (unpinned); Rollup 2 / TS 4.9; consider esbuild (as in Obsidian's sample plugin) and TS 5.
 - README prose below the top sections (Usage, How it works, Settings, ccard) is still largely inherited from the original and needs a rewrite (tracked in issue #8).
 

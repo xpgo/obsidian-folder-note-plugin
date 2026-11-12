@@ -19,6 +19,8 @@ Version numbering restarts at 1.0.1 for Folder Note Revamped. The jump accounts 
 - document card image sizing and that a card `link` cannot open folders outside the vault in `doc/ccard-syntax.md` ([#8](https://github.com/SamPlaysKeys/obsidian-folder-note-revamped-plugin/issues/8), 1.0.6)
 - the settings page title now uses `Setting.setHeading()` instead of a raw heading element, as the Obsidian plugin review recommends (1.0.6)
 - raise the minimum Obsidian version from 0.9.12 to 0.14.8, the newest `@since` version of the Obsidian APIs the plugin uses (`registerDomEvent`); the old value was inherited and too low, and the Obsidian plugin review flagged that the plugin uses newer APIs than the listed minimum (1.0.6)
+- raise the minimum Obsidian version from 0.14.8 to 0.16.0; 1.0.6 listed 0.14.8 but `openLinkText` needs 0.16.0 (1.0.7)
+- remove the title from the settings page (1.0.7)
 
 ## 0.7.x
 
