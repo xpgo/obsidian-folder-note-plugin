@@ -165,7 +165,7 @@ export class FolderBrief {
                 if (relativePath) {
                     imageUrl = headPath + '/' + imageUrl;
                 }
-                imageUrl = imageUrl.replace(/\%20/g, ' ')
+                imageUrl = imageUrl.replace(/%20/g, ' ')
                 // imageUrl = this.app.vault.adapter.getResourcePath(imageUrl);
             }
         }
@@ -190,16 +190,16 @@ export class FolderBrief {
         // Remove HTML tags
         .replace(/<[^>]*>/g, '')
         // wiki style links
-        .replace(/\!\[\[(.*?)\]\]/g, '')
+        .replace(/!\[\[(.*?)\]\]/g, '')
         .replace(/\[\[(.*?)\]\]/g, '$1')
         // Remove images
-        .replace(/\!\[(.*?)\][\[\(].*?[\]\)]/g, '')
+        .replace(/!\[(.*?)\][[(].*?[\])]/g, '')
         // Remove inline links
-        .replace(/\[(.*?)\][\[\(].*?[\]\)]/g, '$1')
+        .replace(/\[(.*?)\][[(].*?[\])]/g, '$1')
         // Remove emphasis (repeat the line to remove double emphasis)
-        .replace(/([\*_]{1,3})(\S.*?\S{0,1})\1/g, '$2')
+        .replace(/([*_]{1,3})(\S.*?\S{0,1})\1/g, '$2')
         // Remove blockquotes
-        .replace(/\n(&gt;|\>)(.*)/g, '')
+        .replace(/\n(&gt;|>)(.*)/g, '')
         // Remove code blocks
         .replace(/(```[^\s]*\n[\s\S]*?\n```)/g, '')
         // Remove inline code
@@ -209,7 +209,7 @@ export class FolderBrief {
         // try to get the first paragraph
         let contentBrief = '';
         content = '\n' + content + '\n';
-        const regexP1 = new RegExp('\n([^\n|^#|^>])([^\n]+)\n', 'g'); 
+        const regexP1 = /\n([^\n|^#|^>])([^\n]+)\n/g; 
         let match = null;
         if ((match = regexP1.exec(content)) !== null) {
             contentBrief = match[1] + match[2];
@@ -220,7 +220,7 @@ export class FolderBrief {
 
         // use section headings
         if (contentBrief.length == 0) {
-            const regexHead = new RegExp('^#{1,6}(?!#)(.*)[\r\n]', 'mg');
+            const regexHead = /^#{1,6}(?!#)(.*)[\r\n]/mg;
             while ((match = regexHead.exec(content)) !== null) {
                 contentBrief += match[1] + ', ';
                 if (contentBrief.length > this.briefMax) {
