@@ -22,7 +22,7 @@ export class FolderBrief {
     // generate folder overview
     async makeBriefCards(folderPath: string, activeNotePath: string) {
         // set note name
-        let cardBlock = new CardBlock();
+        const cardBlock = new CardBlock();
 
         // children from the vault tree: hidden folders such as .obsidian are not part of it
         const children = this.getChildren(folderPath);
@@ -32,23 +32,23 @@ export class FolderBrief {
 
         // sub folders
         if (!this.noteOnly) {
-            for (var i = 0; i < subFolderList.length; i++) {
-                var subFolderPath = subFolderList[i].path;
+            for (let i = 0; i < subFolderList.length; i++) {
+                const subFolderPath = subFolderList[i].path;
                 // have outside folder note?
-                let noteExists = this.app.vault.getAbstractFileByPath(subFolderPath + '.md') instanceof TFile;
+                const noteExists = this.app.vault.getAbstractFileByPath(subFolderPath + '.md') instanceof TFile;
                 if (!noteExists) {
-                    let folderCard = await this.makeFolderCard(folderPrefix, subFolderPath);
+                    const folderCard = await this.makeFolderCard(folderPrefix, subFolderPath);
                     cardBlock.addCard(folderCard);
                 }
             }
         }
 
         // notes
-        for (var i = 0; i < subFileList.length; i++) {
-            var subFilePath = subFileList[i].path;
+        for (let i = 0; i < subFileList.length; i++) {
+            const subFilePath = subFileList[i].path;
             if (subFileList[i].extension != 'md') continue;
             if (subFilePath == activeNotePath) continue; // omit self includeing
-            let noteCard = await this.makeNoteCard(folderPrefix, subFilePath);
+            const noteCard = await this.makeNoteCard(folderPrefix, subFilePath);
             cardBlock.addCard(noteCard);
         }
 
@@ -75,12 +75,12 @@ export class FolderBrief {
     // make folder brief card
     async makeFolderCard(folderPath: string, subFolderPath: string) {
         // title
-        var subFolderName = subFolderPath.split('/').pop();
-        let card = new CardItem(subFolderName, CardStyle.Folder);
+        const subFolderName = subFolderPath.split('/').pop();
+        const card = new CardItem(subFolderName, CardStyle.Folder);
 
         // description
-        let subChildren = this.getChildren(subFolderPath);
-        var folderBrief = 'Contains ';
+        const subChildren = this.getChildren(subFolderPath);
+        let folderBrief = 'Contains ';
         folderBrief += subChildren.folders.length.toString() + ' folders, ';
         folderBrief += subChildren.files.filter(f => f.extension == 'md').length.toString() + ' notes.';
         card.setAbstract(folderBrief);
@@ -95,26 +95,26 @@ export class FolderBrief {
     // make note brief card
     async makeNoteCard(folderPath: string, notePath: string) {
         // titile
-        var noteName = notePath.split('/').pop();
-        var noteTitle = noteName.substring(0, noteName.length - 3);
-        let card = new CardItem(noteTitle, CardStyle.Note);
+        const noteName = notePath.split('/').pop();
+        const noteTitle = noteName.substring(0, noteName.length - 3);
+        const card = new CardItem(noteTitle, CardStyle.Note);
         card.setTitleLink(notePath);
 
         // read content
-        let file = this.app.vault.getAbstractFileByPath(notePath);
+        const file = this.app.vault.getAbstractFileByPath(notePath);
         if (file && file instanceof TFile) {
-            let contentOrg = await this.app.vault.cachedRead(file);
+            const contentOrg = await this.app.vault.cachedRead(file);
             // let content = await this.app.vault.adapter.read(notePath);
             // console.log(content);
 
             // image
-            var imageUrl = this.getContentImage(contentOrg, folderPath);
+            const imageUrl = this.getContentImage(contentOrg, folderPath);
             if (imageUrl.length > 0) {
                 card.setHeadImage(imageUrl);
             }
             
             // content?
-            var contentBrief = this.getContentBrief(contentOrg);
+            let contentBrief = this.getContentBrief(contentOrg);
             if (contentBrief.length > 0) {
                 if (contentBrief.length > this.briefMax) {
                     contentBrief = contentBrief.substring(0, this.briefMax);
@@ -126,7 +126,7 @@ export class FolderBrief {
             // foot note
             const fileSt = (file as TFile);
             if (fileSt.stat) {
-                let date = new Date(fileSt.stat.mtime);
+                const date = new Date(fileSt.stat.mtime);
                 card.setFootnote(date.toLocaleString());
             }
             else {
@@ -139,16 +139,16 @@ export class FolderBrief {
     }
 
     getContentImage(contentOrg: string, folderPath: string) {
-        var imageUrl = '';
+        let imageUrl = '';
         // for patten: ![xxx.png]
-        let regexImg = new RegExp('!\\[(.*?)\\]\\((.*?)\\)');
-        var match = regexImg.exec(contentOrg);
+        const regexImg = new RegExp('!\\[(.*?)\\]\\((.*?)\\)');
+        let match = regexImg.exec(contentOrg);
         if (match != null) {
             imageUrl = match[2];
         }
         else {
             // for patten: ![[xxx.png]]
-            let regexImg2 = new RegExp('!\\[\\[(.*?)\\]\\]');
+            const regexImg2 = new RegExp('!\\[\\[(.*?)\\]\\]');
             match = regexImg2.exec(contentOrg);
             if (match != null) imageUrl = match[1];
         }
@@ -174,7 +174,7 @@ export class FolderBrief {
 
     getContentBrief(contentOrg: string) {
         // remove some special content
-        var content = contentOrg.trim();
+        let content = contentOrg.trim();
 
         // skip yaml head
         if (content.startsWith('---\r') || content.startsWith('---\n') ) {
@@ -207,10 +207,10 @@ export class FolderBrief {
         .trim()
 
         // try to get the first paragraph
-        var contentBrief = '';
+        let contentBrief = '';
         content = '\n' + content + '\n';
-        let regexP1 = new RegExp('\n([^\n|^#|^>])([^\n]+)\n', 'g'); 
-        var match = null;
+        const regexP1 = new RegExp('\n([^\n|^#|^>])([^\n]+)\n', 'g'); 
+        let match = null;
         if ((match = regexP1.exec(content)) !== null) {
             contentBrief = match[1] + match[2];
         }
@@ -220,7 +220,7 @@ export class FolderBrief {
 
         // use section headings
         if (contentBrief.length == 0) {
-            let regexHead = new RegExp('^#{1,6}(?!#)(.*)[\r\n]', 'mg');
+            const regexHead = new RegExp('^#{1,6}(?!#)(.*)[\r\n]', 'mg');
             while ((match = regexHead.exec(content)) !== null) {
                 contentBrief += match[1] + ', ';
                 if (contentBrief.length > this.briefMax) {
