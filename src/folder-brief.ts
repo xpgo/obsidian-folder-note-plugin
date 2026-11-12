@@ -124,9 +124,8 @@ export class FolderBrief {
             }
 
             // foot note
-            const fileSt = (file as TFile);
-            if (fileSt.stat) {
-                const date = new Date(fileSt.stat.mtime);
+            if (file.stat) {
+                const date = new Date(file.stat.mtime);
                 card.setFootnote(date.toLocaleString());
             }
             else {
