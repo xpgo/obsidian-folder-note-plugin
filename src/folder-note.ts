@@ -208,7 +208,7 @@ export class FolderNote {
         if (folderNoteExists) {
             this.hideFolderNote(folderElem);
             // show the note
-            this.app.workspace.openLinkText(this.notePath, '', false, { active: true });
+            await this.app.workspace.openLinkText(this.notePath, '', false, { active: true });
         } 
         else if (folderElem.hasClass('has-folder-note')) {
             folderElem.removeClass('has-folder-note');
@@ -236,7 +236,7 @@ export class FolderNote {
                 await this.app.vault.adapter.mkdir(folderPath);
                 const newNotePath = folderPath + '/' + this.noteBase + '.md';
                 await this.app.vault.adapter.rename(this.notePath, newNotePath);
-                this.app.workspace.openLinkText(newNotePath, '', false, { active: true });
+                await this.app.workspace.openLinkText(newNotePath, '', false, { active: true });
             }
         }
     }
@@ -406,7 +406,7 @@ export class FolderNote {
                     const newFolderPath = this.filesToRename[1];
                     // console.log('Mod Old Path:', oldFolderPath);
                     // console.log('Mod New Path:', newFolderPath);
-                    this.app.vault.adapter.rename(oldFolderPath, newFolderPath);
+                    void this.app.vault.adapter.rename(oldFolderPath, newFolderPath);
                     this.filesToRename = [];
                     this.filesToRenameSet = false;
                 }

@@ -61,7 +61,7 @@ export default class FolderNotePlugin extends Plugin {
                 }
 
                 // open it
-                this.folderNote.openFolderNote(folderElem, newKey);
+                void this.folderNote.openFolderNote(folderElem, newKey);
             }
         });
 
@@ -124,12 +124,12 @@ export default class FolderNotePlugin extends Plugin {
     // keep notefile name to be the folder name
     async handleFileRename(newPath: any, oldPath: any) {
         if (!this.settings.folderNoteAutoRename) return;
-        this.folderNote.syncName(newPath, oldPath);
+        await this.folderNote.syncName(newPath, oldPath);
     }
 
     // delete folder
     async handleFileDelete(pathToDel: any) {
         if (!this.settings.folderDelete2Note) return;
-        this.folderNote.deleteFolder(pathToDel.path);
+        await this.folderNote.deleteFolder(pathToDel.path);
     }
 }

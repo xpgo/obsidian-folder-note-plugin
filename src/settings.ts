@@ -57,9 +57,9 @@ export class FolderNoteSettingTab extends PluginSettingTab {
                 .addOption('inside', 'Folder Name Inside')
                 .addOption('outside', 'Folder Name Outside')
                 .setValue(this.plugin.settings.folderNoteType || 'inside')
-                .onChange((value: string) => {
+                .onChange(async (value: string) => {
                     this.plugin.settings.folderNoteType = value;
-                    this.plugin.saveSettings();
+                    await this.plugin.saveSettings();
                     this.display();
                 }));
 
@@ -103,9 +103,9 @@ export class FolderNoteSettingTab extends PluginSettingTab {
                 .addOption('ctrl', Platform.isMacOS ? 'Cmd + Click' : 'Ctrl + Click')
                 .addOption('alt', Platform.isMacOS ? 'Option + Click' : 'Alt + Click')
                 .setValue(this.plugin.settings.folderNoteKey || 'ctrl')
-                .onChange((value: string) => {
+                .onChange(async (value: string) => {
                     this.plugin.settings.folderNoteKey = value;
-                    this.plugin.saveSettings();
+                    await this.plugin.saveSettings();
                 }));
         
         new Setting(containerEl)
