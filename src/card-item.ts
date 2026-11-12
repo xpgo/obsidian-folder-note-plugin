@@ -38,16 +38,16 @@ export class CardBlock {
         const cardDiv = createDiv();
         if (this.style == 'strip') {
             cardDiv.addClass('strip-card-band');
-            for (const i in this.cards) {
-                const cardEl = this.cards[i].getBoxElement(app, this.imagePrefix);
+            for (const card of this.cards) {
+                const cardEl = card.getBoxElement(app, this.imagePrefix);
                 cardEl.addClass('strip-card-view');
                 cardDiv.appendChild(cardEl);
             }
         }
         else { // default: this.style == 'card'
             cardDiv.addClass('cute-card-band');
-            for (const i in this.cards) {
-                const cardEl = this.cards[i].getBoxElement(app, this.imagePrefix);
+            for (const card of this.cards) {
+                const cardEl = card.getBoxElement(app, this.imagePrefix);
                 cardEl.addClass('cute-card-view');
                 cardDiv.appendChild(cardEl);
             }
@@ -64,9 +64,9 @@ export class CardBlock {
         const nCard = this.getCardNum();
         if (nCard > 0) {
             yamlStr = '\n```ccard\nitems: [';
-            for (const i in this.cards) {
+            for (const card of this.cards) {
                 yamlStr += '\n  {\n'
-                yamlStr += this.cards[i].getYamlCode('    ');
+                yamlStr += card.getYamlCode('    ');
                 yamlStr += '  },'
             }
             // get rid of last period
