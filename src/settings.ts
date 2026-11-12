@@ -47,7 +47,7 @@ export class FolderNoteSettingTab extends PluginSettingTab {
         let { containerEl } = this;
 
         containerEl.empty();
-        containerEl.createEl('h2', { text: 'Folder Note Revamped: Settings.' });
+        new Setting(containerEl).setName('Folder Note Revamped: Settings.').setHeading();
 
         new Setting(containerEl)
             .setName('Note File Method')
