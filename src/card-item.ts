@@ -9,6 +9,28 @@ export enum CardStyle {
     Folder, Note, Image,
 }
 
+// One card as written in a ccard block (all keys are optional user input)
+export interface CardDict {
+    title?: string;
+    head?: string;
+    image?: string;
+    link?: string;
+    brief?: string;
+    foot?: string;
+}
+
+// The options and items of a ccard block as parsed from its YAML source
+export interface CardBlockYaml {
+    type?: string;
+    style?: string;
+    col?: number;
+    imagePrefix?: string;
+    items?: CardDict[];
+    folder?: string;
+    briefMax?: number;
+    noteOnly?: boolean;
+}
+
 export class CardBlock {
     style: string;
     col: number;
@@ -80,18 +102,16 @@ export class CardBlock {
         return yamlStr;
     }
 
-    fromYamlCards(yaml: any) {
+    fromYamlCards(yaml: CardBlockYaml) {
         // parser options
         this.fromYamlOptions(yaml);
 
         // parser items
         if (yaml.items) {
             this.clear();
-            const allItems = yaml.items;
-            for (const i in allItems) {
-                const cardInfo = allItems[i];
-                if ('title' in cardInfo) {
-                    const cardItem = new CardItem(cardInfo['title'], CardStyle.Note);
+            for (const cardInfo of yaml.items) {
+                if (cardInfo && typeof cardInfo === 'object' && 'title' in cardInfo) {
+                    const cardItem = new CardItem(String(cardInfo.title ?? ''), CardStyle.Note);
                     cardItem.fromDict(cardInfo);
                     this.addCard(cardItem);
                 }
@@ -102,7 +122,7 @@ export class CardBlock {
         return (this.getCardNum() > 0);
     }
 
-    fromYamlOptions(yaml: any) {
+    fromYamlOptions(yaml: CardBlockYaml) {
         if (yaml.style) {
             this.style = yaml.style;
         }
@@ -154,9 +174,9 @@ export class CardItem {
         this.footnote = footnote;
     }
 
-    fromDict(dict: any) {
-        if ('head' in dict) {
-            this.headText = dict['head'];
+    fromDict(dict: CardDict) {
+        if (dict.head !== undefined) {
+            this.headText = dict.head;
             if (this.headText == 'Folder') {
                 this.cardStyle = CardStyle.Folder;
             }
@@ -164,10 +184,10 @@ export class CardItem {
                 this.cardStyle = CardStyle.Note;
             }
         }
-        if ('image' in dict) this.headImage = dict['image'];
-        if ('link' in dict) this.titleLink = dict['link'];
-        if ('brief' in dict) this.abstract = dict['brief'];
-        if ('foot' in dict) this.footnote = dict['foot'];
+        if (dict.image !== undefined) this.headImage = dict.image;
+        if (dict.link !== undefined) this.titleLink = dict.link;
+        if (dict.brief !== undefined) this.abstract = dict.brief;
+        if (dict.foot !== undefined) this.footnote = dict.foot;
     }
 
     yamlEscapeQuotes(org: string) {
@@ -221,8 +241,8 @@ export class CardItem {
                 let imageUrl = this.headImage;
                 if (imagePrefix.length > 0) {
                     // skip explicitly path
-                    const urlPathList = imageUrl.split('/').join(' ').trimStart();
-                    const fixPathList = imagePrefix.split('/').join(' ').trimStart();
+                    const urlPathList = imageUrl.split('/').join(' ').replace(/^\s+/, '');
+                    const fixPathList = imagePrefix.split('/').join(' ').replace(/^\s+/, '');
                     if (!urlPathList.startsWith(fixPathList)) {
                         imageUrl = imagePrefix + this.headImage;
                     }
