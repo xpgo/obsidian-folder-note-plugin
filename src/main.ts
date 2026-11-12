@@ -118,7 +118,7 @@ export default class FolderNotePlugin extends Plugin {
     }
 
     async loadSettings() {
-        this.settings = Object.assign(FOLDER_NOTE_DEFAULT_SETTINGS, await this.loadData());
+        this.settings = Object.assign({}, FOLDER_NOTE_DEFAULT_SETTINGS, await this.loadData());
         this.updateFolderNote();
     }
 
