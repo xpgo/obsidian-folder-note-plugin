@@ -85,9 +85,16 @@ div.has-folder-note {
     letter-spacing: 0.05em;
 }
 
-.cute-card-view .thumb {
+.cute-card-view-cover .thumb {
     padding-bottom: 60%;
     background-size: cover;
+    background-position: center center;
+    border-radius: 10px 10px 0px 0px;
+}
+
+.cute-card-view-contain .thumb {
+    padding-bottom: 60%;
+    background-size: contain;background-repeat: no-repeat;
     background-position: center center;
     border-radius: 10px 10px 0px 0px;
 }

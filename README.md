@@ -1,3 +1,9 @@
+Written directly in js
+
+![Changes](https://federicoboccaccio.wordpress.com/wp-content/uploads/2025/03/folder-note.jpg)
+
+See https://federicoboccaccio.wordpress.com/folder-note-mod-plugin-per-obsidian/
+
 # Folder Note Plugin
 
 Obsidian Plugin: Add description note to a folder. Generate card-style overview of folder. Make your vault to be a hierarchy note system.
