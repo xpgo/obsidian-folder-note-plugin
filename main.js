@@ -8976,7 +8976,7 @@ var FOLDER_NOTE_DEFAULT_SETTINGS = {
 var FolderNoteSettingTab = /** @class */ (function (_super) {
     __extends(FolderNoteSettingTab, _super);
     function FolderNoteSettingTab(app, plugin) {
-        var _this = _super.call(this, app, plugin) || this;
+        var _this = Reflect.construct(_super, [app, plugin], new.target);
         _this.plugin = plugin;
         return _this;
     }
@@ -9213,7 +9213,7 @@ var NoteFileMethod$1;
 var FolderNotePlugin = /** @class */ (function (_super) {
     __extends(FolderNotePlugin, _super);
     function FolderNotePlugin() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        return Reflect.construct(_super, arguments, new.target);
     }
     FolderNotePlugin.prototype.onload = function () {
         return __awaiter(this, void 0, void 0, function () {
