@@ -13,6 +13,7 @@ Ported to the current Obsidian API (requires Obsidian 1.6.6+).
 - Fix: clicking the collapse arrow only folds the folder instead of opening the note.
 - Change: folder notes are hidden (and folders with notes highlighted) as soon as the explorer renders, not only after you click the folder; switching methods re-shows notes correctly (upstream #98, #102).
 - Change: disabling the plugin un-hides everything.
+- Change: folders with a note look like regular folders (no accent color/underline).
 - Build: rollup -> esbuild, TypeScript 5, yaml 2, updated release workflow.
 
 # Change log of Folder Note Plugin

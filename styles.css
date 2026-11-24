@@ -4,13 +4,6 @@
     display: none;
 }
 
-/* indicate the folder has a note */
-.nav-folder-title.has-folder-note .nav-folder-title-content {
-    color: var(--text-accent);
-    text-decoration: underline dotted;
-    text-underline-offset: 3px;
-}
-
 /*---------------------------------------------
             Cute card view
 -----------------------------------------------*/

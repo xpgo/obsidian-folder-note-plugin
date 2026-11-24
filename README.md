@@ -1,4 +1,4 @@
-> **Fork notice:** this is an updated fork of [xpgo/obsidian-folder-note-plugin](https://github.com/xpgo/obsidian-folder-note-plugin), ported to the Obsidian 1.x API (v0.8.0). See [doc/change-log.md](doc/change-log.md) for what changed. All credit for the original plugin goes to xpgo.
+> **Fork notice:** this is [ShoeburR's](https://github.com/ShoeburR/Obsidian-Folder-Note-Plugin1.15.1) updated fork of [xpgo/obsidian-folder-note-plugin](https://github.com/xpgo/obsidian-folder-note-plugin), ported to the Obsidian 1.x API (v0.8.0). See [doc/change-log.md](doc/change-log.md) for what changed. All credit for the original plugin goes to xpgo.
 
 # Folder Note Plugin
 
