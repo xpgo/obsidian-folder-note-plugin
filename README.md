@@ -1,122 +1,89 @@
-> **Fork notice:** this is [ShoeburR's](https://github.com/ShoeburR/Obsidian-Folder-Note-Plugin1.15.1) updated fork of [xpgo/obsidian-folder-note-plugin](https://github.com/xpgo/obsidian-folder-note-plugin), ported to the Obsidian 1.x API (v0.8.0). See [doc/change-log.md](doc/change-log.md) for what changed. All credit for the original plugin goes to xpgo.
+# Folder Note
 
-# Folder Note Plugin
+An [Obsidian](https://obsidian.md) plugin that attaches a note to a folder. Click a folder to open its note, and generate card-style overviews of what's inside.
 
-Obsidian Plugin: Add description note to a folder. Generate card-style overview of folder. Make your vault to be a hierarchy note system.
+> **Fork notice:** this is a modernized fork of [xpgo/obsidian-folder-note-plugin](https://github.com/xpgo/obsidian-folder-note-plugin), which stopped working on current Obsidian versions. The update to the Obsidian 1.x API was vibe-coded with [Claude](https://claude.ai) (Anthropic). All credit goes to [xpgo](https://github.com/xpgo), who built the original plugin, and to Claude, which did the modernization. See the [change log](doc/change-log.md) for what changed.
 
-![Folder_Note_Show](https://raw.githubusercontent.com/xpgo/obsidian-folder-note-plugin/master/image/folder-note1.png)
+![Folder note example](image/folder-note1.png)
 
 ## Usage
 
-- **Add** description note: CTRL+Click on a folder in the file explorer panel.
-- **Show** description note: Just Click the folder.
-- **Delete** description note: Just delete the opened note file.
-- **Settings** : configure the note file method, file name and inital template on the settings panel.
-- **Command**: Use some commands to control the folder note plugin.
+| Action | How |
+| --- | --- |
+| Create a folder note | **Ctrl+Click** a folder in the file explorer (or **Alt+Click**, see settings) |
+| Open a folder note | Click the folder |
+| Delete a folder note | Delete the note file |
+| Turn a note into a folder | Command palette → **Make Current Note to Folder** |
+| Insert a folder overview | Command palette → **Insert Folder Brief** |
 
-## Features
+## Folder note methods
 
-- Dispaly and manage folder note easily
-- Support 3 different folder note methods
-- Automatically keep folder and folder-note name in syncing
-- Make a folder by active note file
-- Customized initial folder note content
-- Card and strip style view of folder content
-- ccard code block for elegant view of item data
+Where the note file lives depends on the method you pick in settings:
 
-## How it works
+| Method | Note location for folder `Projects` |
+| --- | --- |
+| **Inside-Folder** (default) | `Projects/Projects.md` |
+| **Outside-Folder** | `Projects.md`, next to the folder |
+| **Index-File** | `Projects/_about_.md` (name is configurable) |
 
-The mechanism is simple: attaching a note file to a folder, and the folder note file will be hidden by CSS rules. But where do you put the folder note? There are three methods of creating description note for a folder: **Inside-Folder**, **Outside-Folder** and **Index-File**, please read [Folder Note Methods](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/folder-note-methods.md) for more information about the Pros and Cons of each method. The **default** configuration is the **Inside-Folder** method. If you prefer the others, please change the settings.
-
-When CTRL+Click a folder, the plugin will create a description note with the path dependent on the method you choose. When clicking a folder, the plugin will open the attached note for you. You can configure the plugin to hide/show the folder note. It can also be configured to try to automatically keep the folder and note name in syncing. 
+Folder notes are hidden in the file explorer, so the folder itself acts as the note. See [Folder Note Methods](doc/folder-note-methods.md) for the trade-offs of each.
 
 ## Settings
 
-- **Note File method**: select the folder note file method as mentioned above.
-- **Index File Name**: For the  *Index-File*  method, set the folder note name, like `_overview_` or `index`.
-- **Note Initial Content**: set the initial content for a new folder note, you can use some keywords:
-    - {{FOLDER_NAME}} will be replaced with the folder name.
-    - {{FOLDER_PATH}} will be replaced with the folder path.
-    - {{FOLDER_BRIEF}} will be replaced with a ccard code block for card-style overview of current folder, and the content in the ccard can be edited, see [ccard Syntax](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/ccard-syntax.md) for more information.
-    - {{FOLDER_BRIEF_LIVE}}  will be replaced with a tiny code block which will be rendered to the folder overview in real time.
-- **Key for New Note**: set to use CTRL+Click or ALT+Click for creating new folder note.
-- **Hide Folder Note**: turn off the setting if you want to show the note file in file explorer.
-- **Auto Rename**: For the methods *Inside-Folder* and *Outside-Folder*, the plugin tries to rename the folder note name when a folder name is changed or vice versa. However, this function is experimental, it does not always work. Rename them manually if you have some issue related to the operation.
-- **Delete Folder Note**: For the method *Outside-Folder*, delete folder note file when a folder is deleted. 
+- **Note File Method**: Inside-Folder, Outside-Folder, or Index-File.
+- **Index File Name**: the note name for the Index-File method, e.g. `_about_` or `index`.
+- **Initial Content**: template for new folder notes. Supported keywords:
+	- `{{FOLDER_NAME}}`: the folder's name.
+	- `{{FOLDER_PATH}}`: the folder's path.
+	- `{{FOLDER_BRIEF}}`: a one-time `ccard` overview of the folder's contents, editable afterward.
+	- `{{FOLDER_BRIEF_LIVE}}`: a `ccard` overview that updates whenever the note is rendered.
+- **Key for New Note**: Ctrl+Click or Alt+Click to create a folder note.
+- **Hide Folder Note**: hide folder note files in the file explorer.
+- **Auto Rename**: keep folder and note names in sync when either is renamed (Inside-Folder and Outside-Folder only). Experimental.
+- **Delete Folder Note**: trash the note when its folder is deleted (Outside-Folder only).
 
-## Command
+## Folder overviews (`ccard`)
 
-Use `Ctrl+P` to open Obsidian's command panel, and use the following commands of the plugin:
+The plugin renders `ccard` code blocks as card or strip views. The simplest live overview of the current folder:
 
-- **Insert Folder Overview**: Insert a folder overview code blocks in the current note file.
-- **Make Current Note to Folder**: Create a folder based on the current note and attach the note to the new folder as folder note. 
+````markdown
+```ccard
+type: folder_brief_live
+```
+````
 
-## Overview of folder
+You can control style, column count, image prefix, target folder, notes-only mode, brief length, and more. See [ccard Syntax](doc/ccard-syntax.md) and [ccard Recipes](doc/ccard-recipes.md).
 
-The plugin can automatically generate a code block of `ccard` in a note file for displaying overview of a folder. The code block can be used and edited in any normal note file. For the syntax of `ccard` code block, please refer to [ccard Syntax](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/ccard-syntax.md).
-
-You can use the `ccard` code block in the inital folder note template in the settings page. Alternatively, you can use some keywords in the initial folder note template to generate the code blocks for you:
-
-**Keyword: {{FOLDER_BRIEF}}**
-
-The keyword {{FOLDER_BRIEF}} will be replaces with a `ccard` code block which describes an brief overview of the folder. You can edit the codes in the code block to display whatever content you like. If you want to update the overview of a folder, it can be inserted to a note by command: Ctrl+P, Insert Folder Overview.
-
-**Keyword: {{FOLDER_BRIEF_LIVE}}**
-
-The keyword {{FOLDER_BRIEF_LIVE}} will be replaced  with a `ccard` code block which will be rendered to the folder overview in real time. It is useful when you put some notes with image in a folder, e.g., things collections, it will generate a card view of all the notes with images dynamically.
-
-**Configuration**
-
-If you want to configure the content and appearence of the `ccard` code block, please refer to [ccard Syntax](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/ccard-syntax.md). You can configure the style, colume number, image prefix, folder path, note only, max brief length and more. For example, the following image show different styles of folder overview. 
-
-![Card_Strip_Style](https://raw.githubusercontent.com/xpgo/obsidian-folder-note-plugin/master/image/style-card-strip.png)
-
-
-## Change log
-
-Remember to update the plugin, if you find some issues. 
-**For updating from version < 0.4.0**, please refer to [Update from old version](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/update-old-version.md).
-
-
-### 0.7.x
-
-- add strip style view of item data (0.7.3)
-- use {{FOLDER_BRIEF_LIVE}} for default inital content (0.7.2)
-- add Keyword {{FOLDER_PATH}} for inital content (0.7.1)
-- fix multiple usage of some keywords for initial content (0.7.1)
-- add imagePrefix key for ccard (0.7.0)
-- add noteOnly Key for folder_brief_live (0.7.0)
-- fix showing both folder and note for outside mode (0.7.0)
-- hide settings according to folder method (0.7.0)
-
-See [more change log](https://github.com/xpgo/obsidian-folder-note-plugin/blob/main/doc/change-log.md).
-
-## Plans for future
-
-- Add more template option for generating the initial content.
-- Automatically generate overview contents for the folder note file based on contents in the folder, like the software [Trilium](https://github.com/zadam/trilium) does. (Partially done.)
-- More robust renaming operation.
-- More style of overview.
-
-## Known issues
-
-- The folder note file may appear when created. Click it again to hide.
-- Leave a message on the GitHub repo if you find any issues or want to improve the plugin.
+![Card and strip styles](image/style-card-strip.png)
 
 ## Install
 
-- On the Obsidian's settings page, browse the community plugins and search 'Folder Note', then install.
-- Or manually installing: go to the GitHub release page, copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/folder-note-plugin/`.
-- The plugin will be updated continuously, update it through Obsidian's settings page or manually.
+**Manual:** download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/ShoeburR/Obsidian-Folder-Note-Plugin1.15.1/releases/latest) into `<your vault>/.obsidian/plugins/folder-note-plugin/`, then enable **Folder Note** under Settings → Community plugins.
+
+**BRAT:** add `ShoeburR/Obsidian-Folder-Note-Plugin1.15.1` with the [BRAT](https://github.com/TfTHacker/obsidian42-brat) plugin to receive updates automatically.
+
+> [!NOTE]
+> The **Folder Note** listing in Obsidian's community plugin browser is the original, unmaintained version. Install from this repo instead.
+
+Requires Obsidian 1.6.6 or newer.
 
 ## Build
 
-- Clone this repo.
-- `npm i` or `yarn` to install dependencies
-- `npm run dev` to start compilation in watch mode.
+```bash
+npm install
+npm run dev     # rebuild on change
+npm run build   # production build
+```
 
-## Support
+Pushing a version tag (e.g. `0.8.1`) runs the release workflow, which creates a draft GitHub release with the built files attached.
 
-[<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="BuyMeACoffee" width="100">](https://www.buymeacoffee.com/xpgo)
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/xpgo/obsidian-folder-note-plugin?style=for-the-badge)
-![GitHub all releases](https://img.shields.io/github/downloads/xpgo/obsidian-folder-note-plugin/total?style=for-the-badge)
+## Credits
+
+- **Original plugin:** [xpgo](https://github.com/xpgo). All features and design are theirs.
+- **Modernization (v0.8.0):** vibe-coded with [Claude](https://claude.ai) by Anthropic, at the request of [ShoeburR](https://github.com/ShoeburR).
+
+If you find the plugin useful, consider supporting the original author:
+
+[<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="100">](https://www.buymeacoffee.com/xpgo)
+
+Licensed under MIT.
