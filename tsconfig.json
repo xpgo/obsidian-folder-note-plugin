@@ -4,19 +4,15 @@
     "inlineSourceMap": true,
     "inlineSources": true,
     "module": "ESNext",
-    "target": "es5",
+    "target": "ES2018",
     "allowJs": true,
     "noImplicitAny": true,
+    "strictNullChecks": false,
     "moduleResolution": "node",
     "importHelpers": true,
-    "lib": [
-      "dom",
-      "es5",
-      "scripthost",
-      "es2015"
-    ]
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "lib": ["DOM", "ES2018"]
   },
-  "include": [
-    "**/*.ts"
-  ]
+  "include": ["src/**/*.ts"]
 }

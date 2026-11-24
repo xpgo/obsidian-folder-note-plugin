@@ -1,5 +1,5 @@
 
-import { App, MarkdownView, TFile, } from "obsidian";
+import { App, TFile, TFolder } from "obsidian";
 import { CardStyle, CardBlock, CardItem } from './card-item'
 
 // ------------------------------------------------------------
@@ -19,65 +19,49 @@ export class FolderBrief {
         this.noteOnly = false;
     }
 
-    // for cards type: folder_brief
+    // for cards type: folder_brief (legacy, not used by the ccard processor)
     async yamlFolderBrief(yaml: any) {
-        var folderPath = '';
         const activeFile = this.app.workspace.getActiveFile();
-        var notePath = activeFile.path;
-        if (yaml.cards.folder) {
+        if (!activeFile) return null;
+        let folderPath = '';
+        if (yaml.cards && yaml.cards.folder) {
             folderPath = yaml.cards.folder;
-            let folderExist = await this.app.vault.adapter.exists(folderPath);
-            if (!folderExist) folderPath = '';
+            if (!(this.app.vault.getAbstractFileByPath(folderPath) instanceof TFolder)) folderPath = '';
         }
-        else {
+        else if (activeFile.parent) {
             folderPath = activeFile.parent.path;
         }
-
-        // generate
-        if (folderPath.length > 0) {
-            const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-            if (view) {
-                let briefCards = await this.makeBriefCards(folderPath, notePath);
-                const cardsElem = briefCards.getDocElement(this.app);
-                return cardsElem;
-            }
-        }
-        return null;
+        if (folderPath.length == 0) return null;
+        const briefCards = await this.makeBriefCards(folderPath, activeFile.path);
+        return briefCards.getDocElement(this.app);
     }
-    
+
     // generate folder overview
     async makeBriefCards(folderPath: string, activeNotePath: string) {
-        // set note name
-        let cardBlock = new CardBlock();
+        const cardBlock = new CardBlock();
+        const folder = this.app.vault.getAbstractFileByPath(folderPath.length ? folderPath : '/');
+        if (!(folder instanceof TFolder)) return cardBlock;
 
-        // children statistic
-        let pathList = await this.app.vault.adapter.list(folderPath);
-        const subFolderList = pathList.folders;
-        const subFileList = pathList.files;
+        const byName = (a: { name: string }, b: { name: string }) =>
+            a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
+        const subFolders = folder.children.filter((f): f is TFolder => f instanceof TFolder).sort(byName);
+        const subFiles = folder.children.filter((f): f is TFile => f instanceof TFile).sort(byName);
 
-        // sub folders
+        // sub folders (skip ones that have an "outside" note, the note card covers them)
         if (!this.noteOnly) {
-            for (var i = 0; i < subFolderList.length; i++) {
-                var subFolderPath = subFolderList[i];
-                // have outside folder note?
-                let noteExists = await this.app.vault.adapter.exists(subFolderPath + '.md');
-                if (!noteExists) {
-                    let folderCard = await this.makeFolderCard(folderPath, subFolderPath);
-                    cardBlock.addCard(folderCard);
-                }
+            for (const sub of subFolders) {
+                if (this.app.vault.getAbstractFileByPath(sub.path + '.md') instanceof TFile) continue;
+                cardBlock.addCard(await this.makeFolderCard(folder.path, sub.path));
             }
         }
 
         // notes
-        for (var i = 0; i < subFileList.length; i++) {
-            var subFilePath = subFileList[i];
-            if (!subFilePath.endsWith('.md')) continue;
-            if (subFilePath == activeNotePath) continue; // omit self includeing
-            let noteCard = await this.makeNoteCard(folderPath, subFilePath);
-            cardBlock.addCard(noteCard);
+        for (const sub of subFiles) {
+            if (sub.extension !== 'md') continue;
+            if (sub.path == activeNotePath) continue; // omit self
+            cardBlock.addCard(await this.makeNoteCard(folder.path, sub.path));
         }
 
-        // return
         return cardBlock;
     }
 
@@ -88,14 +72,15 @@ export class FolderBrief {
         let card = new CardItem(subFolderName, CardStyle.Folder);
 
         // description
-        let subPathList = await this.app.vault.adapter.list(subFolderPath);
-        var folderBrief = 'Contains ';
-        folderBrief += subPathList.folders.length.toString() + ' folders, ';
-        folderBrief += subPathList.files.length.toString() + ' notes.';
+        const sub = this.app.vault.getAbstractFileByPath(subFolderPath);
+        const children = (sub instanceof TFolder) ? sub.children : [];
+        const nFolders = children.filter(f => f instanceof TFolder).length;
+        const nNotes = children.filter(f => f instanceof TFile && f.extension === 'md').length;
+        const folderBrief = `Contains ${nFolders} folders, ${nNotes} notes.`;
         card.setAbstract(folderBrief);
 
         // footnote, use date in the future
-        card.setFootnote(subFolderPath.replace(folderPath + '/', ''));
+        card.setFootnote(this.relPath(folderPath, subFolderPath));
         
         // return
         return card;
@@ -117,7 +102,7 @@ export class FolderBrief {
             // console.log(content);
 
             // image
-            var imageUrl = this.getContentImage(contentOrg, folderPath);
+            var imageUrl = this.getContentImage(contentOrg, folderPath, notePath);
             if (imageUrl.length > 0) {
                 card.setHeadImage(imageUrl);
             }
@@ -139,7 +124,7 @@ export class FolderBrief {
                 card.setFootnote(date.toLocaleString());
             }
             else {
-                card.setFootnote(notePath.replace(folderPath + '/', ''));
+                card.setFootnote(this.relPath(folderPath, notePath));
             }
         }
 
@@ -147,38 +132,53 @@ export class FolderBrief {
         return card;
     }
 
-    getContentImage(contentOrg: string, folderPath: string) {
-        var imageUrl = '';
-        // for patten: ![xxx.png]
-        let regexImg = new RegExp('!\\[(.*?)\\]\\((.*?)\\)');
-        var match = regexImg.exec(contentOrg);
+    relPath(folderPath: string, path: string) {
+        if (folderPath === '/' || folderPath === '') return path;
+        return path.startsWith(folderPath + '/') ? path.substring(folderPath.length + 1) : path;
+    }
+
+    // find the first image in a note and return a vault path (or an http url)
+    getContentImage(contentOrg: string, folderPath: string, notePath: string = '') {
+        let imageUrl = '';
+        let isWiki = false;
+        // pattern: ![alt](path)
+        let match = /!\[(.*?)\]\((.*?)\)/.exec(contentOrg);
         if (match != null) {
-            imageUrl = match[2];
+            imageUrl = match[2].trim();
+            // strip optional title: ![a](img.png "title")
+            imageUrl = imageUrl.replace(/\s+".*"$/, '').replace(/^<|>$/g, '');
         }
         else {
-            // for patten: ![[xxx.png]]
-            let regexImg2 = new RegExp('!\\[\\[(.*?)\\]\\]');
-            match = regexImg2.exec(contentOrg);
-            if (match != null) imageUrl = match[1];
-        }
-        // add image url
-        if (imageUrl.length > 0) {
-            if (!imageUrl.startsWith('http')) {
-                let headPath = folderPath;
-                let relativePath = false;
-                while (imageUrl.startsWith('../')) {
-                    imageUrl = imageUrl.substring(3);
-                    headPath = headPath.substring(0, headPath.lastIndexOf('/'));
-                    relativePath = true;
-                }
-                if (relativePath) {
-                    imageUrl = headPath + '/' + imageUrl;
-                }
-                imageUrl = imageUrl.replace(/\%20/g, ' ')
-                // imageUrl = this.app.vault.adapter.getResourcePath(imageUrl);
+            // pattern: ![[path|size]]
+            match = /!\[\[(.*?)\]\]/.exec(contentOrg);
+            if (match != null) {
+                imageUrl = match[1];
+                isWiki = true;
             }
         }
-        return imageUrl;
+        if (imageUrl.length == 0 || imageUrl.startsWith('http')) return imageUrl;
+
+        // drop "|size" and "#heading" parts, decode %20 etc.
+        let linkPath = imageUrl.split('|')[0].split('#')[0].trim();
+        try { linkPath = decodeURI(linkPath); } catch (e) { /* keep as-is */ }
+
+        // let Obsidian resolve it the same way it resolves embeds
+        const dest = this.app.metadataCache.getFirstLinkpathDest(linkPath, notePath);
+        if (dest) return dest.path;
+
+        // fallback: resolve relative markdown paths by hand
+        if (!isWiki) {
+            let headPath = folderPath;
+            let relative = false;
+            while (linkPath.startsWith('../')) {
+                linkPath = linkPath.substring(3);
+                headPath = headPath.substring(0, headPath.lastIndexOf('/'));
+                relative = true;
+            }
+            if (linkPath.startsWith('./')) { linkPath = linkPath.substring(2); relative = true; }
+            if (relative && headPath.length > 0) linkPath = headPath + '/' + linkPath;
+        }
+        return linkPath;
     }
 
     getContentBrief(contentOrg: string) {

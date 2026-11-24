@@ -1,5 +1,5 @@
 
-import { App, } from "obsidian";
+import { App, TFile, normalizePath } from "obsidian";
 
 // ------------------------------------------------------------
 // Card block
@@ -210,12 +210,12 @@ export class CardItem {
             if (this.headImage.startsWith("#")) {
                 // color
                 headEl.addClass('thumb-color');
-                headEl.setAttr('style', `background-color: ${this.headImage};`);
+                headEl.style.backgroundColor = this.headImage;
             }
-            else if (this.headImage.contains("://")) {
+            else if (this.headImage.includes("://")) {
                 // app local image
                 headEl.addClass('thumb');
-                headEl.setAttr('style', `background-image: url(${this.headImage});`);
+                headEl.style.backgroundImage = `url("${this.headImage.replace(/"/g, '%22')}")`;
             } else {
                 // asset file name?
                 let imageUrl = this.headImage;
@@ -227,11 +227,14 @@ export class CardItem {
                         imageUrl = imagePrefix + this.headImage;
                     }
                 }
-                if (!imageUrl.contains('://')) {
-                    imageUrl = app.vault.adapter.getResourcePath(imageUrl);
+                if (!imageUrl.includes('://')) {
+                    const imgFile = app.vault.getAbstractFileByPath(normalizePath(imageUrl));
+                    imageUrl = (imgFile instanceof TFile)
+                        ? app.vault.getResourcePath(imgFile)
+                        : app.vault.adapter.getResourcePath(normalizePath(imageUrl));
                 }
                 headEl.addClass('thumb');
-                headEl.setAttr('style', `background-image: url(${imageUrl});`);
+                headEl.style.backgroundImage = `url("${imageUrl.replace(/"/g, '%22')}")`;
             }
 
             if (this.headText) {
@@ -255,6 +258,7 @@ export class CardItem {
                 titleEl.addClass('internal-link');
             }
             titleEl.href = this.titleLink;
+            titleEl.setAttr('data-href', this.titleLink);
             let h1El = document.createElement('h1');
             h1El.textContent = this.title;
             titleEl.appendChild(h1El);

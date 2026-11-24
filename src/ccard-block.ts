@@ -1,5 +1,4 @@
-
-import { App, MarkdownView, MarkdownPostProcessorContext} from "obsidian";
+import { App, Keymap, MarkdownPostProcessorContext, TFolder } from "obsidian";
 import { FolderBrief } from './folder-brief';
 import { FolderNote } from './folder-note';
 import { CardBlock } from './card-item';
@@ -15,82 +14,76 @@ export class ccardProcessor {
     constructor(app: App) {
         this.app = app;
     }
-    
+
     async run(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext, folderNote: FolderNote) {
-        // Change cards code to html element
         try {
             const yaml = Yaml.parse(source);
             if (!yaml) return;
 
-            // set default
             if (yaml.type === undefined) yaml.type = 'static';
             if (yaml.style === undefined) yaml.style = 'card';
 
-            // for different types
+            let docEl: HTMLElement | null = null;
             if (yaml.type == 'static') {
-                const docEl = await this.docElemStatic(yaml);
-                if (docEl) {
-                    el.appendChild(docEl);
-                }
+                docEl = await this.docElemStatic(yaml);
             }
             else if (yaml.type == 'folder_brief_live') {
-                const docEl = await this.docElemFolderBriefLive(yaml, folderNote);
-                if (docEl) {
-                    el.appendChild(docEl);
-                }
+                docEl = await this.docElemFolderBriefLive(yaml, folderNote, ctx.sourcePath);
+            }
+
+            if (docEl) {
+                el.appendChild(docEl);
+                this.wireInternalLinks(el, ctx.sourcePath);
             }
         }
         catch (error) {
-            console.log('Code Block: ccard', error)
+            console.log('Code Block: ccard', error);
+            el.createEl('pre', { text: `ccard error: ${error}` });
         }
     }
 
-    // static
+    // make card titles open notes in both Reading view and Live Preview
+    wireInternalLinks(el: HTMLElement, sourcePath: string) {
+        el.querySelectorAll<HTMLAnchorElement>('a.internal-link').forEach(a => {
+            a.addEventListener('click', (evt: MouseEvent) => {
+                evt.preventDefault();
+                evt.stopPropagation();
+                const href = a.getAttribute('data-href') || a.getAttribute('href');
+                if (href) this.app.workspace.openLinkText(href, sourcePath, Keymap.isModEvent(evt));
+            });
+        });
+    }
+
     async docElemStatic(yaml: any) {
         if (yaml.items && (yaml.items instanceof Array)) {
-            let cardBlock = new CardBlock();
+            const cardBlock = new CardBlock();
             cardBlock.fromYamlCards(yaml);
-            const cardsElem = cardBlock.getDocElement(this.app);
-            return cardsElem;
+            return cardBlock.getDocElement(this.app);
         }
         return null;
     }
 
     // folder_brief_live
-    async docElemFolderBriefLive(yaml: any, folderNote: FolderNote) {
-        var folderPath = '';
-        const activeFile = this.app.workspace.getActiveFile();
-        var notePath = activeFile.path;
+    async docElemFolderBriefLive(yaml: any, folderNote: FolderNote, notePath: string) {
+        let folderPath = '';
         if (yaml.folder) {
-            let folderExist = await this.app.vault.adapter.exists(yaml.folder);
-            if (folderExist) folderPath = yaml.folder;
-        }
-        else {
-            folderPath = await folderNote.getNoteFolderBriefPath(notePath);
-        }
-        
-        if (folderPath.length > 0) {
-            const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-            if (view) {
-                let folderBrief = new FolderBrief(this.app);
-
-                // brief options
-                if (yaml.briefMax) {
-                    folderBrief.briefMax = yaml.briefMax;
-                }
-                if (yaml.noteOnly != undefined) {
-                    folderBrief.noteOnly = yaml.noteOnly;
-                }
-
-                // cards options
-                let briefCards = await folderBrief.makeBriefCards(folderPath, notePath);
-                briefCards.fromYamlOptions(yaml);
-                
-                // generate el
-                const ccardElem = briefCards.getDocElement(this.app);
-                return ccardElem;
+            if (this.app.vault.getAbstractFileByPath(yaml.folder) instanceof TFolder) {
+                folderPath = yaml.folder;
             }
         }
-        return null;
+        else {
+            // use the note that contains this block, not whichever note is active
+            folderPath = await folderNote.getNoteFolderBriefPath(notePath);
+        }
+
+        if (folderPath.length == 0) return null;
+
+        const folderBrief = new FolderBrief(this.app);
+        if (yaml.briefMax) folderBrief.briefMax = yaml.briefMax;
+        if (yaml.noteOnly != undefined) folderBrief.noteOnly = yaml.noteOnly;
+
+        const briefCards = await folderBrief.makeBriefCards(folderPath, notePath);
+        briefCards.fromYamlOptions(yaml);
+        return briefCards.getDocElement(this.app);
     }
 }

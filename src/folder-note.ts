@@ -1,12 +1,11 @@
-
-import { App, MarkdownView, TFile, } from "obsidian";
+import { App, TAbstractFile, TFile, TFolder, normalizePath } from "obsidian";
 import { FolderBrief } from './folder-brief';
 
 // ------------------------------------------------------------
 // Folder Note
 // ------------------------------------------------------------
 
-enum NoteFileMethod {
+export enum NoteFileMethod {
     Index, Inside, Outside,
 }
 
@@ -24,108 +23,93 @@ export class FolderNote {
     // for rename
     filesToRename: string[];
     filesToRenameSet: boolean;
+    selfRenaming: boolean;
 
     constructor(app: App, methodStr: string, indexBase: string) {
         this.app = app;
+        this.indexBase = indexBase;
         this.setMethod(methodStr, indexBase);
         this.emptyPath();
-        // for rename
         this.filesToRename = [];
         this.filesToRenameSet = false;
+        this.selfRenaming = false;
     }
 
-    // set the method
     setMethod(methodStr: string, indexBase: string) {
         if (methodStr == 'index') {
             this.method = NoteFileMethod.Index;
             this.indexBase = indexBase;
-        } 
-        else if (methodStr == 'inside') { 
+        }
+        else if (methodStr == 'inside') {
             this.method = NoteFileMethod.Inside;
         }
-        else if (methodStr == 'outside') { 
+        else if (methodStr == 'outside') {
             this.method = NoteFileMethod.Outside;
         }
     }
 
-    // clear
     emptyPath() {
         this.folderPath = '';
         this.notePath = '';
         this.noteBase = '';
     }
 
-    // set by folder path
     setByFolderPath(path: string) {
         this.emptyPath();
-        var folderPath = path.trim();
+        const folderPath = path.trim();
         if (folderPath.length == 0) return;
-
-        // set
         this.folderPath = folderPath;
-        var notePaths = this.getFolderNotePath(folderPath);
+        const notePaths = this.getFolderNotePath(folderPath);
         this.notePath = notePaths[0];
         this.noteBase = notePaths[1];
     }
 
-    // set by note, should ends with .md
+    // set by note, should end with .md
     setByNotePath(path: string) {
         this.emptyPath();
-        var notePath = path.trim();
+        const notePath = path.trim();
         if (notePath.length == 0) return;
         if (!notePath.endsWith('.md')) return;
-
-        // set
         this.notePath = notePath;
         this.noteBase = this.getFileBaseName(notePath);
         this.folderPath = this.getNoteFolderPath(notePath);
     }
 
-    // set by folder element
-    setByFolderElement(folderItemEl: Element) {
-        var folderPath = '';
-        var folderName = '';
+    // set by a clicked element inside the file explorer.
+    // returns the folder title element, or null if the click was not on a folder.
+    setByFolderElement(clickedEl: Element): HTMLElement | null {
+        this.emptyPath();
+        const folderElem = clickedEl.closest<HTMLElement>('.nav-folder-title[data-path]');
+        if (!folderElem) return null;
+        // only react inside the file explorer (other views reuse nav-* classes)
+        if (!folderElem.closest('.workspace-leaf-content[data-type="file-explorer"]')) return null;
 
-        var className = folderItemEl.className.toString();
-        var folderElem = folderItemEl;
-        if (className.contains('nav-folder-title-content')) {
-            folderName = folderElem.getText();
-            folderElem = folderItemEl.parentElement;
-            folderPath = folderElem.attributes.getNamedItem('data-path').textContent;
-        }
-        else if (className.contains('nav-folder-title')) {
-            folderPath = folderItemEl.attributes.getNamedItem('data-path').textContent;
-            folderName = folderItemEl.lastElementChild.getText();
-        }
+        let folderPath = folderElem.getAttribute('data-path') || '';
+        if (folderPath === '/' || folderPath.length === 0) return null; // vault root
 
-        // fix the folder path
-        if (folderPath.length > 0) {
-            var slashLast = folderPath.lastIndexOf('/');
-            var folderPathLast = folderPath.split('/').pop();
-            if (folderPathLast != folderName) {
-                folderPath = folderPath.substring(0, slashLast + 1) + folderName;
-            }
+        // data-path can lag behind right after a rename; trust the visible name
+        const nameEl = folderElem.querySelector('.nav-folder-title-content');
+        const folderName = nameEl ? nameEl.textContent : '';
+        if (folderName && folderPath.split('/').pop() != folderName) {
+            const slashLast = folderPath.lastIndexOf('/');
+            folderPath = folderPath.substring(0, slashLast + 1) + folderName;
         }
 
-        // set to mine
         this.setByFolderPath(folderPath);
-
-        // return the element in useage
         return folderElem;
     }
 
-    // get file base name
     getFileBaseName(filePath: string) {
-        var baseName = filePath.split('/').pop();
-        var dotPos = baseName.lastIndexOf('.');
+        let baseName = filePath.split('/').pop();
+        const dotPos = baseName.lastIndexOf('.');
         if (dotPos > 0) baseName = baseName.substring(0, dotPos);
         return baseName;
     }
 
-    // get folder note path by folder path
-    getFolderNotePath(folderPath: string) {
-        var notePath = '';
-        var noteBaseName = this.indexBase;
+    // [notePath, noteBaseName] for a folder
+    getFolderNotePath(folderPath: string): [string, string] {
+        let notePath = '';
+        let noteBaseName = this.indexBase;
         if (this.method == NoteFileMethod.Index) {
             notePath = folderPath + '/' + noteBaseName + '.md';
         }
@@ -134,282 +118,219 @@ export class FolderNote {
             if (this.method == NoteFileMethod.Inside) {
                 notePath = folderPath + '/' + noteBaseName + '.md';
             }
-            else if  (this.method == NoteFileMethod.Outside) {
+            else if (this.method == NoteFileMethod.Outside) {
                 notePath = folderPath + '.md';
             }
         }
-        // console.log('notePath: ', notePath);
         return [notePath, noteBaseName];
     }
 
-    // get note folder, make sure it is a note file
     getNoteFolderPath(notePath: string) {
-        var folderPath = '';
-        if (this.method == NoteFileMethod.Index) {
-            folderPath = notePath.substring(0, notePath.lastIndexOf('/'));
-        }
-        else if (this.method == NoteFileMethod.Inside) {
+        let folderPath = '';
+        if (this.method == NoteFileMethod.Index || this.method == NoteFileMethod.Inside) {
             folderPath = notePath.substring(0, notePath.lastIndexOf('/'));
         }
         else if (this.method == NoteFileMethod.Outside) {
-            folderPath = notePath.substring(0,  notePath.length-3);
+            folderPath = notePath.substring(0, notePath.length - 3);
         }
         return folderPath;
     }
 
-    // check if it is folder note name
+    // synchronous check using the vault's in-memory file tree
+    isFolderNoteSync(notePath: string): boolean {
+        if (!notePath || !notePath.endsWith('.md')) return false;
+        if (this.method == NoteFileMethod.Index) {
+            return notePath.endsWith(`/${this.indexBase}.md`);
+        }
+        if (this.method == NoteFileMethod.Inside) {
+            const base = this.getFileBaseName(notePath);
+            const parts = notePath.split('/');
+            return parts.length >= 2 && parts[parts.length - 2] === base;
+        }
+        if (this.method == NoteFileMethod.Outside) {
+            const folderPath = notePath.substring(0, notePath.length - 3);
+            return this.app.vault.getAbstractFileByPath(folderPath) instanceof TFolder;
+        }
+        return false;
+    }
+
+    hasFolderNoteSync(folderPath: string): boolean {
+        const [notePath] = this.getFolderNotePath(folderPath);
+        return this.app.vault.getAbstractFileByPath(notePath) instanceof TFile;
+    }
+
+    // kept async for backwards compatibility with callers
     async isFolderNotePath(notePath: string) {
-        var isFN = false;
-        if (!notePath.endsWith('.md')) return false;
-
-        if (this.method == NoteFileMethod.Index) {
-            isFN = notePath.endsWith(`/${this.indexBase}.md`);
-        }
-        else if (this.method == NoteFileMethod.Inside) {
-            var noteBaseName = this.getFileBaseName(notePath);
-            if (notePath.endsWith(noteBaseName + '/' + noteBaseName + '.md'))  {
-                isFN = true;
-            }
-        }
-        else if (this.method == NoteFileMethod.Outside) {
-            var folderPath = notePath.substring(0, notePath.length-3);
-            isFN = await this.app.vault.adapter.exists(folderPath);
-        }
-        return isFN;
+        return this.isFolderNoteSync(notePath);
     }
 
-    // check is folder note file?
     async isFolderNote(notePath: string) {
-        var isFN = false;
-        if (this.method == NoteFileMethod.Index) {
-            isFN = notePath.endsWith(`/${this.indexBase}.md`);
-        }
-        else if (this.method == NoteFileMethod.Inside) {
-            var noteBaseName = this.getFileBaseName(notePath);
-            isFN = notePath.endsWith(`${noteBaseName}/${noteBaseName}.md`);
-        }
-        else if (this.method == NoteFileMethod.Outside) {
-            var folderPath = notePath.substring(0, notePath.length-3);
-            isFN = await this.app.vault.adapter.exists(folderPath);
-        }
-        return isFN;
+        return this.isFolderNoteSync(notePath);
     }
 
-    // open note file
-    async openFolderNote(folderElem: Element, doCreate: boolean) {
-        // check note file
-        let folderNoteExists = await this.app.vault.adapter.exists(this.notePath);
-        if (!folderNoteExists && doCreate) {
-            await this.newFolderNote();
-            folderNoteExists = true;
+    async openFolderNote(folderElem: HTMLElement, doCreate: boolean) {
+        let file = this.app.vault.getAbstractFileByPath(this.notePath);
+        if (!(file instanceof TFile) && doCreate) {
+            file = await this.newFolderNote();
         }
 
-        // open the note
-        if (folderNoteExists) {
-            this.hideFolderNote(folderElem);
-            // show the note
-            this.app.workspace.openLinkText(this.notePath, '', false, { active: true });
-        } 
-        else if (folderElem.hasClass('has-folder-note')) {
+        if (file instanceof TFile) {
+            folderElem.addClass('has-folder-note');
+            await this.app.workspace.getLeaf(false).openFile(file, { active: true });
+        }
+        else {
             folderElem.removeClass('has-folder-note');
         }
     }
 
-    // create folder note
-    async newFolderNote() {
-        let noteInitContent = await this.expandContent(this.initContent);
-        await this.app.vault.adapter.write(this.notePath, noteInitContent);
+    async newFolderNote(): Promise<TFile> {
+        const content = await this.expandContent(this.initContent);
+        return await this.app.vault.create(normalizePath(this.notePath), content);
     }
 
-    // create folder by note
+    // turn the current note into a folder (with the note as its folder note)
     async newNoteFolder() {
         if (this.method == NoteFileMethod.Outside) {
-            let folderExists = await this.app.vault.adapter.exists(this.folderPath);
-            if (!folderExists) {
-                await this.app.vault.adapter.mkdir(this.folderPath);
+            if (!this.app.vault.getAbstractFileByPath(this.folderPath)) {
+                await this.app.vault.createFolder(this.folderPath);
             }
         }
         else if (this.method == NoteFileMethod.Inside) {
-            var folderPath = this.notePath.substring(0, this.notePath.length-3);
-            let folderExists = await this.app.vault.adapter.exists(folderPath);
-            if (!folderExists) {
-                await this.app.vault.adapter.mkdir(folderPath);
-                var newNotePath = folderPath + '/' + this.noteBase + '.md';
-                await this.app.vault.adapter.rename(this.notePath, newNotePath);
-                this.app.workspace.openLinkText(newNotePath, '', false, { active: true });
+            const folderPath = this.notePath.substring(0, this.notePath.length - 3);
+            if (!this.app.vault.getAbstractFileByPath(folderPath)) {
+                await this.app.vault.createFolder(folderPath);
+                const newNotePath = folderPath + '/' + this.noteBase + '.md';
+                await this.renamePath(this.notePath, newNotePath);
+                const moved = this.app.vault.getAbstractFileByPath(newNotePath);
+                if (moved instanceof TFile) {
+                    await this.app.workspace.getLeaf(false).openFile(moved, { active: true });
+                }
             }
         }
     }
 
-    // expand content template
+    // keywords: {{FOLDER_NAME}}, {{FOLDER_PATH}}, {{FOLDER_BRIEF}}, {{FOLDER_BRIEF_LIVE}}
     async expandContent(template: string) {
-        // keyword: {{FOLDER_NAME}}, {{FOLDER_PATH}}
-        var folderName = this.folderPath.split('/').pop();
-        var content = template
+        const folderName = this.folderPath.split('/').pop();
+        let content = template
             .replace(/{{FOLDER_NAME}}/g, folderName)
-            .replace(/{{FOLDER_PATH}}/g, this.folderPath)
-        // keyword: {{FOLDER_BRIEF}}
-        if (content.contains('{{FOLDER_BRIEF}}')) {
-            let folderBrief = new FolderBrief(this.app);
-            let briefCards = await folderBrief.makeBriefCards(this.folderPath, this.notePath);
+            .replace(/{{FOLDER_PATH}}/g, this.folderPath);
+        if (content.includes('{{FOLDER_BRIEF}}')) {
+            const folderBrief = new FolderBrief(this.app);
+            const briefCards = await folderBrief.makeBriefCards(this.folderPath, this.notePath);
             content = content.replace('{{FOLDER_BRIEF}}', briefCards.getYamlCode());
         }
-        // keyword: {{FOLDER_BRIEF_LIVE}}
-        if (content.contains('{{FOLDER_BRIEF_LIVE}}')) {
+        if (content.includes('{{FOLDER_BRIEF_LIVE}}')) {
             const briefLiveCode = '\n```ccard\ntype: folder_brief_live\n```\n';
             content = content.replace('{{FOLDER_BRIEF_LIVE}}', briefLiveCode);
         }
         return content;
     }
 
-    // hide folder note
-    hideFolderNote(folderElem: Element) {
-        // modify the element
-        const hideSetting = this.hideNoteFile;
-        folderElem.addClass('has-folder-note');
-        var parentElem = folderElem.parentElement;
-        var fileSelector = ':scope > div.nav-folder-children > div.nav-file > div.nav-file-title';
-        var isOutsideMethod = (this.method == NoteFileMethod.Outside);
-        if (isOutsideMethod) {
-            parentElem = parentElem.parentElement;
-            fileSelector = ':scope > div.nav-file > div.nav-file-title';
-        }
-        var noteBase = this.noteBase;
-        parentElem.querySelectorAll(fileSelector)
-            .forEach(function (fileElem) {
-                var fileNodeTitle = fileElem.firstElementChild.textContent;
-                // console.log('fileNoteTitle: ', fileNodeTitle);
-                if (hideSetting && (fileNodeTitle == noteBase)) {
-                    fileElem.addClass('is-folder-note');
-                }
-                else if (!isOutsideMethod) {
-                    fileElem.removeClass('is-folder-note');
-                }
-                // console.log('isOutsideMethod: ', isOutsideMethod);
-            }
-        );
-    }
-    
-    // get the file breif path
     async getNoteFolderBriefPath(notePath: string) {
-        var folderPath = '';
-        let isFN = await this.isFolderNote(notePath);
-        if (isFN) {
-            folderPath = this.getNoteFolderPath(notePath);
+        if (this.isFolderNoteSync(notePath)) {
+            return this.getNoteFolderPath(notePath);
         }
-        else {
-            folderPath = notePath.substring(0, notePath.lastIndexOf('/'));
-        }
-        return folderPath;
+        return notePath.substring(0, notePath.lastIndexOf('/'));
     }
 
-    // delete a folder 
-    async deleteFolder(pathToDel: any) {
+    // called after a folder was deleted (outside method only)
+    async deleteFolder(pathToDel: string) {
         if (this.method == NoteFileMethod.Outside && !pathToDel.endsWith('.md')) {
-            // delete a folder
-            let myNotePath = pathToDel + '.md';
-            let noteExists = await this.app.vault.adapter.exists(myNotePath);
-            if (noteExists) {
-                await this.app.vault.adapter.trashLocal(myNotePath);
+            const note = this.app.vault.getAbstractFileByPath(pathToDel + '.md');
+            if (note instanceof TFile) {
+                // respects the user's "deleted files" setting (system trash / .trash / permanent)
+                await this.app.fileManager.trashFile(note);
             }
         }
     }
 
-    // sync folder / note name
-    async syncName(newPath: any, oldPath: any) {
+    // rename through Obsidian so links get updated; never overwrite an existing file
+    async renamePath(oldPath: string, newPath: string) {
+        const file = this.app.vault.getAbstractFileByPath(oldPath);
+        if (!file) return;
+        if (this.app.vault.getAbstractFileByPath(newPath)) {
+            console.warn(`Folder Note: not renaming ${oldPath} -> ${newPath}, target exists.`);
+            return;
+        }
+        this.selfRenaming = true;
+        try {
+            await this.app.fileManager.renameFile(file, newPath);
+        } finally {
+            this.selfRenaming = false;
+        }
+    }
+
+    async syncName(file: TAbstractFile, oldPath: string) {
         if (this.method == NoteFileMethod.Outside) {
-            await this.syncNameOutside(newPath, oldPath);
+            await this.syncNameOutside(file, oldPath);
         }
         else if (this.method == NoteFileMethod.Inside) {
-            await this.syncNameInside(newPath, oldPath);
+            await this.syncNameInside(file, oldPath);
         }
     }
 
-    // sync folder / note name for outside
-    async syncNameOutside(newPath: any, oldPath: any) {
-        if (!oldPath.endsWith('.md')) {
-            // changing folder name
-            // console.log('changing folder!!!')
-            // console.log('oldPath: ', oldPath);
-            // console.log('newPath: ', newPath.path);
-            let noteExists = await this.app.vault.adapter.exists(oldPath + '.md');
-            if (noteExists) {
-                var oldNotePaths = this.getFolderNotePath(oldPath);
-                var newNotePaths = this.getFolderNotePath(newPath.path);
-                if (oldNotePaths[1] != newNotePaths[1]) {
-                    await this.app.vault.adapter.rename(oldNotePaths[0], newNotePaths[0]);
-                }
+    async syncNameOutside(file: TAbstractFile, oldPath: string) {
+        if (file instanceof TFolder) {
+            // folder renamed: rename sibling note
+            const oldNotePaths = this.getFolderNotePath(oldPath);
+            const newNotePaths = this.getFolderNotePath(file.path);
+            if (this.app.vault.getAbstractFileByPath(oldNotePaths[0]) instanceof TFile
+                && oldNotePaths[0] != newNotePaths[0]) {
+                await this.renamePath(oldNotePaths[0], newNotePaths[0]);
             }
         }
-        else {
-            // changeing note name
-            let isFN = await this.isFolderNote(oldPath);
-            if (isFN) {
-                // console.log('oldPath: ', oldPath);
-                // console.log('newPath: ', newPath.path);
-                var oldFolderPath = this.getNoteFolderPath(oldPath);
-                var newFolderPath = this.getNoteFolderPath(newPath.path);
-                await this.app.vault.adapter.rename(oldFolderPath, newFolderPath);
+        else if (oldPath.endsWith('.md')) {
+            // note renamed: rename sibling folder if it was a folder note
+            const oldFolderPath = this.getNoteFolderPath(oldPath);
+            if (this.app.vault.getAbstractFileByPath(oldFolderPath) instanceof TFolder
+                && file.path.endsWith('.md')) {
+                const newFolderPath = this.getNoteFolderPath(file.path);
+                await this.renamePath(oldFolderPath, newFolderPath);
             }
         }
     }
 
-    //  sync folder / note name for inside case
-    async syncNameInside(newPath: any, oldPath: any) {
-        if (!oldPath.endsWith('.md')) {
-            // changing folder name
-            var oldNotePaths = this.getFolderNotePath(oldPath);
-            var newNotePaths = this.getFolderNotePath(newPath.path);
-            var oldNotePathNew = newPath.path + '/' + oldNotePaths[1] + '.md';
-            let noteExists = await this.app.vault.adapter.exists(oldNotePathNew);
-            if (noteExists) {
-                if (newNotePaths[0] != oldNotePathNew) {
-                    // put it to rename
-                    this.filesToRename.push(oldNotePathNew);
-                    this.filesToRename.push(newNotePaths[0]);
+    async syncNameInside(file: TAbstractFile, oldPath: string) {
+        if (file instanceof TFolder) {
+            // folder renamed: note inside still has the old name
+            const oldNotePaths = this.getFolderNotePath(oldPath);
+            const newNotePaths = this.getFolderNotePath(file.path);
+            const oldNotePathNew = file.path + '/' + oldNotePaths[1] + '.md';
+            if (this.app.vault.getAbstractFileByPath(oldNotePathNew) instanceof TFile
+                && newNotePaths[0] != oldNotePathNew) {
+                this.filesToRename.push(oldNotePathNew, newNotePaths[0]);
+            }
+        }
+        else if (this.filesToRename.length == 0 && oldPath.endsWith('.md')) {
+            // note renamed: rename the folder that contains it
+            const oldBase = this.getFileBaseName(oldPath);
+            const parts = oldPath.split('/');
+            const wasFolderNote = parts.length >= 2 && parts[parts.length - 2] === oldBase;
+            if (wasFolderNote && file.parent) {
+                const oldFolderPath = this.getNoteFolderPath(oldPath);
+                // only when the note stayed in the same folder (a rename, not a move)
+                if (file.parent.path === oldFolderPath) {
+                    const parentDir = oldFolderPath.substring(0, oldFolderPath.lastIndexOf('/'));
+                    const newBase = this.getFileBaseName(file.path);
+                    const newFolderPath = parentDir.length > 0 ? parentDir + '/' + newBase : newBase;
+                    if (oldFolderPath != newFolderPath) {
+                        this.filesToRename.push(oldFolderPath, newFolderPath);
+                    }
                 }
             }
         }
-        else if (this.filesToRename.length == 0) {
-            // changing note name
-            let isFN = await this.isFolderNote(oldPath);
-            if (isFN) {
-                var oldFolderPath = this.getNoteFolderPath(oldPath);
-                // find the new path
-                var noteDir = newPath.path;
-                noteDir = noteDir.substring(0, noteDir.lastIndexOf('/'));
-                noteDir = noteDir.substring(0, noteDir.lastIndexOf('/'));
-                var noteBase = newPath.path.split('/').pop();
-                noteBase = noteBase.substring(0, noteBase.length-3);
-                var newFolderPath = '';
-                if (noteDir.length > 0) {
-                    newFolderPath = noteDir + '/' + noteBase;
-                } 
-                else {
-                    newFolderPath = noteBase;
-                }
-                // put it to rename
-                if (oldFolderPath != newFolderPath) {
-                    this.filesToRename.push(oldFolderPath);
-                    this.filesToRename.push(newFolderPath);
-                }
-            }
-        }
-        // only do once a time
+
+        // Obsidian fires one rename per child when a folder is renamed;
+        // wait for that burst to finish, then do a single rename.
         if (!this.filesToRenameSet && this.filesToRename.length > 0) {
             this.filesToRenameSet = true;
-            setTimeout(() => {
-                // console.log('rename is running after 1 s.');
-                if (this.filesToRename.length) {
-                    var oldFolderPath = this.filesToRename[0];
-                    var newFolderPath = this.filesToRename[1];
-                    // console.log('Mod Old Path:', oldFolderPath);
-                    // console.log('Mod New Path:', newFolderPath);
-                    this.app.vault.adapter.rename(oldFolderPath, newFolderPath);
-                    this.filesToRename = [];
-                    this.filesToRenameSet = false;
-                }
-            }, 1000);
+            window.setTimeout(async () => {
+                const [from, to] = this.filesToRename;
+                this.filesToRename = [];
+                this.filesToRenameSet = false;
+                if (from && to) await this.renamePath(from, to);
+            }, 500);
         }
     }
 }
