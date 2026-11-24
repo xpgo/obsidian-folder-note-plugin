@@ -1,25 +1,24 @@
 {
   "name": "folder-note-plugin",
-  "version": "0.9.7",
-  "description": "This is a folder note plugin for Obsidian (https://obsidian.md)",
+  "version": "0.8.0",
+  "description": "Folder notes for Obsidian (https://obsidian.md). Updated fork of xpgo/obsidian-folder-note-plugin for Obsidian 1.x.",
   "main": "main.js",
   "scripts": {
-    "dev": "rollup --config rollup.config.js -w",
-    "build": "rollup --config rollup.config.js"
+    "dev": "node esbuild.config.mjs",
+    "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["obsidian", "folder-note"],
+  "author": "xpgo (original), Shoebur Rahman (fork)",
   "license": "MIT",
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^15.1.0",
-    "@rollup/plugin-node-resolve": "^9.0.0",
-    "@rollup/plugin-typescript": "^6.0.0",
-    "@types/node": "^14.14.30",
-    "@types/yaml": "^1.9.7",
-    "obsidian": "https://github.com/obsidianmd/obsidian-api/tarball/master",
-    "rollup": "^2.39.0",
-    "tslib": "^2.0.3",
-    "typescript": "^4.1.5",
-    "yaml": "^1.10.0"
+    "@types/node": "^20.0.0",
+    "builtin-modules": "^3.3.0",
+    "esbuild": "^0.24.0",
+    "obsidian": "latest",
+    "tslib": "^2.6.0",
+    "typescript": "^5.4.0"
+  },
+  "dependencies": {
+    "yaml": "^2.4.0"
   }
 }

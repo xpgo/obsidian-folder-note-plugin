@@ -1,11 +1,14 @@
-/* hide the folder note file node  */
-div.is-folder-note {
+/* hide the folder note file node (title + its tree-item wrapper) */
+.nav-file-title.is-folder-note,
+.nav-file:has(> .nav-file-title.is-folder-note) {
     display: none;
 }
 
-/* indicate the folder has note  */
-div.has-folder-note {
-    color: var(--text-nav-selected);
+/* indicate the folder has a note */
+.nav-folder-title.has-folder-note .nav-folder-title-content {
+    color: var(--text-accent);
+    text-decoration: underline dotted;
+    text-underline-offset: 3px;
 }
 
 /*---------------------------------------------

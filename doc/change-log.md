@@ -1,3 +1,20 @@
+## 0.8.0 (fork)
+
+Ported to the current Obsidian API (requires Obsidian 1.6.6+).
+
+- Fix: "Insert Folder Brief" used the removed legacy editor (`sourceMode.cmEditor`); now uses the Editor API.
+- Fix: renames go through `fileManager.renameFile`, so links to renamed folder notes get updated.
+- Fix: auto-rename no longer overwrites an existing file, and moving a folder note into another folder no longer renames the old folder.
+- Fix: folder deletion trashes the note via `fileManager.trashFile` (respects your "Deleted files" setting).
+- Fix: `folder_brief_live` cards use the note that contains the block, not whichever note is active, and work in Live Preview.
+- Fix: card title links open in Live Preview (Ctrl/Cmd-click opens in a new tab).
+- Fix: card images resolve `![[img.png|300]]`, paths with spaces, and attachments stored in other folders.
+- Fix: changing settings no longer mutates the defaults object.
+- Fix: clicking the collapse arrow only folds the folder instead of opening the note.
+- Change: folder notes are hidden (and folders with notes highlighted) as soon as the explorer renders, not only after you click the folder; switching methods re-shows notes correctly (upstream #98, #102).
+- Change: disabling the plugin un-hides everything.
+- Build: rollup -> esbuild, TypeScript 5, yaml 2, updated release workflow.
+
 # Change log of Folder Note Plugin
 
 

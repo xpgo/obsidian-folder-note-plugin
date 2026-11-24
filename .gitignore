@@ -1,11 +1,5 @@
-# Intellij
-*.iml
-.idea
-
-# npm
-node_modules
-package-lock.json
-
-# build
+node_modules/
 main.js
-*.js.map
+*.zip
+data.json
+.DS_Store

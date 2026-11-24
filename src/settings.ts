@@ -46,7 +46,7 @@ export class FolderNoteSettingTab extends PluginSettingTab {
         let { containerEl } = this;
 
         containerEl.empty();
-        containerEl.createEl('h2', { text: 'Folder Note Plugin: Settings.' });
+        
 
         new Setting(containerEl)
             .setName('Note File Method')
@@ -57,9 +57,9 @@ export class FolderNoteSettingTab extends PluginSettingTab {
                 .addOption('inside', 'Folder Name Inside')
                 .addOption('outside', 'Folder Name Outside')
                 .setValue(this.plugin.settings.folderNoteType || 'inside')
-                .onChange((value: string) => {
+                .onChange(async (value: string) => {
                     this.plugin.settings.folderNoteType = value;
-                    this.plugin.saveSettings();
+                    await this.plugin.saveSettings();
                     this.display();
                 }));
 
@@ -77,8 +77,8 @@ export class FolderNoteSettingTab extends PluginSettingTab {
         }
 
         new Setting(containerEl)
-            .setName('Inital Content')
-            .setDesc('Set the inital content for new folder note. {{FOLDER_NAME}} will be replaced with current folder name.')
+            .setName('Initial Content')
+            .setDesc('Initial content for a new folder note. Supports {{FOLDER_NAME}}, {{FOLDER_PATH}}, {{FOLDER_BRIEF}} and {{FOLDER_BRIEF_LIVE}}.')
             .addTextArea(text => {
                 text
                     .setPlaceholder('About the folder.')
@@ -103,9 +103,9 @@ export class FolderNoteSettingTab extends PluginSettingTab {
                 .addOption('ctrl', 'Ctrl + Click')
                 .addOption('alt', 'Alt + Click')
                 .setValue(this.plugin.settings.folderNoteKey || 'ctrl')
-                .onChange((value: string) => {
+                .onChange(async (value: string) => {
                     this.plugin.settings.folderNoteKey = value;
-                    this.plugin.saveSettings();
+                    await this.plugin.saveSettings();
                 }));
         
         new Setting(containerEl)
